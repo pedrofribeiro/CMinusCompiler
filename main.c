@@ -3,20 +3,30 @@
 #define NO_PARSE FALSE
 /* set NO_ANALYZE to TRUE to get a parser-only compiler */
 #define NO_ANALYZE FALSE
-/* set NO_CODE to TRUE to get a compiler that does not generate code  */
-#define NO_CODE TRUE
+/* set NO_INTERMCODE to TRUE to get a compiler that does not generate intermediary code  */
+#define NO_INTERMCODE TRUE
+/* set NO_ASM to TRUE to get a compiler that does not generate assembly code  */
+#define NO_ASM TRUE
+/* set NO_MACHINECODE to TRUE to get a compiler that does not generate machine code  */
+#define NO_MACHINECODE TRUE
 
 #include "util.h"
 #if NO_PARSE
-#include "scan.h"
+    #include "scan.h"
 #else
-#include "parse.h"
-#if !NO_ANALYZE
-#include "analyze.h"
-#if !NO_CODE
-#include "cgen.h"
-#endif
-#endif
+    #include "parse.h"
+    #if !NO_ANALYZE
+      #include "analyze.h"
+      #if !NO_INTERMCODE
+        #include "intermediaryCode.h"
+      #endif
+      #if !NO_ASM
+        #include "asm.h"
+      #endif
+      #if !NO_MACHINECODE
+        #include "machineCode.h"
+      #endif
+    #endif
 #endif
 
 /* allocate global variables */
@@ -29,6 +39,9 @@ int EchoSource = TRUE;
 int TraceScan = TRUE;
 int TraceParse = TRUE;
 int TraceAnalyze = TRUE;
+int TraceIntermCode = FALSE;
+int TraceASM = FALSE;
+int TraceMachineCode = FALSE;
 
 int Error = FALSE;
 
@@ -81,9 +94,9 @@ int main( int argc, char * argv[] )
     fprintf(listing, "Checagem de tipos.\n");
     typeCheck(syntaxTree);
     fprintf(listing, "Checagem de tipos finalizada.\n");
-    
+
   }
-#if !NO_CODE
+#if !NO_MACHINECODE
   if (! Error)
   { char * codefile;
     int fnlen = strcspn(pgm,".");

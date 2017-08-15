@@ -62,11 +62,11 @@ extern char* GUARDAESCOPO;
 /**************************************************/
 
 typedef enum {StmtK,ExpK} NodeKind;
-typedef enum {IfK, RepeatK, AtribK, ReturnK, FunK, VarK, VetK, DadoK, TempK} StmtKind;
+typedef enum {IfK, RepeatK, AtribK, ReturnK, FunK, VarK, VetK, DadoK} StmtKind;
 typedef enum {OpK, IdK, IdVetK, IdFunK, ConstK} ExpKind;
 
 /* ExpType is used for type checking */
-typedef enum {Void, Integer, Boolean, Temporary} ExpType;
+typedef enum {Void, Integer, Boolean} ExpType;
 
 #define MAXCHILDREN 3
 

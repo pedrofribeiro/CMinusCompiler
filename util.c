@@ -110,6 +110,31 @@ static void printSpaces(void)
     fprintf(listing," ");
 }
 
+/* procedure to notify the system of an exception.
+* Ideally, this should never happen.
+*/
+void callException(char* functionOfException, int kindOfException, int pointOfBreak){
+	if(kindOfException == 2){
+		printf("null node found.\n");
+		return;
+	}
+	printf("<EXCEPTION FOUND>\nA problem was found at the stage -%d- of the compilation process.\n",pointOfBreak);
+	printf("The exception happened at function < %s >.\n",functionOfException);
+	printf("The kind of exception is -%d-, please refer to manual to further instructions.\n",kindOfException);
+	/*There are 6 stages of compilation:
+	1. Lexical Analysis
+	2. Parsing Analysis
+	3. Semantic Analysis
+	4. Intermediary Code Generation
+	5. Assembly Code Generation
+	6. Machine Code Generation
+	There are 2 kinds of exceptions:
+	1. A default case was assumed when it shouldn't have.
+		This means that one of the switches used catched an error, probably on a given (current) treeNode.
+	2. A null node has been found.
+	*/
+}
+
 /* procedure printTree prints a syntax tree to the
  * listing file using indentation to indicate subtrees
  */
