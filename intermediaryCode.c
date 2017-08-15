@@ -1,4 +1,5 @@
 #include "intermediaryCode.h"
+#include "triple.h"
 
 void evalStmt(TreeNode *node){
   switch (node->kind.stmt) {

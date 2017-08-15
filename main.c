@@ -4,7 +4,7 @@
 /* set NO_ANALYZE to TRUE to get a parser-only compiler */
 #define NO_ANALYZE FALSE
 /* set NO_INTERMCODE to TRUE to get a compiler that does not generate intermediary code  */
-#define NO_INTERMCODE TRUE
+#define NO_INTERMCODE FALSE
 /* set NO_ASM to TRUE to get a compiler that does not generate assembly code  */
 #define NO_ASM TRUE
 /* set NO_MACHINECODE to TRUE to get a compiler that does not generate machine code  */
