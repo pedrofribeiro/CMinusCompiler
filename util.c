@@ -136,6 +136,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	4. NULL List was found.
 	5. Triple kind could not be correctly matched.
 	6. NULL child of a node that has to have a child, such as int or void.
+	7. Illegal construction found on an operationKind node.
 	*/
 }
 

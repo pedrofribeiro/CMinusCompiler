@@ -37,18 +37,34 @@ void evalStmt(TreeNode *node){
   }
 }
 
-//typedef enum {OpK, IdK, IdVetK, IdFunK, ConstK} ExpKind;
+//addTriple(operationType op, int fo, int so, operandType fot, operandType sot);
 void evalExp(TreeNode *node){
   switch (node->kind.exp) {
     case ConstK:
+      //done as a subcase of another case
     break;
     case IdK:
+      //done as a subcase of another case
     break;
     case IdVetK:
+      //not yet
     break;
     case OpK:
+      //this conditional investigates the RHS, knowing that the LHS can only be either a constant, a var, a vet or a fn call.
+      if(node->child[0]->kind.exp == ConstK){
+        // a = const, var, vet, fn call,
+      }else if(node->child[0]->kind.exp == IdVarK){
+        //not yet
+      }else if(node->child[0]->kind.exp == IdVetK){
+        //not yet
+      }else if(node->child[0]->kind.exp == IdFunK){
+        //not yet
+      }else{
+        callException("evalExp OpK",7,4);
+      }
     break;
     case IdFunK:
+      //parameters must be done inside here. otherwise they will be treated as var decls.
     break;
     default:
       callException("evalExp",1,4);
