@@ -1,0 +1,1275 @@
+Terminals unused in grammar
+
+   THEN
+   END
+   ERROR
+
+
+Grammar
+
+    0 $accept: programa $end
+
+    1 programa: declaracao_lista
+
+    2 declaracao_lista: declaracao_lista declaracao
+    3                 | declaracao
+
+    4 declaracao: var_declaracao
+    5           | fun_declaracao
+
+    6 var_declaracao: tipo_especificador id SEMI
+    7               | tipo_especificador id LCH num RCH SEMI
+
+    8 tipo_especificador: INT
+    9                   | VOID
+
+   10 fun_declaracao: tipo_especificador id LPAREN params RPAREN composto_decl
+
+   11 params: param_lista
+   12       | VOID
+
+   13 param_lista: param_lista COMMA param
+   14            | param
+
+   15 param: tipo_especificador id
+   16      | tipo_especificador id LCH RCH
+
+   17 composto_decl: LBKT local_declaracoes statement_lista RBKT
+
+   18 local_declaracoes: local_declaracoes var_declaracao
+   19                  | %empty
+
+   20 statement_lista: statement_lista statement
+   21                | %empty
+
+   22 statement: expressao_decl
+   23          | composto_decl
+   24          | selecao_decl
+   25          | iteracao_decl
+   26          | retorno_decl
+
+   27 expressao_decl: expressao SEMI
+   28               | SEMI
+
+   29 selecao_decl: IF LPAREN expressao RPAREN statement
+   30             | IF LPAREN expressao RPAREN statement ELSE statement
+
+   31 iteracao_decl: WHILE LPAREN expressao RPAREN statement
+
+   32 retorno_decl: RETURN SEMI
+   33             | RETURN expressao SEMI
+
+   34 expressao: var ASSIGN expressao
+   35          | simples_expressao
+
+   36 var: id
+   37    | id LCH expressao RCH
+
+   38 simples_expressao: soma_expressao relacional soma_expressao
+   39                  | soma_expressao
+
+   40 relacional: LET
+   41           | LT
+   42           | GT
+   43           | GET
+   44           | EQ
+   45           | DIF
+
+   46 soma_expressao: soma_expressao soma termo
+   47               | termo
+
+   48 soma: PLUS
+   49     | MINUS
+
+   50 termo: termo mult fator
+   51      | fator
+
+   52 mult: TIMES
+   53     | OVER
+
+   54 fator: LPAREN expressao RPAREN
+   55      | var
+   56      | ativacao
+   57      | num
+
+   58 ativacao: id LPAREN args RPAREN
+
+   59 args: arg_lista
+   60     | %empty
+
+   61 arg_lista: arg_lista COMMA expressao
+   62          | expressao
+
+   63 id: ID
+
+   64 num: NUM
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+INT (258) 8
+VOID (259) 9 12
+IF (260) 29 30
+THEN (261)
+ELSE (262) 30
+END (263)
+WHILE (264) 31
+RETURN (265) 32 33
+ID (266) 63
+NUM (267) 64
+EQ (268) 44
+DIF (269) 45
+LT (270) 41
+LET (271) 40
+GT (272) 42
+GET (273) 43
+PLUS (274) 48
+MINUS (275) 49
+TIMES (276) 52
+OVER (277) 53
+ASSIGN (278) 34
+LPAREN (279) 10 29 30 31 54 58
+RPAREN (280) 10 29 30 31 54 58
+LCH (281) 7 16 37
+RCH (282) 7 16 37
+LBKT (283) 17
+RBKT (284) 17
+COMMA (285) 13 61
+SEMI (286) 6 7 27 28 32 33
+ERROR (287)
+
+
+Nonterminals, with rules where they appear
+
+$accept (33)
+    on left: 0
+programa (34)
+    on left: 1, on right: 0
+declaracao_lista (35)
+    on left: 2 3, on right: 1 2
+declaracao (36)
+    on left: 4 5, on right: 2 3
+var_declaracao (37)
+    on left: 6 7, on right: 4 18
+tipo_especificador (38)
+    on left: 8 9, on right: 6 7 10 15 16
+fun_declaracao (39)
+    on left: 10, on right: 5
+params (40)
+    on left: 11 12, on right: 10
+param_lista (41)
+    on left: 13 14, on right: 11 13
+param (42)
+    on left: 15 16, on right: 13 14
+composto_decl (43)
+    on left: 17, on right: 10 23
+local_declaracoes (44)
+    on left: 18 19, on right: 17 18
+statement_lista (45)
+    on left: 20 21, on right: 17 20
+statement (46)
+    on left: 22 23 24 25 26, on right: 20 29 30 31
+expressao_decl (47)
+    on left: 27 28, on right: 22
+selecao_decl (48)
+    on left: 29 30, on right: 24
+iteracao_decl (49)
+    on left: 31, on right: 25
+retorno_decl (50)
+    on left: 32 33, on right: 26
+expressao (51)
+    on left: 34 35, on right: 27 29 30 31 33 34 37 54 61 62
+var (52)
+    on left: 36 37, on right: 34 55
+simples_expressao (53)
+    on left: 38 39, on right: 35
+relacional (54)
+    on left: 40 41 42 43 44 45, on right: 38
+soma_expressao (55)
+    on left: 46 47, on right: 38 39 46
+soma (56)
+    on left: 48 49, on right: 46
+termo (57)
+    on left: 50 51, on right: 46 47 50
+mult (58)
+    on left: 52 53, on right: 50
+fator (59)
+    on left: 54 55 56 57, on right: 50 51
+ativacao (60)
+    on left: 58, on right: 56
+args (61)
+    on left: 59 60, on right: 58
+arg_lista (62)
+    on left: 61 62, on right: 59 61
+id (63)
+    on left: 63, on right: 6 7 10 15 16 36 37 58
+num (64)
+    on left: 64, on right: 7 57
+
+
+State 0
+
+    0 $accept: . programa $end
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    programa            go to state 3
+    declaracao_lista    go to state 4
+    declaracao          go to state 5
+    var_declaracao      go to state 6
+    tipo_especificador  go to state 7
+    fun_declaracao      go to state 8
+
+
+State 1
+
+    8 tipo_especificador: INT .
+
+    $default  reduce using rule 8 (tipo_especificador)
+
+
+State 2
+
+    9 tipo_especificador: VOID .
+
+    $default  reduce using rule 9 (tipo_especificador)
+
+
+State 3
+
+    0 $accept: programa . $end
+
+    $end  shift, and go to state 9
+
+
+State 4
+
+    1 programa: declaracao_lista .
+    2 declaracao_lista: declaracao_lista . declaracao
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    $default  reduce using rule 1 (programa)
+
+    declaracao          go to state 10
+    var_declaracao      go to state 6
+    tipo_especificador  go to state 7
+    fun_declaracao      go to state 8
+
+
+State 5
+
+    3 declaracao_lista: declaracao .
+
+    $default  reduce using rule 3 (declaracao_lista)
+
+
+State 6
+
+    4 declaracao: var_declaracao .
+
+    $default  reduce using rule 4 (declaracao)
+
+
+State 7
+
+    6 var_declaracao: tipo_especificador . id SEMI
+    7               | tipo_especificador . id LCH num RCH SEMI
+   10 fun_declaracao: tipo_especificador . id LPAREN params RPAREN composto_decl
+
+    ID  shift, and go to state 11
+
+    id  go to state 12
+
+
+State 8
+
+    5 declaracao: fun_declaracao .
+
+    $default  reduce using rule 5 (declaracao)
+
+
+State 9
+
+    0 $accept: programa $end .
+
+    $default  accept
+
+
+State 10
+
+    2 declaracao_lista: declaracao_lista declaracao .
+
+    $default  reduce using rule 2 (declaracao_lista)
+
+
+State 11
+
+   63 id: ID .
+
+    $default  reduce using rule 63 (id)
+
+
+State 12
+
+    6 var_declaracao: tipo_especificador id . SEMI
+    7               | tipo_especificador id . LCH num RCH SEMI
+   10 fun_declaracao: tipo_especificador id . LPAREN params RPAREN composto_decl
+
+    LPAREN  shift, and go to state 13
+    LCH     shift, and go to state 14
+    SEMI    shift, and go to state 15
+
+
+State 13
+
+   10 fun_declaracao: tipo_especificador id LPAREN . params RPAREN composto_decl
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 16
+
+    tipo_especificador  go to state 17
+    params              go to state 18
+    param_lista         go to state 19
+    param               go to state 20
+
+
+State 14
+
+    7 var_declaracao: tipo_especificador id LCH . num RCH SEMI
+
+    NUM  shift, and go to state 21
+
+    num  go to state 22
+
+
+State 15
+
+    6 var_declaracao: tipo_especificador id SEMI .
+
+    $default  reduce using rule 6 (var_declaracao)
+
+
+State 16
+
+    9 tipo_especificador: VOID .
+   12 params: VOID .
+
+    RPAREN    reduce using rule 12 (params)
+    $default  reduce using rule 9 (tipo_especificador)
+
+
+State 17
+
+   15 param: tipo_especificador . id
+   16      | tipo_especificador . id LCH RCH
+
+    ID  shift, and go to state 11
+
+    id  go to state 23
+
+
+State 18
+
+   10 fun_declaracao: tipo_especificador id LPAREN params . RPAREN composto_decl
+
+    RPAREN  shift, and go to state 24
+
+
+State 19
+
+   11 params: param_lista .
+   13 param_lista: param_lista . COMMA param
+
+    COMMA  shift, and go to state 25
+
+    $default  reduce using rule 11 (params)
+
+
+State 20
+
+   14 param_lista: param .
+
+    $default  reduce using rule 14 (param_lista)
+
+
+State 21
+
+   64 num: NUM .
+
+    $default  reduce using rule 64 (num)
+
+
+State 22
+
+    7 var_declaracao: tipo_especificador id LCH num . RCH SEMI
+
+    RCH  shift, and go to state 26
+
+
+State 23
+
+   15 param: tipo_especificador id .
+   16      | tipo_especificador id . LCH RCH
+
+    LCH  shift, and go to state 27
+
+    $default  reduce using rule 15 (param)
+
+
+State 24
+
+   10 fun_declaracao: tipo_especificador id LPAREN params RPAREN . composto_decl
+
+    LBKT  shift, and go to state 28
+
+    composto_decl  go to state 29
+
+
+State 25
+
+   13 param_lista: param_lista COMMA . param
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    tipo_especificador  go to state 17
+    param               go to state 30
+
+
+State 26
+
+    7 var_declaracao: tipo_especificador id LCH num RCH . SEMI
+
+    SEMI  shift, and go to state 31
+
+
+State 27
+
+   16 param: tipo_especificador id LCH . RCH
+
+    RCH  shift, and go to state 32
+
+
+State 28
+
+   17 composto_decl: LBKT . local_declaracoes statement_lista RBKT
+
+    $default  reduce using rule 19 (local_declaracoes)
+
+    local_declaracoes  go to state 33
+
+
+State 29
+
+   10 fun_declaracao: tipo_especificador id LPAREN params RPAREN composto_decl .
+
+    $default  reduce using rule 10 (fun_declaracao)
+
+
+State 30
+
+   13 param_lista: param_lista COMMA param .
+
+    $default  reduce using rule 13 (param_lista)
+
+
+State 31
+
+    7 var_declaracao: tipo_especificador id LCH num RCH SEMI .
+
+    $default  reduce using rule 7 (var_declaracao)
+
+
+State 32
+
+   16 param: tipo_especificador id LCH RCH .
+
+    $default  reduce using rule 16 (param)
+
+
+State 33
+
+   17 composto_decl: LBKT local_declaracoes . statement_lista RBKT
+   18 local_declaracoes: local_declaracoes . var_declaracao
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    $default  reduce using rule 21 (statement_lista)
+
+    var_declaracao      go to state 34
+    tipo_especificador  go to state 35
+    statement_lista     go to state 36
+
+
+State 34
+
+   18 local_declaracoes: local_declaracoes var_declaracao .
+
+    $default  reduce using rule 18 (local_declaracoes)
+
+
+State 35
+
+    6 var_declaracao: tipo_especificador . id SEMI
+    7               | tipo_especificador . id LCH num RCH SEMI
+
+    ID  shift, and go to state 11
+
+    id  go to state 37
+
+
+State 36
+
+   17 composto_decl: LBKT local_declaracoes statement_lista . RBKT
+   20 statement_lista: statement_lista . statement
+
+    IF      shift, and go to state 38
+    WHILE   shift, and go to state 39
+    RETURN  shift, and go to state 40
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+    LBKT    shift, and go to state 28
+    RBKT    shift, and go to state 42
+    SEMI    shift, and go to state 43
+
+    composto_decl      go to state 44
+    statement          go to state 45
+    expressao_decl     go to state 46
+    selecao_decl       go to state 47
+    iteracao_decl      go to state 48
+    retorno_decl       go to state 49
+    expressao          go to state 50
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 37
+
+    6 var_declaracao: tipo_especificador id . SEMI
+    7               | tipo_especificador id . LCH num RCH SEMI
+
+    LCH   shift, and go to state 14
+    SEMI  shift, and go to state 15
+
+
+State 38
+
+   29 selecao_decl: IF . LPAREN expressao RPAREN statement
+   30             | IF . LPAREN expressao RPAREN statement ELSE statement
+
+    LPAREN  shift, and go to state 59
+
+
+State 39
+
+   31 iteracao_decl: WHILE . LPAREN expressao RPAREN statement
+
+    LPAREN  shift, and go to state 60
+
+
+State 40
+
+   32 retorno_decl: RETURN . SEMI
+   33             | RETURN . expressao SEMI
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+    SEMI    shift, and go to state 61
+
+    expressao          go to state 62
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 41
+
+   54 fator: LPAREN . expressao RPAREN
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    expressao          go to state 63
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 42
+
+   17 composto_decl: LBKT local_declaracoes statement_lista RBKT .
+
+    $default  reduce using rule 17 (composto_decl)
+
+
+State 43
+
+   28 expressao_decl: SEMI .
+
+    $default  reduce using rule 28 (expressao_decl)
+
+
+State 44
+
+   23 statement: composto_decl .
+
+    $default  reduce using rule 23 (statement)
+
+
+State 45
+
+   20 statement_lista: statement_lista statement .
+
+    $default  reduce using rule 20 (statement_lista)
+
+
+State 46
+
+   22 statement: expressao_decl .
+
+    $default  reduce using rule 22 (statement)
+
+
+State 47
+
+   24 statement: selecao_decl .
+
+    $default  reduce using rule 24 (statement)
+
+
+State 48
+
+   25 statement: iteracao_decl .
+
+    $default  reduce using rule 25 (statement)
+
+
+State 49
+
+   26 statement: retorno_decl .
+
+    $default  reduce using rule 26 (statement)
+
+
+State 50
+
+   27 expressao_decl: expressao . SEMI
+
+    SEMI  shift, and go to state 64
+
+
+State 51
+
+   34 expressao: var . ASSIGN expressao
+   55 fator: var .
+
+    ASSIGN  shift, and go to state 65
+
+    $default  reduce using rule 55 (fator)
+
+
+State 52
+
+   35 expressao: simples_expressao .
+
+    $default  reduce using rule 35 (expressao)
+
+
+State 53
+
+   38 simples_expressao: soma_expressao . relacional soma_expressao
+   39                  | soma_expressao .
+   46 soma_expressao: soma_expressao . soma termo
+
+    EQ     shift, and go to state 66
+    DIF    shift, and go to state 67
+    LT     shift, and go to state 68
+    LET    shift, and go to state 69
+    GT     shift, and go to state 70
+    GET    shift, and go to state 71
+    PLUS   shift, and go to state 72
+    MINUS  shift, and go to state 73
+
+    $default  reduce using rule 39 (simples_expressao)
+
+    relacional  go to state 74
+    soma        go to state 75
+
+
+State 54
+
+   47 soma_expressao: termo .
+   50 termo: termo . mult fator
+
+    TIMES  shift, and go to state 76
+    OVER   shift, and go to state 77
+
+    $default  reduce using rule 47 (soma_expressao)
+
+    mult  go to state 78
+
+
+State 55
+
+   51 termo: fator .
+
+    $default  reduce using rule 51 (termo)
+
+
+State 56
+
+   56 fator: ativacao .
+
+    $default  reduce using rule 56 (fator)
+
+
+State 57
+
+   36 var: id .
+   37    | id . LCH expressao RCH
+   58 ativacao: id . LPAREN args RPAREN
+
+    LPAREN  shift, and go to state 79
+    LCH     shift, and go to state 80
+
+    $default  reduce using rule 36 (var)
+
+
+State 58
+
+   57 fator: num .
+
+    $default  reduce using rule 57 (fator)
+
+
+State 59
+
+   29 selecao_decl: IF LPAREN . expressao RPAREN statement
+   30             | IF LPAREN . expressao RPAREN statement ELSE statement
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    expressao          go to state 81
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 60
+
+   31 iteracao_decl: WHILE LPAREN . expressao RPAREN statement
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    expressao          go to state 82
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 61
+
+   32 retorno_decl: RETURN SEMI .
+
+    $default  reduce using rule 32 (retorno_decl)
+
+
+State 62
+
+   33 retorno_decl: RETURN expressao . SEMI
+
+    SEMI  shift, and go to state 83
+
+
+State 63
+
+   54 fator: LPAREN expressao . RPAREN
+
+    RPAREN  shift, and go to state 84
+
+
+State 64
+
+   27 expressao_decl: expressao SEMI .
+
+    $default  reduce using rule 27 (expressao_decl)
+
+
+State 65
+
+   34 expressao: var ASSIGN . expressao
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    expressao          go to state 85
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 66
+
+   44 relacional: EQ .
+
+    $default  reduce using rule 44 (relacional)
+
+
+State 67
+
+   45 relacional: DIF .
+
+    $default  reduce using rule 45 (relacional)
+
+
+State 68
+
+   41 relacional: LT .
+
+    $default  reduce using rule 41 (relacional)
+
+
+State 69
+
+   40 relacional: LET .
+
+    $default  reduce using rule 40 (relacional)
+
+
+State 70
+
+   42 relacional: GT .
+
+    $default  reduce using rule 42 (relacional)
+
+
+State 71
+
+   43 relacional: GET .
+
+    $default  reduce using rule 43 (relacional)
+
+
+State 72
+
+   48 soma: PLUS .
+
+    $default  reduce using rule 48 (soma)
+
+
+State 73
+
+   49 soma: MINUS .
+
+    $default  reduce using rule 49 (soma)
+
+
+State 74
+
+   38 simples_expressao: soma_expressao relacional . soma_expressao
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    var             go to state 86
+    soma_expressao  go to state 87
+    termo           go to state 54
+    fator           go to state 55
+    ativacao        go to state 56
+    id              go to state 57
+    num             go to state 58
+
+
+State 75
+
+   46 soma_expressao: soma_expressao soma . termo
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    var       go to state 86
+    termo     go to state 88
+    fator     go to state 55
+    ativacao  go to state 56
+    id        go to state 57
+    num       go to state 58
+
+
+State 76
+
+   52 mult: TIMES .
+
+    $default  reduce using rule 52 (mult)
+
+
+State 77
+
+   53 mult: OVER .
+
+    $default  reduce using rule 53 (mult)
+
+
+State 78
+
+   50 termo: termo mult . fator
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    var       go to state 86
+    fator     go to state 89
+    ativacao  go to state 56
+    id        go to state 57
+    num       go to state 58
+
+
+State 79
+
+   58 ativacao: id LPAREN . args RPAREN
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    $default  reduce using rule 60 (args)
+
+    expressao          go to state 90
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    args               go to state 91
+    arg_lista          go to state 92
+    id                 go to state 57
+    num                go to state 58
+
+
+State 80
+
+   37 var: id LCH . expressao RCH
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    expressao          go to state 93
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 81
+
+   29 selecao_decl: IF LPAREN expressao . RPAREN statement
+   30             | IF LPAREN expressao . RPAREN statement ELSE statement
+
+    RPAREN  shift, and go to state 94
+
+
+State 82
+
+   31 iteracao_decl: WHILE LPAREN expressao . RPAREN statement
+
+    RPAREN  shift, and go to state 95
+
+
+State 83
+
+   33 retorno_decl: RETURN expressao SEMI .
+
+    $default  reduce using rule 33 (retorno_decl)
+
+
+State 84
+
+   54 fator: LPAREN expressao RPAREN .
+
+    $default  reduce using rule 54 (fator)
+
+
+State 85
+
+   34 expressao: var ASSIGN expressao .
+
+    $default  reduce using rule 34 (expressao)
+
+
+State 86
+
+   55 fator: var .
+
+    $default  reduce using rule 55 (fator)
+
+
+State 87
+
+   38 simples_expressao: soma_expressao relacional soma_expressao .
+   46 soma_expressao: soma_expressao . soma termo
+
+    PLUS   shift, and go to state 72
+    MINUS  shift, and go to state 73
+
+    $default  reduce using rule 38 (simples_expressao)
+
+    soma  go to state 75
+
+
+State 88
+
+   46 soma_expressao: soma_expressao soma termo .
+   50 termo: termo . mult fator
+
+    TIMES  shift, and go to state 76
+    OVER   shift, and go to state 77
+
+    $default  reduce using rule 46 (soma_expressao)
+
+    mult  go to state 78
+
+
+State 89
+
+   50 termo: termo mult fator .
+
+    $default  reduce using rule 50 (termo)
+
+
+State 90
+
+   62 arg_lista: expressao .
+
+    $default  reduce using rule 62 (arg_lista)
+
+
+State 91
+
+   58 ativacao: id LPAREN args . RPAREN
+
+    RPAREN  shift, and go to state 96
+
+
+State 92
+
+   59 args: arg_lista .
+   61 arg_lista: arg_lista . COMMA expressao
+
+    COMMA  shift, and go to state 97
+
+    $default  reduce using rule 59 (args)
+
+
+State 93
+
+   37 var: id LCH expressao . RCH
+
+    RCH  shift, and go to state 98
+
+
+State 94
+
+   29 selecao_decl: IF LPAREN expressao RPAREN . statement
+   30             | IF LPAREN expressao RPAREN . statement ELSE statement
+
+    IF      shift, and go to state 38
+    WHILE   shift, and go to state 39
+    RETURN  shift, and go to state 40
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+    LBKT    shift, and go to state 28
+    SEMI    shift, and go to state 43
+
+    composto_decl      go to state 44
+    statement          go to state 99
+    expressao_decl     go to state 46
+    selecao_decl       go to state 47
+    iteracao_decl      go to state 48
+    retorno_decl       go to state 49
+    expressao          go to state 50
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 95
+
+   31 iteracao_decl: WHILE LPAREN expressao RPAREN . statement
+
+    IF      shift, and go to state 38
+    WHILE   shift, and go to state 39
+    RETURN  shift, and go to state 40
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+    LBKT    shift, and go to state 28
+    SEMI    shift, and go to state 43
+
+    composto_decl      go to state 44
+    statement          go to state 100
+    expressao_decl     go to state 46
+    selecao_decl       go to state 47
+    iteracao_decl      go to state 48
+    retorno_decl       go to state 49
+    expressao          go to state 50
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 96
+
+   58 ativacao: id LPAREN args RPAREN .
+
+    $default  reduce using rule 58 (ativacao)
+
+
+State 97
+
+   61 arg_lista: arg_lista COMMA . expressao
+
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+
+    expressao          go to state 101
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 98
+
+   37 var: id LCH expressao RCH .
+
+    $default  reduce using rule 37 (var)
+
+
+State 99
+
+   29 selecao_decl: IF LPAREN expressao RPAREN statement .
+   30             | IF LPAREN expressao RPAREN statement . ELSE statement
+
+    ELSE  shift, and go to state 102
+
+    $default  reduce using rule 29 (selecao_decl)
+
+
+State 100
+
+   31 iteracao_decl: WHILE LPAREN expressao RPAREN statement .
+
+    $default  reduce using rule 31 (iteracao_decl)
+
+
+State 101
+
+   61 arg_lista: arg_lista COMMA expressao .
+
+    $default  reduce using rule 61 (arg_lista)
+
+
+State 102
+
+   30 selecao_decl: IF LPAREN expressao RPAREN statement ELSE . statement
+
+    IF      shift, and go to state 38
+    WHILE   shift, and go to state 39
+    RETURN  shift, and go to state 40
+    ID      shift, and go to state 11
+    NUM     shift, and go to state 21
+    LPAREN  shift, and go to state 41
+    LBKT    shift, and go to state 28
+    SEMI    shift, and go to state 43
+
+    composto_decl      go to state 44
+    statement          go to state 103
+    expressao_decl     go to state 46
+    selecao_decl       go to state 47
+    iteracao_decl      go to state 48
+    retorno_decl       go to state 49
+    expressao          go to state 50
+    var                go to state 51
+    simples_expressao  go to state 52
+    soma_expressao     go to state 53
+    termo              go to state 54
+    fator              go to state 55
+    ativacao           go to state 56
+    id                 go to state 57
+    num                go to state 58
+
+
+State 103
+
+   30 selecao_decl: IF LPAREN expressao RPAREN statement ELSE statement .
+
+    $default  reduce using rule 30 (selecao_decl)
