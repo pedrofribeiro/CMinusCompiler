@@ -55,11 +55,6 @@ TreeNode * newStmtNode(StmtKind kind)
     t->nodekind = StmtK;
     t->kind.stmt = kind;
     t->lineno = lineno;
-		strcpy(t->tacode,"");
-		strcpy(t->tacodeopk,"");
-		strcpy(t->cummulativeTacode,"");
-		t->paramIndex = 0;
-		t->numberOfParameters = 0;
   }
   return t;
 }
@@ -80,11 +75,6 @@ TreeNode * newExpNode(ExpKind kind)
     t->kind.exp = kind;
     t->lineno = lineno;
   	t->type = Integer;
-		strcpy(t->tacode,"exp");
-		strcpy(t->tacodeopk,"");
-		strcpy(t->cummulativeTacode,"");
-		t->paramIndex = 0;
-		t->numberOfParameters = 0;
   }
   return t;
 }

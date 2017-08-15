@@ -81,12 +81,6 @@ typedef struct treeNode
              char * name;
             } attr;
      ExpType type; /* for type checking of exps */
-     char tacode[700];
-     char tacodeopk[40];
-     char cummulativeTacode[40];
-     int paramIndex;
-     int numberOfParameters;
-     //o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o- (50 caracteres)
    } TreeNode;
 
 /**************************************************/
