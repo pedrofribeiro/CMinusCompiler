@@ -1,7 +1,7 @@
 #include "intermediaryCode.h"
 
 void evalStmt(TreeNode *node){
-  switch (node->kind) {
+  switch (node->kind.stmt) {
     case DadoK:
     break;
     case VarK:
@@ -26,7 +26,7 @@ void evalStmt(TreeNode *node){
 
 //typedef enum {OpK, IdK, IdVetK, IdFunK, ConstK} ExpKind;
 void evalExp(TreeNode *node){
-  switch (node->kind) {
+  switch (node->kind.exp) {
     case ConstK:
     break;
     case IdK:
