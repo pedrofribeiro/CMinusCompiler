@@ -5,7 +5,7 @@
 #include "util.h"
 
 typedef enum {ADD, SUB, MULT, DIV, IFF, WHILEE, ATRIB, EQT, DIFF, GRT, LESST, GRTET, LESSTET, FNDECL, FNCALL, PARAM, RTRN, TRIPLE} operationType;
-typedef enum {SymboltableAddress, TripleAddress, Constant} operandType;
+typedef enum {SymboltableAddress, TripleAddress, Constant, Empty} operandType;
 
 int NUMBER_OF_TRIPLES;
 

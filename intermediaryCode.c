@@ -1,15 +1,31 @@
 #include "intermediaryCode.h"
 #include "triple.h"
 
+//addTriple(operationType op, int fo, int so, operandType fot, operandType sot);
+
 void evalStmt(TreeNode *node){
   switch (node->kind.stmt) {
     case DadoK:
+      if(node->child[0] == NULL){
+        callException("evalStmt DadoK",6,4);
+        return;
+      }
+      evalStmt(node->child[0]);
     break;
     case VarK:
     break;
     case VetK:
     break;
     case ReturnK:
+      if(node->child[0] == NULL){
+        callException("evalStmt ReturnK",6,4);
+        return;
+      }
+      evalStmt(node->child[0]);
+      if(node->child[0]->kind.exp == IdFunK){
+          int tempVar = NUMBER_OF_TRIPLES + 1 - node->child[0]->numberOfParameters;
+          addTriple(RTRN,tempVar,-1,TripleAddress,Empty);
+      }
     break;
     case AtribK:
     break;

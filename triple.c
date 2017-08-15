@@ -43,23 +43,29 @@ void printTripleList(){
   while (tempTriple != NULL) {
     /*I chose to make the code clearer to read instead of faster to compile. */
     if((tempTriple->firstOperandType == Constant) && (tempTriple->secondOperandType == Constant))
-      printf("%d: (%d, %d, %d)\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, %d, %d)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == Constant) && (tempTriple->secondOperandType == SymboltableAddress))
-      printf("%d: (%d, %d, st[%d])\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, %d, st[%d])\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == Constant) && (tempTriple->secondOperandType == TripleAddress))
-      printf("%d: (%d, %d, t(%d))\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, %d, t(%d))\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
+    else if((tempTriple->firstOperandType == Constant) && (tempTriple->secondOperandType == Empty))
+      printf("%d: (%d, %d, _)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand);
     else if((tempTriple->firstOperandType == SymboltableAddress) && (tempTriple->secondOperandType == Constant))
-      printf("%d: (%d, st[%d], %d)\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, st[%d], %d)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == SymboltableAddress) && (tempTriple->secondOperandType == SymboltableAddress))
-      printf("%d: (%d, st[%d], st[%d])\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, st[%d], st[%d])\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == SymboltableAddress) && (tempTriple->secondOperandType == TripleAddress))
-      printf("%d: (%d, st[%d], t(%d))\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, st[%d], t(%d))\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
+    else if((tempTriple->firstOperandType == SymboltableAddress) && (tempTriple->secondOperandType == Empty))
+      printf("%d: (%d, st[%d], _)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand);
     else if((tempTriple->firstOperandType == TripleAddress) && (tempTriple->secondOperandType == Constant))
-      printf("%d: (%d, t(%d), %d)\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, t(%d), %d)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == TripleAddress) && (tempTriple->secondOperandType == SymboltableAddress))
-      printf("%d: (%d, t(%d), st[%d])\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, t(%d), st[%d])\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == TripleAddress) && (tempTriple->secondOperandType == TripleAddress))
-      printf("%d: (%d, t(%d), t(%d))\n",tempTriple->tripleNumber, tempTriple->firstOperand, tempTriple->secondOperand);
+      printf("%d: (%d, t(%d), t(%d))\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
+    else if((tempTriple->firstOperandType == TripleAddress) && (tempTriple->secondOperandType == Empty))
+      printf("%d: (%d, t(%d), _)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand);
     else callException("printTripleList",5,4);
 
     tempTriple = tempTriple->next;

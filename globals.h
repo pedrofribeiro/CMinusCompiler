@@ -80,6 +80,7 @@ typedef struct treeNode
              int val;
              char * name;
             } attr;
+     int numberOfParameters;
      ExpType type; /* for type checking of exps */
    } TreeNode;
 

@@ -32,6 +32,7 @@ typedef struct BucketListRec
      StmtKind idType;
      char* scope;
      struct BucketListRec * next;
+     int numberOfParameters;
    } * BucketList;
 
 

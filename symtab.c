@@ -143,6 +143,7 @@ int st_lookupFnStart( char * name )
   }
   return -1;
 }
+
 /* Procedure printSymTab prints a formatted
  * listing of the symbol table contents
  * to the listing file
