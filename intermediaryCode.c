@@ -17,10 +17,6 @@ void evalStmt(TreeNode *node){
     case VetK:
     break;
     case ReturnK:
-      if(node->child[0] == NULL){
-        callException("evalStmt ReturnK",6,4);
-        return;
-      }
       evalStmt(node->child[0]);
       if(node->child[0]->kind.exp == IdFunK){
           int tempVar = NUMBER_OF_TRIPLES + 1 - node->child[0]->numberOfParameters;
