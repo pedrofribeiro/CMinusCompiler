@@ -7,23 +7,61 @@ void evalStmt(TreeNode *node){
   switch (node->kind.stmt) {
     case DadoK:
       if(node->child[0] == NULL){
-        callException("evalStmt DadoK",6,4);
+        callException("evalStmt: DadoK",6,4);
         return;
       }
-      evalStmt(node->child[0]);
+      evalProgram(node->child[0]);
     break;
     case VarK:
     break;
     case VetK:
     break;
     case ReturnK:
-      evalStmt(node->child[0]);
-      if(node->child[0]->kind.exp == IdFunK){
-          int tempVar = NUMBER_OF_TRIPLES + 1 - node->child[0]->numberOfParameters;
-          addTriple(RTRN,tempVar,-1,TripleAddress,Empty);
+      evalProgram(node->child[0]);
+
+      if(node->child[0]->kind.exp == ConstK){
+        addTriple("RETURN",node->child[0]->attr.value,-1,ConstantNoAddress,EmptyAddress);
+      }else if(node->child[0]->kind.exp == IdVarK){
+        addTriple("RETURN",st_lookupFnStart(node->child[0]->attr.name),-1,SymboltableAddress,EmptyAddress);
+      }else if(node->child[0]->kind.exp == IdVetK){
+        addTriple("RETURN",st_lookupFnStart(node->child[0]->attr.name),-1,SymboltableAddress,EmptyAddress);
+      }else if(node->child[0]->kind.exp == IdFunK){
+        addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
+      }else if(node->child[0]->kind.exp == OpK){
+        addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
+      }else if(node->child[0]->kind.exp == AtribK){
+        addTriple("RETURN",st_lookupFnStart(node->child[0]->attr.name),-1,SymboltableAddress,EmptyAddress);
+      }else{
+        callException("evalStmt: ReturnK",7,4);
       }
     break;
     case AtribK:
+      evalProgram(node->child[0]);
+      evalProgram(node->child[1]);
+
+      if((node->child[0]->kind.exp == IdVarK) && (node->child[1]->kind.exp == ConstK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),node->child[1]->attr.value,SymboltableAddress,ConstantNoAddress);
+      } else if((node->child[0]->kind.exp == IdVarK) && (node->child[1]->kind.exp == IdVarK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),st_lookupFnStart(node->child[1]->attr.name),SymboltableAddress,SymboltableAddress);
+      } else if((node->child[0]->kind.exp == IdVarK) && (node->child[1]->kind.exp == IdVetK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),st_lookupFnStart(node->child[1]->attr.name),SymboltableAddress,SymboltableAddress);
+      } else if((node->child[0]->kind.exp == IdVarK) && (node->child[1]->kind.exp == OpK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+      } else if((node->child[0]->kind.exp == IdVarK) && (node->child[1]->kind.exp == IdFunK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == ConstK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),node->child[1]->attr.value,SymboltableAddress,ConstantNoAddress);
+      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == IdVarK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),st_lookupFnStart(node->child[1]->attr.name),SymboltableAddress,SymboltableAddress);
+      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == IdVetK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),st_lookupFnStart(node->child[1]->attr.name),SymboltableAddress,SymboltableAddress);
+      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == OpK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name));
+      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == IdFunK)){
+          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name));
+      } else{
+          callException("evalStmt: AtribK",7,4);
+      }
     break;
     case IfK:
     break;
@@ -52,7 +90,7 @@ void evalExp(TreeNode *node){
     case OpK:
       //this conditional investigates the RHS, knowing that the LHS can only be either a constant, a var, a vet or a fn call.
       if(node->child[0]->kind.exp == ConstK){
-        // a = const, var, vet, fn call,
+        // a = const, var, vet, fn call
       }else if(node->child[0]->kind.exp == IdVarK){
         //not yet
       }else if(node->child[0]->kind.exp == IdVetK){

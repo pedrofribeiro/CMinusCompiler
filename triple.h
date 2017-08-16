@@ -4,13 +4,12 @@
 #include "globals.h"
 #include "util.h"
 
-typedef enum {ADD, SUB, MULT, DIV, IFF, WHILEE, ATRIB, EQT, DIFF, GRT, LESST, GRTET, LESSTET, FNDECL, FNCALL, PARAM, RTRN, TRIPLE} operationType;
-typedef enum {SymboltableAddress, TripleAddress, Constant, Empty} operandType;
+typedef enum {SymboltableAddress, TripleAddress, ConstantNoAddress, EmptyAddress} operandType;
 
 int NUMBER_OF_TRIPLES;
 
 typedef struct triple{
-  operationType operation;
+  char operation[6];
   int firstOperand;
   int secondOperand;
   operandType firstOperandType;
@@ -22,9 +21,9 @@ typedef struct triple{
 triple* tripleList;
 triple* tempTriple;
 
-triple* createTriple(operationType op, int fo, int so, operandType fot, operandType sot);
+triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot);
 
-void addTriple(operationType op, int fo, int so, operandType fot, operandType sot);
+void addTriple(char op[], int fo, int so, operandType fot, operandType sot);
 
 void printTripleList();
 
