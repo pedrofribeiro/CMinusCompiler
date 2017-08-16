@@ -39,7 +39,7 @@ int EchoSource = TRUE;
 int TraceScan = TRUE;
 int TraceParse = TRUE;
 int TraceAnalyze = TRUE;
-int TraceIntermCode = FALSE;
+int TraceIntermCode = TRUE;
 int TraceASM = FALSE;
 int TraceMachineCode = FALSE;
 
@@ -96,6 +96,16 @@ int main( int argc, char * argv[] )
     fprintf(listing, "Checagem de tipos finalizada.\n");
 
   }
+
+#if !NO_INTERMCODE
+if(TraceIntermCode){
+    fprintf(listing,"\n\n===================================\n");
+    fprintf(listing,"CÓDIGO INTERMEDIÁRIO.");
+    fprintf(listing,"\n===================================\n\n\n\n");
+    generateIntermediaryCode(syntaxTree);
+}
+#endif
+
 #if !NO_MACHINECODE
   if (! Error)
   { char * codefile;

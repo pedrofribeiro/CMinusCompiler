@@ -10,4 +10,6 @@ void evalExp(TreeNode *node);
 
 void evalProgram(TreeNode *node);
 
+void generateIntermediaryCode(TreeNode * t);
+
 #endif
