@@ -1,6 +1,6 @@
 #include "triple.h"
 
-triple* createTriple(operationType op, int fo, int so, operandType fot, operandType sot){
+triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot){
   triple* newTriple;
   newTriple = (triple*) malloc(sizeof(triple)*1);
   if(newTriple == NULL){
@@ -8,7 +8,7 @@ triple* createTriple(operationType op, int fo, int so, operandType fot, operandT
     return NULL;
   }
   NUMBER_OF_TRIPLES = NUMBER_OF_TRIPLES + 1;
-  newTriple->operation = op;
+  strcpy(newTriple->operation,op);
   newTriple->firstOperand = fo;
   newTriple->secondOperand = so;
   newTriple->firstOperandType = fot;
@@ -18,7 +18,7 @@ triple* createTriple(operationType op, int fo, int so, operandType fot, operandT
   return newTriple;
 }
 
-void addTriple(operationType op, int fo, int so, operandType fot, operandType sot) {
+void addTriple(char op[], int fo, int so, operandType fot, operandType sot) {
   if(tripleList->next == NULL){
     tripleList->next = (triple*) malloc(sizeof(triple)*1);
     if(tripleList->next == NULL){
@@ -42,15 +42,15 @@ void printTripleList(){
   tempTriple = tripleList->next;
   while (tempTriple != NULL) {
     /*I chose to make the code clearer to read instead of faster to compile. */
-    if((tempTriple->firstOperandType == Constant) && (tempTriple->secondOperandType == Constant))
+    if((tempTriple->firstOperandType == ConstantNoAddress) && (tempTriple->secondOperandType == ConstantNoAddress))
       printf("%d: (%s, %d, %d)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
-    else if((tempTriple->firstOperandType == Constant) && (tempTriple->secondOperandType == SymboltableAddress))
+    else if((tempTriple->firstOperandType == ConstantNoAddress) && (tempTriple->secondOperandType == SymboltableAddress))
       printf("%d: (%s, %d, st[%d])\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
-    else if((tempTriple->firstOperandType == Constant) && (tempTriple->secondOperandType == TripleAddress))
+    else if((tempTriple->firstOperandType == ConstantNoAddress) && (tempTriple->secondOperandType == TripleAddress))
       printf("%d: (%s, %d, t(%d))\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
-    else if((tempTriple->firstOperandType == Constant) && (tempTriple->secondOperandType == EmptyAddress))
+    else if((tempTriple->firstOperandType == ConstantNoAddress) && (tempTriple->secondOperandType == EmptyAddress))
       printf("%d: (%s, %d, _)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand);
-    else if((tempTriple->firstOperandType == SymboltableAddress) && (tempTriple->secondOperandType == Constant))
+    else if((tempTriple->firstOperandType == SymboltableAddress) && (tempTriple->secondOperandType == ConstantNoAddress))
       printf("%d: (%s, st[%d], %d)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == SymboltableAddress) && (tempTriple->secondOperandType == SymboltableAddress))
       printf("%d: (%s, st[%d], st[%d])\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
@@ -58,7 +58,7 @@ void printTripleList(){
       printf("%d: (%s, st[%d], t(%d))\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == SymboltableAddress) && (tempTriple->secondOperandType == EmptyAddress))
       printf("%d: (%s, st[%d], _)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand);
-    else if((tempTriple->firstOperandType == TripleAddress) && (tempTriple->secondOperandType == Constant))
+    else if((tempTriple->firstOperandType == TripleAddress) && (tempTriple->secondOperandType == ConstantNoAddress))
       printf("%d: (%s, t(%d), %d)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
     else if((tempTriple->firstOperandType == TripleAddress) && (tempTriple->secondOperandType == SymboltableAddress))
       printf("%d: (%s, t(%d), st[%d])\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand, tempTriple->secondOperand);
@@ -74,6 +74,6 @@ void printTripleList(){
 
 void initializeTripleList(){
   NUMBER_OF_TRIPLES = 0;
-  tripleList = createTriple(TRIPLE,-1,-1,Constant,Constant);
-  tempTriple = createTriple(TRIPLE,-1,-1,Constant,Constant);
+  tripleList = createTriple("TripleListHead",-1,-1,ConstantNoAddress,ConstantNoAddress);
+  tempTriple = createTriple("TempTriple",-1,-1,ConstantNoAddress,ConstantNoAddress);
 }
