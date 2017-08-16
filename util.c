@@ -130,7 +130,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	6. Machine Code Generation
 	There are 6 kinds of exceptions:
 	1. A default case was assumed when it shouldn't have.
-		This means that one of the switches used catched an error, probably on a given (current) treeNode.
+		 This means that one of the switches used catched an error, probably on a given (current) treeNode.
 	2. A null node has been found.
 	3. Could not allocate dinamically memory.
 	4. NULL List was found.

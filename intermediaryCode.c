@@ -4,6 +4,9 @@
 //addTriple(operationType op, int fo, int so, operandType fot, operandType sot);
 
 void evalStmt(TreeNode *node){
+
+  TreeNode *p0, *p1, *p2;
+
   switch (node->kind.stmt) {
     case DadoK:
       if(node->child[0] == NULL){
@@ -17,48 +20,51 @@ void evalStmt(TreeNode *node){
     case VetK:
     break;
     case ReturnK:
-      evalProgram(node->child[0]);
+      p0 = node->child[0];
+      evalProgram(p0);
 
-      if(node->child[0]->kind.exp == ConstK){
-        addTriple("RETURN",node->child[0]->attr.val,-1,ConstantNoAddress,EmptyAddress);
-      }else if(node->child[0]->kind.exp == IdK){
-        addTriple("RETURN",st_lookupFnStart(node->child[0]->attr.name),-1,SymboltableAddress,EmptyAddress);
-      }else if(node->child[0]->kind.exp == IdVetK){
-        addTriple("RETURN",st_lookupFnStart(node->child[0]->attr.name),-1,SymboltableAddress,EmptyAddress);
-      }else if(node->child[0]->kind.exp == IdFunK){
+      if(p0->kind.exp == ConstK){
+        addTriple("RETURN",p0->attr.val,-1,ConstantNoAddress,EmptyAddress);
+      }else if(p0->kind.exp == IdK){
+        addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
+      }else if(p0->kind.exp == IdVetK){
+        addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
+      }else if(p0->kind.exp == IdFunK){
         addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
-      }else if(node->child[0]->kind.exp == OpK){
+      }else if(p0->kind.exp == OpK){
         addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
-      }else if(node->child[0]->kind.exp == AtribK){
-        addTriple("RETURN",st_lookupFnStart(node->child[0]->attr.name),-1,SymboltableAddress,EmptyAddress);
+      }else if(p0->kind.exp == AtribK){
+        addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
       }else{
         callException("evalStmt: ReturnK",7,4);
       }
     break;
     case AtribK:
-      evalProgram(node->child[0]);
-      evalProgram(node->child[1]);
+      p0 = node->child[0];
+      p1 = node->child[1];
+      evalProgram(p0);
+      evalProgram(p1);
 
-      if((node->child[0]->kind.exp == IdK) && (node->child[1]->kind.exp == ConstK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),node->child[1]->attr.val,SymboltableAddress,ConstantNoAddress);
-      } else if((node->child[0]->kind.exp == IdK) && (node->child[1]->kind.exp == IdK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),st_lookupFnStart(node->child[1]->attr.name),SymboltableAddress,SymboltableAddress);
-      } else if((node->child[0]->kind.exp == IdK) && (node->child[1]->kind.exp == IdVetK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),st_lookupFnStart(node->child[1]->attr.name),SymboltableAddress,SymboltableAddress);
-      } else if((node->child[0]->kind.exp == IdK) && (node->child[1]->kind.exp == OpK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
-      } else if((node->child[0]->kind.exp == IdK) && (node->child[1]->kind.exp == IdFunK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
-      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == ConstK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),node->child[1]->attr.val,SymboltableAddress,ConstantNoAddress);
-      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == IdK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),st_lookupFnStart(node->child[1]->attr.name),SymboltableAddress,SymboltableAddress);
-      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == IdVetK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),st_lookupFnStart(node->child[1]->attr.name),SymboltableAddress,SymboltableAddress);
-      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == OpK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
-      } else if((node->child[0]->kind.exp == IdVetK) && (node->child[1]->kind.exp == IdFunK)){
-          addTriple("ATRIB",st_lookupFnStart(node->child[0]->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+      if((p0->kind.exp == IdK) && (p1->kind.exp == ConstK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),p1->attr.val,SymboltableAddress,ConstantNoAddress);
+      } else if((p0->kind.exp == IdK) && (p1->kind.exp == IdK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
+      } else if((p0->kind.exp == IdK) && (p1->kind.exp == IdVetK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
+      } else if((p0->kind.exp == IdK) && (p1->kind.exp == OpK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+      } else if((p0->kind.exp == IdK) && (p1->kind.exp == IdFunK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+      } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == ConstK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),p1->attr.val,SymboltableAddress,ConstantNoAddress);
+      } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == IdK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
+      } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == IdVetK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
+      } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == OpK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+      } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == IdFunK)){
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
       } else{
           callException("evalStmt: AtribK",7,4);
       }
@@ -77,6 +83,7 @@ void evalStmt(TreeNode *node){
 
 //addTriple(operationType op, int fo, int so, operandType fot, operandType sot);
 void evalExp(TreeNode *node){
+  TreeNode *q0, *q1;
   switch (node->kind.exp) {
     case ConstK:
       //done as a subcase of another case
@@ -98,7 +105,7 @@ void evalExp(TreeNode *node){
       }else if(node->child[0]->kind.exp == IdFunK){
         //not yet
       }else{
-        callException("evalExp OpK",7,4);
+        callException("evalExp: OpK",7,4);
       }
     break;
     case IdFunK:
