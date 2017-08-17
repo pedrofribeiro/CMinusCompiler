@@ -54,8 +54,10 @@ void evalStmt(TreeNode *node){
       } else if((p0->kind.exp == IdK) && (p1->kind.exp == IdVetK)){
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
       } else if((p0->kind.exp == IdK) && (p1->kind.exp == OpK)){
+          evalProgram(p1);
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
       } else if((p0->kind.exp == IdK) && (p1->kind.exp == IdFunK)){
+          evalProgram(p1);
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
       } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == ConstK)){
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),p1->attr.val,SymboltableAddress,ConstantNoAddress);
@@ -64,8 +66,10 @@ void evalStmt(TreeNode *node){
       } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == IdVetK)){
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
       } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == OpK)){
+          evalProgram(p1);
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
       } else if((p0->kind.exp == IdVetK) && (p1->kind.exp == IdFunK)){
+          evalProgram(p1);
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
       } else{
           callException("evalStmt: AtribK",7,4);
@@ -79,6 +83,14 @@ void evalStmt(TreeNode *node){
     break;
     case FunK:
       printf("[FunK]\n");
+
+      p0 = node->child[0]; //arguments
+      p1 = node->child[1]; //fn code
+
+      evalProgram(p0); //evaluates the arguments
+      //somehow the function must be marked as initiated at this particular Triple Number+1;   [ very important ]
+      evalProgram(p1); //evaluates the fn code
+
     break;
     default:
       callException("evalStmt",1,4);
