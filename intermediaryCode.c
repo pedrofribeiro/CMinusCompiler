@@ -91,6 +91,7 @@ void evalStmt(TreeNode *node){
       //somehow the function must be marked as initiated at this particular Triple Number+1;   [ very important ]
       evalProgram(p1); //evaluates the fn code
 
+
     break;
     default:
       callException("evalStmt",1,4);
@@ -210,7 +211,11 @@ void evalExp(TreeNode *node){
     break;
     case IdFunK:
       printf("[IdFunK]\n");
-      //parameters must be done inside here. otherwise they will be treated as var decls.
+      q0 = node->child[0];
+      evalProgram(q0);
+      printf("abriu (%s)\n",node->attr.name );
+      addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+      printf("fechou (%s)\n",node->attr.name );
     break;
     default:
       callException("evalExp",1,4);

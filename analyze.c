@@ -7,6 +7,8 @@
 /* counter for variable memory locations */
 static int location = 0;
 
+int insertSOFunctions;
+
 /*
 Function to control the variable's and function's ESCOPO
 */
@@ -34,7 +36,8 @@ void ESCOPOControllerDOWN(){
 static void traverse( TreeNode * t,
   void (* preProc) (TreeNode *),
   void (* postProc) (TreeNode *) )
-  { if (t != NULL)
+  {
+    if (t != NULL)
     { preProc(t);
       { /*pre-order traversal*/
         int i;
@@ -66,6 +69,12 @@ static void traverse( TreeNode * t,
 */
 static void insertNode( TreeNode * t)
 {
+  if(insertSOFunctions == 0) {
+    insertSOFunctions = 1;
+    //void st_insert( char * name, int loc, int lineno, ExpType dataType, StmtKind idType, char* scope);
+    st_insert("input", 0, 1, 0, 4, "input");
+    st_insert("output", 1, 1, 1, 4, "output");
+  }
   switch (t->nodekind)
   {
     case StmtK:
@@ -139,7 +148,7 @@ static void insertNode( TreeNode * t)
           }else{
             st_insert(t->attr.name, location++, t->lineno, t->type, t->kind.exp, ESCOPO);
             //counting the number of parameters
-              if(t->child[0]->type == Void) t->numberOfParameters = 0;
+              if(t->child[0] == NULL) t->numberOfParameters = 0;
               else{
                 int parametersOfFn = 1;
                 TreeNode *specialNode = (TreeNode*) malloc(sizeof(TreeNode)*1);
@@ -154,6 +163,7 @@ static void insertNode( TreeNode * t)
                 }
                 t->numberOfParameters = parametersOfFn;
               }
+              printf("(%s) :: %d\n",t->attr.name,t->numberOfParameters);
           }
         break;
         default:
@@ -180,6 +190,7 @@ static void insertNode( TreeNode * t)
   */
   void buildSymtab(TreeNode * syntaxTree)
   {
+    insertSOFunctions = 0;
     traverse(syntaxTree,insertNode,nullProc);
     if (TraceAnalyze)
     { fprintf(listing,"\n SYMBOL TABLE DO COMPILADOR: \n\n");

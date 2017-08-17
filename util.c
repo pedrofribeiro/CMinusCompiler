@@ -115,7 +115,7 @@ static void printSpaces(void)
 */
 void callException(char* functionOfException, int kindOfException, int pointOfBreak){
 	if(kindOfException == 2){
-		printf("null node found. <%s>\n",functionOfException);
+		//printf("NNF <%s>\n",functionOfException);
 		return;
 	}
 	printf("<EXCEPTION FOUND>\nA problem was found at the stage -%d- of the compilation process.\n",pointOfBreak);

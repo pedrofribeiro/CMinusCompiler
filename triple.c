@@ -20,18 +20,14 @@ triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot
 
 void addTriple(char op[], int fo, int so, operandType fot, operandType sot) {
   if(tripleList->next == NULL){
-    tripleList->next = (triple*) malloc(sizeof(triple)*1);
-    if(tripleList->next == NULL){
-      callException("addTriple",3,4);
-      return;
-    }
-  }else{
-    tempTriple = tripleList->next;
-    while (tempTriple != NULL) {
-      tempTriple = tempTriple->next;
-    }
-    tempTriple->next = createTriple(op,fo,so,fot,sot);
+    tripleList->next = createTriple(op,fo,so,fot,sot);
+    return;
   }
+  tempTriple = tripleList->next;
+  while (tempTriple->next != NULL) {
+    tempTriple = tempTriple->next;
+  }
+  tempTriple->next = createTriple(op,fo,so,fot,sot);
 }
 
 void printTripleList(){
@@ -74,7 +70,6 @@ void printTripleList(){
 
 void initializeTripleList(){
   NUMBER_OF_TRIPLES = 0;
-  FNBEGIN = 0;
   tripleList = createTriple("TripleListHead",-1,-1,ConstantNoAddress,ConstantNoAddress);
   tempTriple = createTriple("TempTriple",-1,-1,ConstantNoAddress,ConstantNoAddress);
 }
