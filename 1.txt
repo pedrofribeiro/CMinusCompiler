@@ -3,7 +3,8 @@ int gcd(int u, int v)
  else return gcd(v, u-u/v*v);
  }
  void main(void)
- { int x; int y;
+ { int x; int y; int v[2];
  x = input(); y = input();
+ v[1] = 8;
  output(gcd(x,y));
  }
