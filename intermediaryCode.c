@@ -7,11 +7,14 @@ void evalStmt(TreeNode *node){
   switch (node->kind.stmt) {
     case DadoK:
       printf("[DadoK]\n");
-      if(node->child[0] == NULL){
+      p0 = node->child[0];
+
+      if (p0 == NULL) {
         callException("evalStmt: DadoK",6,4);
         return;
       }
-      evalProgram(node->child[0]);
+
+      evalProgram(p0);
     break;
     case VarK:
       printf("[VarK]\n");
@@ -22,32 +25,38 @@ void evalStmt(TreeNode *node){
     case ReturnK:
       printf("[ReturnK]\n");
       p0 = node->child[0];
+
+      if (p0 == NULL) break;
+
       evalProgram(p0);
 
-      if(p0 == NULL) break;
-
-      if(p0->kind.exp == ConstK){
-        addTriple("RETURN",p0->attr.val,-1,ConstantNoAddress,EmptyAddress);
-      }else if(p0->kind.exp == IdK){
-        addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
-      }else if(p0->kind.exp == IdVetK){
-        addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
-      }else if(p0->kind.exp == IdFunK){
-        addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
-      }else if(p0->kind.exp == OpK){
-        addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
-      }else if(p0->kind.exp == AtribK){
-        addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
-      }else{
-        callException("evalStmt: ReturnK",7,4);
+      if (p0->kind.exp == ConstK) {
+          addTriple("RETURN",p0->attr.val,-1,ConstantNoAddress,EmptyAddress);
+      } else if(p0->kind.exp == IdK) {
+          addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
+      } else if(p0->kind.exp == IdVetK) {
+          addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
+      } else if(p0->kind.exp == IdFunK) {
+          addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
+      } else if(p0->kind.exp == OpK) {
+          addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
+      } else if(p0->kind.exp == AtribK) {
+          addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
+      } else {
+          callException("evalStmt: ReturnK",7,4);
       }
     break;
     case AtribK:
       printf("[AtribK]\n");
       p0 = node->child[0];
       p1 = node->child[1];
+
       evalProgram(p0);
+      int leftOperand;
+      leftOperand = NUMBER_OF_TRIPLES;
       evalProgram(p1);
+      int rightOperand;
+      rightOperand = NUMBER_OF_TRIPLES;
 
       if ((p0->kind.exp == IdK) && (p1->kind.exp == ConstK)) {
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),p1->attr.val,SymboltableAddress,ConstantNoAddress);
@@ -57,10 +66,10 @@ void evalStmt(TreeNode *node){
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == OpK)) {
           evalProgram(p1);
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == IdFunK)) {
           evalProgram(p1);
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == ConstK)) {
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),p1->attr.val,SymboltableAddress,ConstantNoAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == IdK)) {
@@ -69,10 +78,10 @@ void evalStmt(TreeNode *node){
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == OpK)) {
           evalProgram(p1);
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == IdFunK)) {
           evalProgram(p1);
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
       } else {
           callException("evalStmt: AtribK",7,4);
       }
@@ -101,41 +110,61 @@ void evalStmt(TreeNode *node){
 
       } else { /*there is an else part*/
 
-        evalProgram(p0);
-        int testTriple = NUMBER_OF_TRIPLES;
-        addTriple("IF_F",testTriple,-999,TripleAddress,TripleAddress);
-        int ifTriple = NUMBER_OF_TRIPLES;
-        evalProgram(p1);
-        addTriple("GOTO",-999,-999,TripleAddress,EmptyAddress);
-        int gotoTriple = NUMBER_OF_TRIPLES;
-        int elseTriple = gotoTriple+1;
-          int adjustment;
-          adjustment = adjustTriple(ifTriple,2,elseTriple); /*goes to the triple after the true part*/
-          if (adjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
-          else { callException("evalStmt: IfK",9,4); }
-        evalProgram(p2);
-        int addrToJumpElsePart;
-        addrToJumpElsePart = NUMBER_OF_TRIPLES+1;
-          int secondAdjustment;
-          secondAdjustment = adjustTriple(gotoTriple,1,addrToJumpElsePart);
-          if (secondAdjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
-          else { callException("evalStmt: IfK",9,4); }
+          evalProgram(p0);
+          int testTriple = NUMBER_OF_TRIPLES;
+          addTriple("IF_F",testTriple,-999,TripleAddress,TripleAddress);
+          int ifTriple = NUMBER_OF_TRIPLES;
+          evalProgram(p1);
+          addTriple("GOTO",-999,-999,TripleAddress,EmptyAddress);
+          int gotoTriple = NUMBER_OF_TRIPLES;
+          int elseTriple = gotoTriple+1;
+            int adjustment;
+            adjustment = adjustTriple(ifTriple,2,elseTriple); /*goes to the triple after the true part*/
+            if (adjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
+            else { callException("evalStmt: IfK",9,4); }
+          evalProgram(p2);
+          int addrToJumpElsePart;
+          addrToJumpElsePart = NUMBER_OF_TRIPLES+1;
+            int secondAdjustment;
+            secondAdjustment = adjustTriple(gotoTriple,1,addrToJumpElsePart);
+            if (secondAdjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
+            else { callException("evalStmt: IfK",9,4); }
 
       }
-
     break;
     case RepeatK:
       printf("[RepeatK]\n");
+      p0 = node->child[0];
+      p1 = node->child[1];
+
+      if (p0 == NULL) break;
+      if (p1 == NULL) break;
+
+      evalProgram(p0); /*evaluates the test*/
+      int testTriple;
+      testTriple = NUMBER_OF_TRIPLES;
+      addTriple("IF_F",testTriple,-999,TripleAddress,TripleAddress);
+      int repeatTriple;
+      repeatTriple = NUMBER_OF_TRIPLES;
+      evalProgram(p1);
+      addTriple("GOTO",testTriple,-999,TripleAddress,EmptyAddress);
+      int addrToJump;
+      addrToJump = NUMBER_OF_TRIPLES+1;
+        int adjustment;
+        adjustment = adjustTriple(repeatTriple,2,addrToJump);
+        if (adjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
+        else { callException("evalStmt: RepeatK",9,4); }
+
     break;
     case FunK:
       printf("[FunK]\n");
 
-      p0 = node->child[0]; //arguments
-      p1 = node->child[1]; //fn code
+      p0 = node->child[0]; /* arguments*/
+      p1 = node->child[1]; /* fn code*/
 
-      evalProgram(p0); //evaluates the arguments
-      //somehow the function must be marked as initiated at this particular Triple Number+1;   [ very important ]
-      evalProgram(p1); //evaluates the fn code
+      evalProgram(p0); /*evaluates the arguments*/
+      /*somehow the function must be marked as initiated at this particular Triple Number+1;   [ very important ]*/
+      evalProgram(p1); /*evaluates the fn code*/
 
     break;
     default:
