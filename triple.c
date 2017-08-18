@@ -23,11 +23,45 @@ void addTriple(char op[], int fo, int so, operandType fot, operandType sot) {
     tripleList->next = createTriple(op,fo,so,fot,sot);
     return;
   }
+  int SAFE_LOOP = 0;
   tempTriple = tripleList->next;
   while (tempTriple->next != NULL) {
     tempTriple = tempTriple->next;
+    /*safe loop measure*/
+    SAFE_LOOP++;
+    if(SAFE_LOOP > SAFE_LOOP_SIZE){
+      callException("addTriple",10,4);
+      return;
+    }
   }
   tempTriple->next = createTriple(op,fo,so,fot,sot);
+}
+
+int adjustTriple(int tn, int ope, int nv){
+  if ((tn <= 0) || (tn > NUMBER_OF_TRIPLES)) {
+    callException("adjustTriple: number of triple",8,4);
+    return -1;
+  }
+  if ((ope < 1) || (ope > 2)){
+    callException("adjustTriple: operand",8,4);
+    return -1;
+  }
+  int SAFE_LOOP = 0;
+  tempTriple = tripleList->next;
+  while (tempTriple->next != NULL) {
+    if (tempTriple->tripleNumber == tn) {
+      if (ope == 1) { tempTriple->firstOperand = nv; }
+      else if (ope == 2) { tempTriple->secondOperand = nv; }
+      return 1;
+    } else { tempTriple = tempTriple->next; }
+    /*safe loop measure*/
+    SAFE_LOOP++;
+    if(SAFE_LOOP > SAFE_LOOP_SIZE){
+      callException("adjustTriple",10,4);
+      return -1;
+    }
+  }
+  return -1;
 }
 
 void printTripleList(){
@@ -35,6 +69,7 @@ void printTripleList(){
     callException("printTripleList",4,4);
     return;
   }
+  int SAFE_LOOP = 0;
   tempTriple = tripleList->next;
   while (tempTriple != NULL) {
     /*I chose to make the code clearer to read instead of faster to compile. */
@@ -65,6 +100,13 @@ void printTripleList(){
     else callException("printTripleList",5,4);
 
     tempTriple = tempTriple->next;
+
+    /*safe loop measure*/
+    SAFE_LOOP++;
+    if(SAFE_LOOP > SAFE_LOOP_SIZE){
+      callException("adjustTriple",10,4);
+      return;
+    }
   }
 }
 

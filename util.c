@@ -137,6 +137,9 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	5. Triple kind could not be correctly matched.
 	6. NULL child of a node that has to have a child, such as int or void.
 	7. Illegal construction found on a node.
+	8. Index out of bounds, or the value was greater than the max value of a control variable.
+	9. Triple adjustment failed.
+	10. An infinite loop condition was triggered.
 	*/
 }
 

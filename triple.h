@@ -7,7 +7,7 @@
 typedef enum {SymboltableAddress, TripleAddress, ConstantNoAddress, EmptyAddress} operandType;
 
 int NUMBER_OF_TRIPLES;
-int FNBEGIN;
+#define SAFE_LOOP_SIZE 100
 
 typedef struct triple{
   char operation[6];
@@ -27,6 +27,8 @@ triple* tempTriple;
 triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot);
 
 void addTriple(char op[], int fo, int so, operandType fot, operandType sot);
+
+int adjustTriple(int tn, int ope, int nv);
 
 void printTripleList();
 
