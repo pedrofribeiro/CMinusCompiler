@@ -28,19 +28,27 @@ void evalStmt(TreeNode *node){
 
       if (p0 == NULL) break;
 
-      evalProgram(p0);
-
       if (p0->kind.exp == ConstK) {
+          evalProgram(p0);
           addTriple("RETURN",p0->attr.val,-1,ConstantNoAddress,EmptyAddress);
       } else if(p0->kind.exp == IdK) {
+          evalProgram(p0);
           addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
       } else if(p0->kind.exp == IdVetK) {
+          evalProgram(p0);
           addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
       } else if(p0->kind.exp == IdFunK) {
-          addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
+          evalProgram(p0);
+          int returnTriple;
+          returnTriple = NUMBER_OF_TRIPLES;
+          addTriple("RETURN",returnTriple,-1,TripleAddress,EmptyAddress);
       } else if(p0->kind.exp == OpK) {
-          addTriple("RETURN",NUMBER_OF_TRIPLES-1,-1,TripleAddress,EmptyAddress);
-      } else if(p0->kind.exp == AtribK) {
+          evalProgram(p0);
+          int returnTriple;
+          returnTriple = NUMBER_OF_TRIPLES;
+          addTriple("RETURN",returnTriple,-1,TripleAddress,EmptyAddress);
+      } else if(p0->kind.exp == AtribK) { /*this may need a very serious further analysis*/
+          evalProgram(p0);
           addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
       } else {
           callException("evalStmt: ReturnK",7,4);
@@ -65,10 +73,8 @@ void evalStmt(TreeNode *node){
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == IdVetK)) {
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == OpK)) {
-          evalProgram(p1);
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == IdFunK)) {
-          evalProgram(p1);
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == ConstK)) {
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),p1->attr.val,SymboltableAddress,ConstantNoAddress);
@@ -77,10 +83,8 @@ void evalStmt(TreeNode *node){
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == IdVetK)) {
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == OpK)) {
-          evalProgram(p1);
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == IdFunK)) {
-          evalProgram(p1);
           addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
       } else {
           callException("evalStmt: AtribK",7,4);
@@ -197,85 +201,151 @@ void evalExp(TreeNode *node){
           addTriple(node->attr.name,q0->attr.val,q1->attr.val,ConstantNoAddress,ConstantNoAddress);
       } else if ((q0->kind.exp == ConstK) && (q1->kind.exp == IdK)) {
           addTriple(node->attr.name,q0->attr.val,st_lookupFnStart(q1->attr.name),ConstantNoAddress,SymboltableAddress);
-      } else if ((q0->kind.exp == ConstK) && (q1->kind.exp == IdVetK)) { // [ NEEDS TREATMENT ]
-          addTriple(node->attr.name,q0->attr.val,st_lookupFnStart(q1->attr.name),ConstantNoAddress,SymboltableAddress);
-      } else if ((q0->kind.exp == ConstK) && (q1->kind.exp == IdFunK)) { // [ NEEDS TREATMENT ] pdf da tripla
+      } else if ((q0->kind.exp == ConstK) && (q1->kind.exp == IdVetK)) {
           evalProgram(q1);
-          addTriple(node->attr.name,q0->attr.val,NUMBER_OF_TRIPLES-1,ConstantNoAddress,TripleAddress);
+          int vectorTriple;
+          vectorTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,q0->attr.val,vectorTriple,ConstantNoAddress,TripleAddress);
+      } else if ((q0->kind.exp == ConstK) && (q1->kind.exp == IdFunK)) {
+          evalProgram(q1);
+          int idfunkTriple;
+          idfunkTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,q0->attr.val,idfunkTriple,ConstantNoAddress,TripleAddress);
       } else if ((q0->kind.exp == ConstK) && (q1->kind.exp == OpK)) {
          evalProgram(q1);
-         addTriple(node->attr.name,q0->attr.val,NUMBER_OF_TRIPLES-1,ConstantNoAddress,TripleAddress);
+         int opkTriple;
+         opkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,q0->attr.val,opkTriple,ConstantNoAddress,TripleAddress);
       }
 
        else if ((q0->kind.exp == IdK) && (q1->kind.exp == ConstK)) {
           addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),q1->attr.val,SymboltableAddress,ConstantNoAddress);
       } else if ((q0->kind.exp == IdK) && (q1->kind.exp == IdK)) {
           addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),st_lookupFnStart(q1->attr.name),SymboltableAddress,SymboltableAddress);
-      } else if ((q0->kind.exp == IdK) && (q1->kind.exp == IdVetK)) { // [ NEEDS TREATMENT ]
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),st_lookupFnStart(q1->attr.name),SymboltableAddress,SymboltableAddress);
-      } else if ((q0->kind.exp == IdK) && (q1->kind.exp == IdFunK)) { // [ NEEDS TREATMENT ] pdf da tripla
+      } else if ((q0->kind.exp == IdK) && (q1->kind.exp == IdVetK)) {
           evalProgram(q1);
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+          int vectorTriple;
+          vectorTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),vectorTriple,SymboltableAddress,TripleAddress);
+      } else if ((q0->kind.exp == IdK) && (q1->kind.exp == IdFunK)) {
+          evalProgram(q1);
+          int idfunkTriple;
+          idfunkTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),idfunkTriple,SymboltableAddress,TripleAddress);
       } else if ((q0->kind.exp == IdK) && (q1->kind.exp == OpK)) {
          evalProgram(q1);
-         addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+         int opkTriple;
+         opkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),opkTriple,SymboltableAddress,TripleAddress);
       }
 
        else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == ConstK)) {
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),q1->attr.val,SymboltableAddress,ConstantNoAddress);
+          evalProgram(q0);
+          int vectorTriple;
+          vectorTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,vectorTriple,q1->attr.val,vectorTriple,ConstantNoAddress);
       } else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == IdK)) {
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),st_lookupFnStart(q1->attr.name),SymboltableAddress,SymboltableAddress);
-      } else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == IdVetK)) { // [ NEEDS TREATMENT ]
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),st_lookupFnStart(q1->attr.name),SymboltableAddress,SymboltableAddress);
-      } else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == IdFunK)) { // [ NEEDS TREATMENT ] pdf da tripla
+          evalProgram(q0);
+          int vectorTriple;
+          vectorTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,vectorTriple,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
+      } else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == IdVetK)) {
+          evalProgram(q0);
+          int vectorTriple;
+          vectorTriple = NUMBER_OF_TRIPLES;
           evalProgram(q1);
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+          int otherVectorTriple;
+          otherVectorTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,vectorTriple,otherVectorTriple,TripleAddress,TripleAddress);
+      } else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == IdFunK)) {
+          evalProgram(q0);
+          int vectorTriple;
+          vectorTriple = NUMBER_OF_TRIPLES;
+          evalProgram(q1);
+          int idfunkTriple;
+          idfunkTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,vectorTriple,idfunkTriple,TripleAddress,TripleAddress);
       } else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == OpK)) {
-         evalProgram(q1);
-         addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),NUMBER_OF_TRIPLES-1,SymboltableAddress,TripleAddress);
+          evalProgram(q0);
+          int vectorTriple;
+          vectorTriple = NUMBER_OF_TRIPLES;
+          evalProgram(q1);
+          int opkTriple;
+          opkTriple = NUMBER_OF_TRIPLES;
+          addTriple(node->attr.name,vectorTriple,opkTriple,TripleAddress,TripleAddress);
       }
 
       // [ NEEDS TREATMENT ] this whole block needs validation
        else if ((q0->kind.exp == IdFunK) && (q1->kind.exp == ConstK)) {
          evalProgram(q0);
-         addTriple(node->attr.name,NUMBER_OF_TRIPLES-1,q1->attr.val,TripleAddress,ConstantNoAddress);
+         int idfunkTriple;
+         idfunkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,idfunkTriple,q1->attr.val,TripleAddress,ConstantNoAddress);
       } else if ((q0->kind.exp == IdFunK) && (q1->kind.exp == IdK)) {
          evalProgram(q0);
-         addTriple(node->attr.name,NUMBER_OF_TRIPLES-1,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
+         int idfunkTriple;
+         idfunkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,idfunkTriple,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
       } else if ((q0->kind.exp == IdFunK) && (q1->kind.exp == IdVetK)) {
          evalProgram(q0);
-         addTriple(node->attr.name,NUMBER_OF_TRIPLES-1,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
+         int idfunkTriple;
+         idfunkTriple = NUMBER_OF_TRIPLES;
+         evalProgram(q1);
+         int vectorTriple;
+         vectorTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,idfunkTriple,vectorTriple,TripleAddress,TripleAddress);
       } else if ((q0->kind.exp == IdFunK) && (q1->kind.exp == IdFunK)) {
          evalProgram(q0);
-         int temp1 = NUMBER_OF_TRIPLES-1;
+         int idfunkTriple;
+         idfunkTriple = NUMBER_OF_TRIPLES;
          evalProgram(q1);
-         addTriple(node->attr.name,temp1,NUMBER_OF_TRIPLES-1,TripleAddress,TripleAddress);
+         int otheridfunkTriple;
+         otheridfunkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,idfunkTriple,otheridfunkTriple,TripleAddress,TripleAddress);
       } else if ((q0->kind.exp == IdFunK) && (q1->kind.exp == OpK)) {
          evalProgram(q0);
-         int temp1 = NUMBER_OF_TRIPLES-1;
+         int idfunkTriple;
+         idfunkTriple = NUMBER_OF_TRIPLES;
          evalProgram(q1);
-         addTriple(node->attr.name,temp1,NUMBER_OF_TRIPLES-1,TripleAddress,TripleAddress);
+         int opkTriple;
+         opkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,idfunkTriple,opkTriple,TripleAddress,TripleAddress);
       }
 
        else if ((q0->kind.exp == OpK) && (q1->kind.exp == ConstK)) {
          evalProgram(q0);
-         addTriple(node->attr.name,NUMBER_OF_TRIPLES-1,q1->attr.val,TripleAddress,ConstantNoAddress);
+         int opkTriple;
+         opkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,opkTriple,q1->attr.val,TripleAddress,ConstantNoAddress);
       } else if ((q0->kind.exp == OpK) && (q1->kind.exp == IdK)) {
          evalProgram(q0);
-         addTriple(node->attr.name,NUMBER_OF_TRIPLES-1,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
+         int opkTriple;
+         opkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,opkTriple,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
       } else if ((q0->kind.exp == OpK) && (q1->kind.exp == IdVetK)) {
          evalProgram(q0);
-         addTriple(node->attr.name,NUMBER_OF_TRIPLES-1,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
+         int opkTriple;
+         opkTriple = NUMBER_OF_TRIPLES;
+         evalProgram(q1);
+         int vectorTriple;
+         vectorTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,opkTriple,vectorTriple,TripleAddress,TripleAddress);
       } else if ((q0->kind.exp == OpK) && (q1->kind.exp == IdFunK)) {
          evalProgram(q0);
-         int temp2 = NUMBER_OF_TRIPLES-1;
+         int opkTriple;
+         opkTriple = NUMBER_OF_TRIPLES;
          evalProgram(q1);
-         addTriple(node->attr.name,temp2,NUMBER_OF_TRIPLES-1,TripleAddress,TripleAddress);
+         int idfunkTriple;
+         idfunkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,opkTriple,idfunkTriple,TripleAddress,TripleAddress);
       } else if ((q0->kind.exp == OpK) && (q1->kind.exp == OpK)) {
          evalProgram(q0);
-         int temp1 = NUMBER_OF_TRIPLES-1;
+         int opkTriple;
+         opkTriple = NUMBER_OF_TRIPLES;
          evalProgram(q1);
-         addTriple(node->attr.name,temp1,NUMBER_OF_TRIPLES-1,TripleAddress,TripleAddress);
+         int otheropkTriple;
+         otheropkTriple = NUMBER_OF_TRIPLES;
+         addTriple(node->attr.name,opkTriple,otheropkTriple,TripleAddress,TripleAddress);
       }
 
        else {
@@ -286,8 +356,55 @@ void evalExp(TreeNode *node){
     case IdFunK:
       printf("[IdFunK]\n");
       q0 = node->child[0];
-      evalProgram(q0);
-      addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+
+      if (q0 == NULL) { /*the function does not take any arguments*/
+
+        addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+
+      } else { /*the function takes on arguments */
+
+        int SAFE_LOOP = 0;
+        int k = node->numberOfParameters;
+
+        while (k > 0) {
+
+          if (q0->kind.exp == ConstK) {
+              evalExp(q0);
+              addTriple("PARAM",q0->attr.val,-999,ConstantNoAddress,EmptyAddress);
+          } else if (q0->kind.exp == IdK) {
+              evalExp(q0);
+              addTriple("PARAM",st_lookupFnStart(q0->attr.name),-999,SymboltableAddress,EmptyAddress);
+          } else if (q0->kind.exp == IdVetK) {
+              evalExp(q0);
+              addTriple("PARAM",st_lookupFnStart(q0->attr.name),-999,SymboltableAddress,EmptyAddress);
+          } else if (q0->kind.exp == OpK) {
+              evalExp(q0);
+              int paramTriple;
+              paramTriple = NUMBER_OF_TRIPLES;
+              addTriple("PARAM",paramTriple,-999,TripleAddress,EmptyAddress);
+          } else if (q0->kind.exp == IdFunK) {
+              evalExp(q0);
+              int paramTriple;
+              paramTriple = NUMBER_OF_TRIPLES;
+              addTriple("PARAM",paramTriple,-999,TripleAddress,EmptyAddress);
+          } else {
+              callException("evalExp: IdFunK",7,4);
+              break;
+          }
+
+          q0 = q0->sibling;
+          /*safe loop measure*/
+          SAFE_LOOP++;
+          if(SAFE_LOOP > SAFE_LOOP_SIZE){
+            callException("evalExp: IdFunK",10,4);
+            return;
+          }
+          k--;
+        }
+        addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+
+      }
+
     break;
     default:
       callException("evalExp",1,4);

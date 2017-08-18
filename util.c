@@ -128,7 +128,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	4. Intermediary Code Generation
 	5. Assembly Code Generation
 	6. Machine Code Generation
-	There are 6 kinds of exceptions:
+	There are 10 kinds of exceptions:
 	1. A default case was assumed when it shouldn't have.
 		 This means that one of the switches used catched an error, probably on a given (current) treeNode.
 	2. A null node has been found.
