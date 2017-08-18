@@ -166,7 +166,7 @@ void evalStmt(TreeNode *node){
       printf("[FunK]\n");
 
       p0 = node->child[0]; /* arguments*/
-      p1 = node->child[1]; /* fn code*/
+      p1 = node->child[1]; /* function statements' code*/
 
       addTriple(node->attr.name,-999,-999,EmptyAddress,EmptyAddress);
 

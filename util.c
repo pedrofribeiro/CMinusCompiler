@@ -140,7 +140,6 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	8. Index out of bounds, or the value was inconsistent with that of a control variable.
 	9. Triple adjustment failed.
 	10. An infinite loop condition was triggered.
-	11. 
 	*/
 }
 
