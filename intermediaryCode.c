@@ -205,7 +205,6 @@ void evalExp(TreeNode *node){
       indexTriple = NUMBER_OF_TRIPLES;
 
       if (q0->kind.exp == ConstK) {
-        //this bolognie strategy needs to be verified.
           addTriple("V_INDEX",st_lookupFnStart(node->attr.name),q0->attr.val,SymboltableAddress,ConstantNoAddress);
       } else if (q0->kind.exp == IdK) {
           addTriple("V_INDEX",st_lookupFnStart(node->attr.name),st_lookupFnStart(q0->attr.name),SymboltableAddress,SymboltableAddress);
