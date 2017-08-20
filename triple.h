@@ -7,7 +7,6 @@
 typedef enum {SymboltableAddress, TripleAddress, ConstantNoAddress, EmptyAddress} operandType;
 
 int NUMBER_OF_TRIPLES;
-#define SAFE_LOOP_SIZE 100
 
 typedef struct triple{
   char operation[6];
@@ -16,8 +15,6 @@ typedef struct triple{
   operandType firstOperandType;
   operandType secondOperandType;
   int tripleNumber;
-  int fnBegin; //bool
-  char fnName[10];
   struct triple* next;
 }triple;
 

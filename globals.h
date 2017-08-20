@@ -39,6 +39,9 @@
 /* MAXRESERVED = the number of reserved words */
 #define MAXRESERVED 8
 
+/* Infinite loop barrier*/
+#define SAFE_LOOP_SIZE 100
+
 /* Yacc/Bison generates its own integer values
  * for tokens
  */

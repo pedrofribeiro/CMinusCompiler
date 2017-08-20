@@ -128,11 +128,11 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	4. Intermediary Code Generation
 	5. Assembly Code Generation
 	6. Machine Code Generation
-	There are 10 kinds of exceptions:
+	There are 16 kinds of exceptions:
 	1. A default case was assumed when it shouldn't have.
 		 This means that one of the switches used catched an error, probably on a given (current) treeNode.
 	2. A null node has been found.
-	3. Could not allocate dinamically memory.
+	3. Could not allocate dynamic memory.
 	4. NULL List was found.
 	5. Triple kind could not be correctly matched.
 	6. NULL child of a node that has to have a child, such as int or void.
@@ -140,6 +140,13 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	8. Index out of bounds, or the value was inconsistent with that of a control variable.
 	9. Triple adjustment failed.
 	10. An infinite loop condition was triggered.
+	11. A NULL triple was found.
+	12. The string was NOT correctly copied.
+	13. The operation was not correctly Identified.
+	14. A NULL ASM instruction was found.
+	15. Illegal type of asm instruction found.
+	16. Illegal construction found on a triple.
+	17. Unexpected behavior during the packaging of constants.
 	*/
 }
 
