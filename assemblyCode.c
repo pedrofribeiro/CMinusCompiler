@@ -1,12 +1,10 @@
 #include "assemblyCode.h"
 #include "triple.h"
 
-op recognizeOperation(triple* tr){
+CPU_OPERATIONS recognizeOperation(triple* tr){
 
   /*operation initialized with WRONG values, to be used if it doesn't match*/
-  op newOperation;
-  strcpy(newOperation.ope,"NONE");
-  newOperation.opeNumber = -1;
+  CPU_OPERATIONS newOperation = NONE;
 
   if (tr == NULL) { /*verify if the triple is null*/
     callException("recognizeOperation",11,5);
@@ -21,88 +19,54 @@ op recognizeOperation(triple* tr){
     return newOperation;
   }
 
-  /*models for recognition*/
-  char models[16][6];
-  strcpy(models[0],"+");
-  strcpy(models[1],"-");
-  strcpy(models[2],"*");
-  strcpy(models[3],"/");
-  strcpy(models[4],"RETURN");
-  strcpy(models[5],"FNCALL");
-  strcpy(models[6],"ATRIB");
-  strcpy(models[7],"IF_F");
-  strcpy(models[8],"GOTO");
-  strcpy(models[9],"V_INDEX");
-  strcpy(models[10],"==");
-  strcpy(models[11],"!=");
-  strcpy(models[12],">");
-  strcpy(models[13],"<");
-  strcpy(models[14],">=");
-  strcpy(models[15],"<=");
-
-  if (strcmp(models[0],rawOperation) == 0) {
-      strcpy(newOperation.ope,"ADD");
-      newOperation.opeNumber = 0;
+  printf("OPERATION = %s\n",rawOperation);
+  if (strcmp("+",rawOperation) == 0) {
+      newOperation = ADD;
       return newOperation;
-  } else if (strcmp(models[1],rawOperation) == 0) {
-      strcpy(newOperation.ope,"SUB");
-      newOperation.opeNumber = 1;
+  } else if (strcmp("-",rawOperation) == 0) {
+      newOperation = SUB;
       return newOperation;
-  } else if (strcmp(models[2],rawOperation) == 0) {
-      strcpy(newOperation.ope,"MUL");
-      newOperation.opeNumber = 2;
+  } else if (strcmp("*",rawOperation) == 0) {
+      newOperation = MUL;
       return newOperation;
-  } else if (strcmp(models[3],rawOperation) == 0) {
-      strcpy(newOperation.ope,"DIV");
-      newOperation.opeNumber = 3;
+  } else if (strcmp("/",rawOperation) == 0) {
+      newOperation = DIV;
       return newOperation;
-  } else if (strcmp(models[4],rawOperation) == 0) {
-      strcpy(newOperation.ope,"RET");
-      newOperation.opeNumber = 4;
+  } else if (strcmp("RETURN",rawOperation) == 0) {
+      newOperation = RET;
       return newOperation;
-  } else if (strcmp(models[5],rawOperation) == 0) {
-      strcpy(newOperation.ope,"CAL");
-      newOperation.opeNumber = 5;
+  } else if (strcmp("FNCALL",rawOperation) == 0) {
+      newOperation = CALL;
       return newOperation;
-  } else if (strcmp(models[6],rawOperation) == 0) {
-      strcpy(newOperation.ope,"ATR");
-      newOperation.opeNumber = 6;
+  } else if (strcmp("ATRIB",rawOperation) == 0) {
+      newOperation = ATR;
       return newOperation;
-  } else if (strcmp(models[7],rawOperation) == 0) {
-      strcpy(newOperation.ope,"IFF");
-      newOperation.opeNumber = 7;
+  } else if (strcmp("IF_F",rawOperation) == 0) {
+      newOperation = IF_F;
       return newOperation;
-  } else if (strcmp(models[8],rawOperation) == 0) {
-      strcpy(newOperation.ope,"GTO");
-      newOperation.opeNumber = 8;
+  } else if (strcmp("GOTO",rawOperation) == 0) {
+      newOperation = GOTO;
       return newOperation;
-  } else if (strcmp(models[9],rawOperation) == 0) {
-      strcpy(newOperation.ope,"VIN");
-      newOperation.opeNumber = 9;
+  } else if (strcmp("V_INDEX",rawOperation) == 0) {
+      newOperation = V_IN;
       return newOperation;
-  } else if (strcmp(models[10],rawOperation) == 0) {
-      strcpy(newOperation.ope,"EQL");
-      newOperation.opeNumber = 10;
+  } else if (strcmp("==",rawOperation) == 0) {
+      newOperation = EQL;
       return newOperation;
-  } else if (strcmp(models[11],rawOperation) == 0) {
-      strcpy(newOperation.ope,"DIF");
-      newOperation.opeNumber = 11;
+  } else if (strcmp("!=",rawOperation) == 0) {
+      newOperation = DIFE;
       return newOperation;
-  } else if (strcmp(models[12],rawOperation) == 0) {
-      strcpy(newOperation.ope,"GRT");
-      newOperation.opeNumber = 12;
+  } else if (strcmp(">",rawOperation) == 0) {
+      newOperation = GRT;
       return newOperation;
-  } else if (strcmp(models[13],rawOperation) == 0) {
-      strcpy(newOperation.ope,"LST");
-      newOperation.opeNumber = 13;
+  } else if (strcmp("<",rawOperation) == 0) {
+      newOperation = LST;
       return newOperation;
-  } else if (strcmp(models[14],rawOperation) == 0) {
-      strcpy(newOperation.ope,"GTE");
-      newOperation.opeNumber = 14;
+  } else if (strcmp(">=",rawOperation) == 0) {
+      newOperation = GTE;
       return newOperation;
-  } else if (strcmp(models[15],rawOperation) == 0) {
-      strcpy(newOperation.ope,"LTE");
-      newOperation.opeNumber = 15;
+  } else if (strcmp("<=",rawOperation) == 0) {
+      newOperation = LTE;
       return newOperation;
   }
     callException("recognizeOperation",13,5);
@@ -112,22 +76,26 @@ op recognizeOperation(triple* tr){
 
 void instructionMatch(triple* List){
 
-  /* function label*/
+  /* function label, creates a new Activation Record*/
   if ((List->firstOperandType == EmptyAddress) && (List->secondOperandType == EmptyAddress)) {
-      addASM(createJTYPE(List->operation,111));
+      addASM(createLTYPE(List->operation,111));
+      addASM(createRTYPE(MOVE,$fp,$sp,$NONE));
+      addASM(createITYPE(SW,$ra,$sp,0));
+      addASM(createITYPE(ADDIU,$sp,$sp,1));
+      generateAssembly(List->next);
+      addASM(createITYPE(LW,$ra,$sp,-1));
+      addASM(createITYPE(ADDIU,$sp,$sp,2)); //      CHANGE THIS IMMEDIATELY.
+      addASM(createITYPE(LW,$fp,$sp,0));
       return;
   }
 
-  op newOperation = recognizeOperation(List);
-  /*
-  3: (gcd, _, _)                                  :                   gcd  :
-  4: (==, st[16], 0)                              :                   ldi $acc, 0
-                                                  :                   AND $acc, $acc, $r1
-  5: (IF_F, t(4), t(8))                           :                   BNE
-  6: (RETURN, st[3], _)
-  7: (GOTO, t(15), _)
-  */
-  switch (newOperation.opeNumber) {
+  CPU_OPERATIONS newOperation = recognizeOperation(List);
+  if (newOperation == NONE) {
+      callException("instructionMatch",13,5);
+      return;
+  }
+
+  switch (newOperation) {
     case ADD:
     case SUB:
     case MUL:
@@ -138,13 +106,13 @@ void instructionMatch(triple* List){
             /*packaging of constants*/
             int constantsResult = -999;
 
-            if (newOperation.opeNumber == ADD) {
+            if (newOperation == ADD) {
                 constantsResult = List->firstOperand + List->secondOperand;
-            } else if (newOperation.opeNumber == SUB) {
+            } else if (newOperation == SUB) {
                 constantsResult = List->firstOperand - List->secondOperand;
-            } else if (newOperation.opeNumber == MUL) {
+            } else if (newOperation == MUL) {
                 constantsResult = List->firstOperand * List->secondOperand;
-            } else if (newOperation.opeNumber == DIV){
+            } else if (newOperation == DIV){
                 constantsResult = List->firstOperand / List->secondOperand;
             } else {
                 callException("instructionMatch",17,5);
@@ -154,7 +122,7 @@ void instructionMatch(triple* List){
             /*validates the packaging*/
             if (constantsResult == -999) { callException("instructionMatch",17,5); break; }
 
-            addASM( createITYPE("li","$acc","$zero",constantsResult) );
+            addASM( createITYPE(LI,$acc,$zero,constantsResult) );
 
         } else if ((List->firstOperandType == ConstantNoAddress) && (List->secondOperandType == SymboltableAddress)) {
 
@@ -208,6 +176,10 @@ void generateAssembly(triple* List){
   }
 
   initializeASMList();
-  instructionMatch(List);
+  while (List->next != NULL) {
+    instructionMatch(List);
+    List = List->next;
+  }
+  printASM(asmList);
 
 }

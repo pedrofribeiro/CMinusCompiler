@@ -27,8 +27,6 @@ echo ---------------------------------------------------------------------------
 
 #./tiny selectionSort.txt
 ./tiny 1.txt
-#./tiny 2.txt
-#./tiny 3.txt
 #./tiny fib.txt
 #./tiny sort.txt
 #./tiny foo.txt

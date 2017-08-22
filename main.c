@@ -6,7 +6,7 @@
 /* set NO_INTERMCODE to TRUE to get a compiler that does not generate intermediary code  */
 #define NO_INTERMCODE FALSE
 /* set NO_ASM to TRUE to get a compiler that does not generate assembly code  */
-#define NO_ASM TRUE
+#define NO_ASM FALSE
 /* set NO_MACHINECODE to TRUE to get a compiler that does not generate machine code  */
 #define NO_MACHINECODE TRUE
 
@@ -21,7 +21,7 @@
         #include "intermediaryCode.h"
       #endif
       #if !NO_ASM
-        #include "asm.h"
+        #include "assemblyCode.h"
       #endif
       #if !NO_MACHINECODE
         #include "machineCode.h"
@@ -40,7 +40,7 @@ int TraceScan = TRUE;
 int TraceParse = TRUE;
 int TraceAnalyze = TRUE;
 int TraceIntermCode = TRUE;
-int TraceASM = FALSE;
+int TraceASM = TRUE;
 int TraceMachineCode = FALSE;
 
 int Error = FALSE;
@@ -65,6 +65,7 @@ int main( int argc, char * argv[] )
   fprintf(listing,"\n\n===================================\n\n");
   fprintf(listing,"ANALISE LEXICA.");
   fprintf(listing,"\n===================================\n\n");
+
 #if NO_PARSE
   while (getToken()!=ENDFILE);
 #else
@@ -75,6 +76,7 @@ int main( int argc, char * argv[] )
     fprintf(listing,"\n===================================\n\n\n\n");
     printTree(syntaxTree);
 	  }
+
 #if !NO_ANALYZE
   if (! Error)
   { if (TraceAnalyze) {
@@ -103,6 +105,15 @@ if(TraceIntermCode){
     fprintf(listing,"CÓDIGO INTERMEDIÁRIO.");
     fprintf(listing,"\n===================================\n\n\n\n");
     generateIntermediaryCode(syntaxTree);
+}
+#endif
+
+#if !NO_ASM
+if(TraceASM){
+    fprintf(listing,"\n\n===================================\n");
+    fprintf(listing,"ASSEMBLY.");
+    fprintf(listing,"\n===================================\n\n\n\n");
+    generateAssembly(tripleList->next);
 }
 #endif
 

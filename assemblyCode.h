@@ -5,7 +5,7 @@
 #include "symtab.h"
 #include "triple.h"
 
-op recognizeOperation(triple* tr);
+CPU_OPERATIONS recognizeOperation(triple* tr);
 
 void instructionMatch(triple *tr);
 
