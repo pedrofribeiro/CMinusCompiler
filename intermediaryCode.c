@@ -18,18 +18,34 @@ void evalStmt(TreeNode *node){
     break;
     case VarK:
       printf("[VarK]\n");
-      NUMBER_OF_VARS = NUMBER_OF_VARS + 1;
+      if (GLOBAL == TRUE) {
+          NUMBER_OF_GLOBALS = NUMBER_OF_GLOBALS + 1;
+          addTriple("G_VAR",st_lookupFnStart(node->attr.name),1,SymboltableAddress,ConstantNoAddress);
+      } else {
+          NUMBER_OF_VARS = NUMBER_OF_VARS + 1;
+          addTriple("VAR",st_lookupFnStart(node->attr.name),1,SymboltableAddress,ConstantNoAddress);
+      }
+
     break;
     case VetK:
       printf("[VetK]\n");
       int k = node->child[0]->attr.val;
-      NUMBER_OF_VARS = NUMBER_OF_VARS + k;
+      if (GLOBAL == TRUE) {
+          NUMBER_OF_GLOBALS = NUMBER_OF_GLOBALS + k;
+          addTriple("G_VET",st_lookupFnStart(node->attr.name),k,SymboltableAddress,ConstantNoAddress);
+      } else {
+          NUMBER_OF_VARS = NUMBER_OF_VARS + k;
+          addTriple("VET",st_lookupFnStart(node->attr.name),k,SymboltableAddress,ConstantNoAddress);
+      }
     break;
     case ReturnK:
       printf("[ReturnK]\n");
       p0 = node->child[0];
 
-      if (p0 == NULL) break;
+      if (p0 == NULL){
+        addTriple("RETURN",-1,-1,EmptyAddress,EmptyAddress);
+        return;
+      }
 
       if (p0->kind.exp == ConstK) {
           evalProgram(p0);
@@ -168,12 +184,10 @@ void evalStmt(TreeNode *node){
     case FunK:
       printf("[FunK]\n");
 
+      GLOBAL = FALSE;
       NUMBER_OF_VARS = 0;
       p0 = node->child[0]; /* arguments*/
       p1 = node->child[1]; /* function statements' code*/
-
-      printf("NUMBER OF VARS = %d\n",NUMBER_OF_VARS);
-      printf("NUMBER OF PARAMETERS IS = %d\n",node->numberOfParameters);
 
       addTriple(node->attr.name,-999,-999,EmptyAddress,EmptyAddress);
       int fnTriple = NUMBER_OF_TRIPLES;
@@ -181,10 +195,15 @@ void evalStmt(TreeNode *node){
       evalProgram(p0); /*evaluates the arguments*/
       evalProgram(p1); /*evaluates the fn code*/
 
-      printf("NEW NUMBER OF VARS = %d\n",NUMBER_OF_VARS);
-      int alignment = adjustTriple(fnTriple,1,NUMBER_OF_VARS);
-      if (alignment == 1) { printf("The number of vars were correctly adjusted.\n"); }
+      int alignmentOne = adjustTriple(fnTriple,1,NUMBER_OF_VARS);
+      if (alignmentOne == 1) { printf("The number of vars were correctly adjusted.\n"); }
       else { callException("evalStmt: FunK",9,4); }
+
+      int alignmentTwo = adjustTriple(fnTriple,2,node->numberOfParameters);
+      if (alignmentTwo == 1) { printf("The number of vars were correctly adjusted.\n"); }
+      else { callException("evalStmt: FunK",9,4); }
+
+      GLOBAL = TRUE;
 
     break;
     default:

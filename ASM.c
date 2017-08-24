@@ -176,6 +176,7 @@ void printASM(){
 
 void initializeASMList(){
   NUMBER_OF_ASM = -2;
+  NUMBER_OF_POSITIONS = 0;
   asmList = createRTYPE(NONE,$none,$none,$none);
   tempAsm = createRTYPE(NONE,$none,$none,$none);
 }

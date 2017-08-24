@@ -49,6 +49,10 @@ Operation getOperation(triple *tr){
     return GTE;
   } else if (strcmp(inputOperation,"<=") == 0) {
     return LTE;
+  } else if (strcmp(inputOperation,"G_VAR") == 0) {
+    return G_VAR;
+  } else if (strcmp(inputOperation,"G_VET") == 0) {
+    return G_VET;
   } else {
     return FNDECL;
   }
@@ -71,8 +75,27 @@ void asmCode (triple* instruction) {
     return;
   }
 
+  int x,y,z;
+
   switch (operation) {
     case FNDECL:
+        NUMBER_OF_POSITIONS = instruction->firstOperand;
+        /*
+        move $fp $sp
+        sw $ra 0($sp)
+        addiu $sp $sp 1
+        >> ADENDOS NECESSARIOS:
+        addiu $paramp $zero y
+        */
+        y = NUMBER_OF_POSITIONS - instruction->secondOperand;
+
+        addASM ( createRTYPE ( MOVE, $fp, $sp, $zero ) );
+        addASM ( createITYPE ( SW, $ra, $sp, 0 ) );
+        addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+        addASM ( createITYPE ( ADDIU, $paramp, $zero, y ) );
+
+        asmCode(instruction->next);
+
     break;
     case ADD:
     case SUB:
@@ -80,6 +103,20 @@ void asmCode (triple* instruction) {
     case DIV:
     break;
     case RET:
+        /*
+        lw $ra -1($sp)
+        addiu $sp $sp Z, Z = #args + #vars + #PositionsUsedByVectors + old $fp + ret. addrs
+        lw $fp 0($sp)
+        jr $ra
+       */
+       z = NUMBER_OF_POSITIONS;
+       addASM ( createITYPE ( LW, $ra, $sp, -1 ) );
+       addASM ( createITYPE ( ADDIU, $sp, $sp, z ) );
+       addASM ( createITYPE ( LW, $fp, $sp, 0 ) );
+       addASM ( createJTYPE ( JR, $ra) );
+
+       asmCode(instruction->next);
+
     break;
     case CALL:
     break;
@@ -102,6 +139,15 @@ void asmCode (triple* instruction) {
     case GTE:
     break;
     case LTE:
+    break;
+    case G_VAR:
+        /*
+        addiu $globalsp $zero x
+        */
+        x = NUMBER_OF_GLOBALS;
+        addASM ( createITYPE ( ADDIU, $globalsp, $zero, x ) );
+    break;
+    case G_VET:
     break;
     default:
         callException("asmCode",1,5);

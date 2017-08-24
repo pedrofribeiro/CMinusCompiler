@@ -5,10 +5,11 @@
 #include "util.h"
 
 typedef enum INSTR_TYPE {RTYPE, ITYPE, JTYPE, LTYPE} ASM_INSTR_TYPE;
-typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,IF_F,GOTO,V_IN,EQL,DIFE,GRT,LST,GTE,LTE,MOVE,LW,ADDIU,SW,LI,FNDECL,NONE} Operation;
-typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $none} Register;
+typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,IF_F,GOTO,V_IN,EQL,DIFE,GRT,LST,GTE,LTE,MOVE,LW,ADDIU,SW,LI,JR,G_VAR,G_VET,FNDECL,NONE} Operation;
+typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $paramp, $globalsp, $none} Register;
 
 int NUMBER_OF_ASM;
+int NUMBER_OF_POSITIONS;
 
 typedef struct ASM_RTYPE {
   Operation cpu_operation;

@@ -1,3 +1,5 @@
+int vector[10];
+int a;
 int gcd(int u, int v)
  { if (v==0) return u;
  else return gcd(v, u-u/v*v);
@@ -7,4 +9,5 @@ int gcd(int u, int v)
  x = input(); y = input();
  v[gcd(x,v[2])] = v[8+5+4];
  output(gcd(x,y));
+return;
  }

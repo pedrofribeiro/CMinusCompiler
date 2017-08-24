@@ -8,6 +8,8 @@ typedef enum {SymboltableAddress, TripleAddress, ConstantNoAddress, EmptyAddress
 
 int NUMBER_OF_TRIPLES;
 int NUMBER_OF_VARS;
+int NUMBER_OF_GLOBALS;
+int GLOBAL;
 
 typedef struct triple{
   char operation[6];
