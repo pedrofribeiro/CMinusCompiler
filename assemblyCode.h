@@ -5,9 +5,9 @@
 #include "symtab.h"
 #include "triple.h"
 
-CPU_OPERATIONS recognizeOperation(triple* tr);
+Operation getOperation(triple* tr);
 
-void instructionMatch(triple *tr);
+void asmCode(triple *tr);
 
 void generateAssembly(triple* List);
 

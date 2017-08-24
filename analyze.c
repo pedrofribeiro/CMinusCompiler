@@ -109,6 +109,24 @@ static void insertNode( TreeNode * t)
           if(st_lookup(t->attr.name) == -1) {
             ESCOPOControllerUP(t);
             st_insert(t->attr.name, location++, t->lineno, t->type, t->kind.stmt, ESCOPO);
+
+              //counting the number of parameters
+                if(t->child[0] == NULL) t->numberOfParameters = 0;
+                else{
+                  int parametersOfFn = 1;
+                  TreeNode *specialNode = (TreeNode*) malloc(sizeof(TreeNode)*1);
+                  if(specialNode == NULL){
+                     callException("insertNode FunK",3,3);
+                     break;
+                  }
+                  specialNode = t->child[0]->sibling;
+                  while (specialNode != NULL) {
+                    parametersOfFn++;
+                    specialNode = specialNode->sibling;
+                  }
+                  t->numberOfParameters = parametersOfFn;
+                }
+
           }else {
             typeError(t, "ERRO ENCONTRADO. IDENTIFICADOR DE FUNCAO DUPLICADO.");
           }

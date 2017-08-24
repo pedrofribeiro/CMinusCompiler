@@ -114,6 +114,7 @@ void printTripleList(){
 
 void initializeTripleList(){
   NUMBER_OF_TRIPLES = -2;
+  NUMBER_OF_VARS = 0;
   tripleList = createTriple("TripleListHead",-1,-1,ConstantNoAddress,ConstantNoAddress);
   tempTriple = createTriple("TempTriple",-1,-1,ConstantNoAddress,ConstantNoAddress);
 }

@@ -147,6 +147,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	15. Illegal type of asm instruction found.
 	16. Illegal construction found on a triple.
 	17. Unexpected behavior during the packaging of constants.
+	18. The TripleListHead has been found.
 	*/
 }
 

@@ -18,9 +18,12 @@ void evalStmt(TreeNode *node){
     break;
     case VarK:
       printf("[VarK]\n");
+      NUMBER_OF_VARS = NUMBER_OF_VARS + 1;
     break;
     case VetK:
       printf("[VetK]\n");
+      int k = node->child[0]->attr.val;
+      NUMBER_OF_VARS = NUMBER_OF_VARS + k;
     break;
     case ReturnK:
       printf("[ReturnK]\n");
@@ -165,13 +168,23 @@ void evalStmt(TreeNode *node){
     case FunK:
       printf("[FunK]\n");
 
+      NUMBER_OF_VARS = 0;
       p0 = node->child[0]; /* arguments*/
       p1 = node->child[1]; /* function statements' code*/
 
+      printf("NUMBER OF VARS = %d\n",NUMBER_OF_VARS);
+      printf("NUMBER OF PARAMETERS IS = %d\n",node->numberOfParameters);
+
       addTriple(node->attr.name,-999,-999,EmptyAddress,EmptyAddress);
+      int fnTriple = NUMBER_OF_TRIPLES;
 
       evalProgram(p0); /*evaluates the arguments*/
       evalProgram(p1); /*evaluates the fn code*/
+
+      printf("NEW NUMBER OF VARS = %d\n",NUMBER_OF_VARS);
+      int alignment = adjustTriple(fnTriple,1,NUMBER_OF_VARS);
+      if (alignment == 1) { printf("The number of vars were correctly adjusted.\n"); }
+      else { callException("evalStmt: FunK",9,4); }
 
     break;
     default:

@@ -7,6 +7,7 @@
 typedef enum {SymboltableAddress, TripleAddress, ConstantNoAddress, EmptyAddress} operandType;
 
 int NUMBER_OF_TRIPLES;
+int NUMBER_OF_VARS;
 
 typedef struct triple{
   char operation[6];

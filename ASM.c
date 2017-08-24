@@ -1,6 +1,6 @@
 #include "ASM.h"
 
-ASM_INSTR* createRTYPE(CPU_OPERATIONS cop, Register rd, Register r1, Register r2){
+ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2){
   ASM_INSTR* newInstruction = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
     callException("createRTYPE",3,5);
@@ -17,7 +17,7 @@ ASM_INSTR* createRTYPE(CPU_OPERATIONS cop, Register rd, Register r1, Register r2
   return newInstruction;
 }
 
-ASM_INSTR* createITYPE(CPU_OPERATIONS cop, Register rd, Register r1, int imm){
+ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm){
   ASM_INSTR* newInstruction = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
     callException("createITYPE",3,5);
@@ -34,7 +34,7 @@ ASM_INSTR* createITYPE(CPU_OPERATIONS cop, Register rd, Register r1, int imm){
   return newInstruction;
 }
 
-ASM_INSTR* createJTYPE(CPU_OPERATIONS cop, int addr){
+ASM_INSTR* createJTYPE(Operation cop, int addr){
   ASM_INSTR* newInstruction = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
     callException("createJTYPE",3,5);
@@ -104,9 +104,12 @@ void addASM(ASM_INSTR* newInstruction){
 
 void printASM(ASM_INSTR* instr){
 
-  if(instr == NULL){
-    callException("printASM",4,5);
-    return;
+  if (instr == NULL) {
+      callException("printASM",4,5);
+      return;
+  } else if (instr->next == NULL) {
+      callException("printASM",4,5);
+      return;
   }
 
   int SAFE_LOOP = 0;
@@ -155,6 +158,6 @@ void printASM(ASM_INSTR* instr){
 
 void initializeASMList(){
   NUMBER_OF_ASM = 0;
-  asmList = createRTYPE(NONE,$NONE,$NONE,$NONE);
-  asmList = createRTYPE(NONE,$NONE,$NONE,$NONE);
+  asmList = createRTYPE(NONE,$none,$none,$none);
+  tempAsm = createRTYPE(NONE,$none,$none,$none);
 }

@@ -1,140 +1,92 @@
 #include "assemblyCode.h"
 #include "triple.h"
 
-CPU_OPERATIONS recognizeOperation(triple* tr){
+Operation getOperation(triple *tr){
 
-  /*operation initialized with WRONG values, to be used if it doesn't match*/
-  CPU_OPERATIONS newOperation = NONE;
-
-  if (tr == NULL) { /*verify if the triple is null*/
-    callException("recognizeOperation",11,5);
-    return newOperation;
+  if (tr == NULL) {
+      callException("getOperation",3,5);
+      return NONE;
   }
 
-  char rawOperation[6];
-  strcpy(rawOperation,tr->operation);
+  char inputOperation[6];
+  sprintf(inputOperation,"%s",tr->operation);
 
-  if (strcmp(rawOperation,tr->operation) != 0) { /*verify if the copy was done correctly*/
-    callException("recognizeOperation",12,5);
-    return newOperation;
+  if (strcmp(inputOperation,tr->operation) != 0) {
+    callException("getOperation",12,5);
+    return NONE;
   }
 
-  printf("OPERATION = %s\n",rawOperation);
-  if (strcmp("+",rawOperation) == 0) {
-      newOperation = ADD;
-      return newOperation;
-  } else if (strcmp("-",rawOperation) == 0) {
-      newOperation = SUB;
-      return newOperation;
-  } else if (strcmp("*",rawOperation) == 0) {
-      newOperation = MUL;
-      return newOperation;
-  } else if (strcmp("/",rawOperation) == 0) {
-      newOperation = DIV;
-      return newOperation;
-  } else if (strcmp("RETURN",rawOperation) == 0) {
-      newOperation = RET;
-      return newOperation;
-  } else if (strcmp("FNCALL",rawOperation) == 0) {
-      newOperation = CALL;
-      return newOperation;
-  } else if (strcmp("ATRIB",rawOperation) == 0) {
-      newOperation = ATR;
-      return newOperation;
-  } else if (strcmp("IF_F",rawOperation) == 0) {
-      newOperation = IF_F;
-      return newOperation;
-  } else if (strcmp("GOTO",rawOperation) == 0) {
-      newOperation = GOTO;
-      return newOperation;
-  } else if (strcmp("V_INDEX",rawOperation) == 0) {
-      newOperation = V_IN;
-      return newOperation;
-  } else if (strcmp("==",rawOperation) == 0) {
-      newOperation = EQL;
-      return newOperation;
-  } else if (strcmp("!=",rawOperation) == 0) {
-      newOperation = DIFE;
-      return newOperation;
-  } else if (strcmp(">",rawOperation) == 0) {
-      newOperation = GRT;
-      return newOperation;
-  } else if (strcmp("<",rawOperation) == 0) {
-      newOperation = LST;
-      return newOperation;
-  } else if (strcmp(">=",rawOperation) == 0) {
-      newOperation = GTE;
-      return newOperation;
-  } else if (strcmp("<=",rawOperation) == 0) {
-      newOperation = LTE;
-      return newOperation;
+  /* finding out the operation*/
+  if (strcmp(inputOperation,"+") == 0) {
+    return ADD;
+  } else if (strcmp(inputOperation,"-") == 0) {
+    return SUB;
+  } else if (strcmp(inputOperation,"*") == 0) {
+    return MUL;
+  } else if (strcmp(inputOperation,"/") == 0) {
+    return DIV;
+  } else if (strcmp(inputOperation,"RETURN") == 0) {
+    return RET;
+  } else if (strcmp(inputOperation,"FNCALL") == 0) {
+    return CALL;
+  } else if (strcmp(inputOperation,"ATRIB") == 0) {
+    return ATR;
+  } else if (strcmp(inputOperation,"IF_F") == 0) {
+    return IF_F;
+  } else if (strcmp(inputOperation,"GOTO") == 0) {
+    return GOTO;
+  } else if (strcmp(inputOperation,"V_INDEX") == 0) {
+    return V_IN;
+  } else if (strcmp(inputOperation,"==") == 0) {
+    return EQL;
+  } else if (strcmp(inputOperation,"!=") == 0) {
+    return DIFE;
+  } else if (strcmp(inputOperation,">") == 0) {
+    return GRT;
+  } else if (strcmp(inputOperation,"<") == 0) {
+    return LST;
+  } else if (strcmp(inputOperation,">=") == 0) {
+    return GTE;
+  } else if (strcmp(inputOperation,"<=") == 0) {
+    return LTE;
+  } else {
+    return FNDECL;
   }
-    callException("recognizeOperation",13,5);
-    return newOperation;
+
+  return NONE;
 }
 
 
-void instructionMatch(triple* List){
+void asmCode (triple* instruction) {
 
-  /* function label, creates a new Activation Record*/
-  if ((List->firstOperandType == EmptyAddress) && (List->secondOperandType == EmptyAddress)) {
-      addASM(createLTYPE(List->operation,111));
-      addASM(createRTYPE(MOVE,$fp,$sp,$NONE));
-      addASM(createITYPE(SW,$ra,$sp,0));
-      addASM(createITYPE(ADDIU,$sp,$sp,1));
-      generateAssembly(List->next);
-      addASM(createITYPE(LW,$ra,$sp,-1));
-      addASM(createITYPE(ADDIU,$sp,$sp,2)); //      CHANGE THIS IMMEDIATELY.
-      addASM(createITYPE(LW,$fp,$sp,0));
-      return;
+  ASM_INSTR* a0;
+
+  if (instruction == NULL) {
+    callException("asmCode",4,5);
+    return;
   }
 
-  CPU_OPERATIONS newOperation = recognizeOperation(List);
-  if (newOperation == NONE) {
-      callException("instructionMatch",13,5);
-      return;
+  Operation operation = NONE;
+  operation = getOperation(instruction);
+
+  if (operation == NONE) {
+    callException("asmCode",13,5);
+    return;
   }
 
-  switch (newOperation) {
+//typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,IF_F,GOTO,V_IN,EQL,DIFE,GRT,LST,GTE,LTE,MOVE,LW,ADDIU,SW,LI,NONE} Operation;
+  switch (operation) {
+    case FNDECL:
+        a0 = createJTYPE (GOTO,-111);
+        addASM (a0); //jumps to main function
+        addASM ( createRTYPE (MOVE, $fp, $sp, $none) );
+        addASM ( createITYPE (SW, $ra, $sp, 0) );
+        addASM ( createITYPE (ADDIU, $sp, $sp, 1) );
+    break;
     case ADD:
     case SUB:
     case MUL:
     case DIV:
-
-        if ((List->firstOperandType == ConstantNoAddress) && (List->secondOperandType == ConstantNoAddress)) {
-
-            /*packaging of constants*/
-            int constantsResult = -999;
-
-            if (newOperation == ADD) {
-                constantsResult = List->firstOperand + List->secondOperand;
-            } else if (newOperation == SUB) {
-                constantsResult = List->firstOperand - List->secondOperand;
-            } else if (newOperation == MUL) {
-                constantsResult = List->firstOperand * List->secondOperand;
-            } else if (newOperation == DIV){
-                constantsResult = List->firstOperand / List->secondOperand;
-            } else {
-                callException("instructionMatch",17,5);
-                break;
-            }
-
-            /*validates the packaging*/
-            if (constantsResult == -999) { callException("instructionMatch",17,5); break; }
-
-            addASM( createITYPE(LI,$acc,$zero,constantsResult) );
-
-        } else if ((List->firstOperandType == ConstantNoAddress) && (List->secondOperandType == SymboltableAddress)) {
-
-            /*needs a fully defined runtime environment to be correctly done*/
-
-        } else if ((List->firstOperandType == SymboltableAddress) && (List->secondOperandType == ConstantNoAddress)) {
-
-        } else if ((List->firstOperandType == SymboltableAddress) && (List->secondOperandType == SymboltableAddress)) {
-
-        } else {
-            callException("instructionMatch: ArithmeticOPs",16,5);
-        }
     break;
     case RET:
     break;
@@ -161,10 +113,11 @@ void instructionMatch(triple* List){
     case LTE:
     break;
     default:
-        callException("instructionMatch",1,5);
+        callException("asmCode",1,5);
     break;
   }
 
+return;
 }
 
 
@@ -176,10 +129,8 @@ void generateAssembly(triple* List){
   }
 
   initializeASMList();
-  while (List->next != NULL) {
-    instructionMatch(List);
-    List = List->next;
-  }
+  asmCode(List);
+  //adjustASM();
   printASM(asmList);
 
 }
