@@ -102,7 +102,33 @@ void addASM(ASM_INSTR* newInstruction){
 
 }
 
-
+int adjustASM(int an, int field, int nv){
+  if ((an <= 0) || (an > NUMBER_OF_ASM)) {
+    callException("adjustASM: number of asm",8,5);
+    return -1;
+  }
+  if ((field < 1) || (field > 3)){
+    callException("adjustASM: field",8,5);
+    return -1;
+  }
+  int SAFE_LOOP = 0;
+  tempAsm = asmList->next;
+  while (tempAsm->next != NULL) {
+    if (tempAsm->asmNumber == an) {
+      if (field == 1) { tempAsm->itype.immediate = nv; }
+      else if (field == 2) { tempAsm->jtype.address = nv; }
+      else if (field == 3) { tempAsm->ltype.asmAddress = nv; }
+      return 1;
+    } else { tempAsm = tempAsm->next; }
+    /*safe loop measure*/
+    SAFE_LOOP++;
+    if(SAFE_LOOP > SAFE_LOOP_SIZE){
+      callException("adjustTriple",10,4);
+      return -1;
+    }
+  }
+  return -1;
+}
 
 void printASM(){
 
@@ -125,8 +151,6 @@ void printASM(){
         callException("printASM",10,5);
         return;
       }
-
-      //NEED TO MAKE A DECENT TRANSLATION FUNCTION TO USE WITH ENUMS
 
       switch (tempAsm->type) {
         case RTYPE:

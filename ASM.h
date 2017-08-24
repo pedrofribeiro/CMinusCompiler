@@ -56,6 +56,8 @@ ASM_INSTR* createLTYPE(char cop[], int addr);
 
 void addASM(ASM_INSTR* t);
 
+int adjustASM(int an, int field, int nv);
+
 void initializeASMList();
 
 #endif

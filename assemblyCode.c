@@ -56,7 +56,6 @@ Operation getOperation(triple *tr){
   return NONE;
 }
 
-
 void asmCode (triple* instruction) {
 
   if (instruction == NULL) {
@@ -72,14 +71,8 @@ void asmCode (triple* instruction) {
     return;
   }
 
-//typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,IF_F,GOTO,V_IN,EQL,DIFE,GRT,LST,GTE,LTE,MOVE,LW,ADDIU,SW,LI,NONE} Operation;
   switch (operation) {
     case FNDECL:
-
-        addASM ( createJTYPE (GOTO,-111) ); //jumps to main function
-        addASM ( createRTYPE (MOVE, $fp, $sp, $none) );
-        addASM ( createITYPE (SW, $ra, $sp, 0) );
-        addASM ( createITYPE (ADDIU, $sp, $sp, 1) );
     break;
     case ADD:
     case SUB:
@@ -129,6 +122,6 @@ void generateAssembly(triple* List){
   initializeASMList();
   asmCode(List);
   //adjustASM();
-  printASM(asmList);
+  //printASM(asmList);
 
 }
