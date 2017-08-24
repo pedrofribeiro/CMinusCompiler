@@ -14,6 +14,7 @@ ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2){
   newInstruction->rtype.r2 = r2;
   newInstruction->asmNumber = NUMBER_OF_ASM;
   newInstruction->next = NULL;
+      printf("[R] %d: %d %d, %d, %d \n",newInstruction->asmNumber,newInstruction->rtype.cpu_operation,newInstruction->rtype.rd,newInstruction->rtype.r1,newInstruction->rtype.r2);
   return newInstruction;
 }
 
@@ -31,6 +32,7 @@ ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm){
   newInstruction->itype.immediate = imm;
   newInstruction->asmNumber = NUMBER_OF_ASM;
   newInstruction->next = NULL;
+      printf("[I] %d: %d %d, %d, %d \n",newInstruction->asmNumber,newInstruction->rtype.cpu_operation,newInstruction->itype.rd,newInstruction->itype.r1,newInstruction->itype.immediate);
   return newInstruction;
 }
 
@@ -43,9 +45,10 @@ ASM_INSTR* createJTYPE(Operation cop, int addr){
   NUMBER_OF_ASM = NUMBER_OF_ASM + 1;
   newInstruction->type = JTYPE;
   newInstruction->jtype.cpu_operation = cop;
-  newInstruction->jtype.im_address = addr;
+  newInstruction->jtype.address = addr;
   newInstruction->asmNumber = NUMBER_OF_ASM;
   newInstruction->next = NULL;
+      printf("[J] %d: %d %d \n",newInstruction->asmNumber,newInstruction->jtype.cpu_operation,newInstruction->jtype.address);
   return newInstruction;
 }
 
@@ -61,6 +64,7 @@ ASM_INSTR* createLTYPE(char cop[], int addr){
   newInstruction->ltype.asmAddress = addr;
   newInstruction->asmNumber = NUMBER_OF_ASM;
   newInstruction->next = NULL;
+      printf("[L] %d: %s %d ",newInstruction->asmNumber,newInstruction->ltype.functionName,newInstruction->ltype.asmAddress);
   return newInstruction;
 }
 
@@ -72,7 +76,6 @@ void addASM(ASM_INSTR* newInstruction){
   }
 
   if (asmList->next == NULL) {
-
       asmList->next = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
       if (asmList->next == NULL) {
         callException("addASM",3,5);
@@ -80,12 +83,10 @@ void addASM(ASM_INSTR* newInstruction){
       } else {
         asmList->next = newInstruction;
       }
-
   } else {
 
       int SAFE_LOOP = 0;
       tempAsm = asmList->next;
-
       while (tempAsm->next != NULL) {
         tempAsm = tempAsm->next;
         /*safe loop measure*/
@@ -97,17 +98,18 @@ void addASM(ASM_INSTR* newInstruction){
       }
 
       tempAsm->next = newInstruction;
-
   }
 
 }
 
-void printASM(ASM_INSTR* instr){
 
-  if (instr == NULL) {
+
+void printASM(){
+
+  if (asmList == NULL) {
       callException("printASM",4,5);
       return;
-  } else if (instr->next == NULL) {
+  } else if (asmList->next == NULL) {
       callException("printASM",4,5);
       return;
   }
@@ -115,7 +117,7 @@ void printASM(ASM_INSTR* instr){
   int SAFE_LOOP = 0;
   tempAsm = asmList->next;
 
-  while (tempAsm->next != NULL) {
+  while (tempAsm != NULL) {
 
       /*safe loop measure*/
       SAFE_LOOP++;
@@ -126,26 +128,18 @@ void printASM(ASM_INSTR* instr){
 
       //NEED TO MAKE A DECENT TRANSLATION FUNCTION TO USE WITH ENUMS
 
-      switch (instr->type) {
+      switch (tempAsm->type) {
         case RTYPE:
-            printf("%d ",instr->rtype.cpu_operation);
-            printf("%d, ",instr->rtype.rd);
-            printf("%d, ",instr->rtype.r1);
-            printf("%d \n",instr->rtype.r2);
+            printf("%d: %d %d, %d, %d \n",tempAsm->asmNumber,tempAsm->rtype.cpu_operation,tempAsm->rtype.rd,tempAsm->rtype.r1,tempAsm->rtype.r2);
         break;
         case ITYPE:
-            printf("%d ",instr->itype.cpu_operation);
-            printf("%d, ",instr->itype.rd);
-            printf("%d, ",instr->itype.r1);
-            printf("%d \n",instr->itype.immediate);
+            printf("%d: %d %d, %d, %d \n",tempAsm->asmNumber,tempAsm->itype.cpu_operation,tempAsm->itype.rd,tempAsm->itype.r1,tempAsm->itype.immediate);
         break;
         case JTYPE:
-            printf("%d ",instr->jtype.cpu_operation);
-            printf("%d \n",instr->jtype.im_address);
+            printf("%d: %d, %d \n",tempAsm->asmNumber,tempAsm->jtype.cpu_operation,tempAsm->jtype.address);
         break;
         case LTYPE:
-            printf("%s ",instr->ltype.functionName);
-            printf("%d \n",instr->ltype.asmAddress);
+            printf("%d: %s %d ",tempAsm->asmNumber,tempAsm->ltype.functionName,tempAsm->ltype.asmAddress);
         break;
         default:
             callException("printASM",15,5);
@@ -157,7 +151,7 @@ void printASM(ASM_INSTR* instr){
 
 
 void initializeASMList(){
-  NUMBER_OF_ASM = 0;
+  NUMBER_OF_ASM = -2;
   asmList = createRTYPE(NONE,$none,$none,$none);
   tempAsm = createRTYPE(NONE,$none,$none,$none);
 }

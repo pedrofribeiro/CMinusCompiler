@@ -26,7 +26,7 @@ typedef struct ASM_ITYPE {
 
 typedef struct ASM_JTYPE {
   Operation cpu_operation;
-  int im_address;
+  int address;
 } ASM_JTYPE;
 
 typedef struct ASM_LTYPE {
