@@ -5,11 +5,23 @@
 #include "util.h"
 
 typedef enum INSTR_TYPE {RTYPE, ITYPE, JTYPE, LTYPE} ASM_INSTR_TYPE;
-typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,IF_F,GOTO,V_IN,EQL,DIFE,GRT,LST,GTE,LTE,MOVE,LW,ADDIU,SW,LI,JR,G_VAR,G_VET,FNDECL,NONE} Operation;
+typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,IF_F,GOTO,V_IN,EQL,DIFE,GRT,LST,GTE,LTE,MOVE,LW,ADDIU,SW,LI,JR,G_VAR,G_VET,VAR,VET,FNDECL,NONE} Operation;
 typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $paramp, $globalsp, $none} Register;
 
 int NUMBER_OF_ASM;
 int NUMBER_OF_POSITIONS;
+int ALIGNED_GLOBALS_POINTER;
+int MEMORY_POSITION;
+
+typedef struct POSITION {
+  int identifier;
+  int basePosition;
+  int availablePositions;
+  struct POSITION* next;
+} POSITION;
+
+POSITION* tempPos;
+POSITION* positionList;
 
 typedef struct ASM_RTYPE {
   Operation cpu_operation;
@@ -49,6 +61,13 @@ typedef struct ASM_INSTR {
 
 ASM_INSTR* asmList;
 ASM_INSTR* tempAsm;
+
+
+int getMemoryPosition(int n);
+int freeMemoryPosition(int n);
+
+int setVarPosition(int id, int np);
+int getVarPosition(int id);
 
 ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2);
 ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm);

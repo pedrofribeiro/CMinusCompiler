@@ -1,5 +1,86 @@
 #include "ASM.h"
 
+int getMemoryPosition(int n){
+  if (n < 0) { callException("getMemoryPosition",8,5); return -999; }
+  int nextFreePosition;
+  nextFreePosition = MEMORY_POSITION;
+  MEMORY_POSITION = MEMORY_POSITION + n;
+  return nextFreePosition;
+}
+
+int freeMemoryPosition(int n){
+  if (n < 0) { callException("freeMemoryPosition: n",8,5); return -999; }
+  MEMORY_POSITION = MEMORY_POSITION - n;
+  if (MEMORY_POSITION < 0) { callException("freeMemoryPosition: MEMORY_POSITION",8,5); return -999; }
+  return 1;
+}
+
+POSITION* createPosition(int id, int ap){
+  POSITION* newPosition = (POSITION*) malloc(sizeof(POSITION)*1);
+  if (newPosition == NULL) { callException("createPosition",3,5); return -999; }
+  newPosition->identifier = id;
+  newPosition->basePosition = getMemoryPosition(ap);
+  newPosition->availablePositions = ap;
+  newPosition->next = NULL;
+  return newPosition;
+}
+
+int getVarPosition(int id){
+  if ((id == -2) || (id == -1)) return -999; /*special control variables have those ids*/
+  else if (id < 0) { callException("getVarPosition",8,5); return -999; }
+
+  tempPos = positionList->next;
+  int SAFE_LOOP = 0;
+
+  while (tempPos != NULL) {
+    if (tempPos->identifier == id) { return tempPos->basePosition; }
+    tempPos = tempPos->next;
+    /*safe loop measure*/
+    SAFE_LOOP++;
+    if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("getVarPosition",10,5); return -999; }
+  }
+  return -999;
+}
+
+int setVarPosition(int id, int ap){
+  if (id < 0) { callException("setVarPosition",8,5); return -999; }
+
+  /*tests if the var is already on the list*/
+  int existenceTest = 0;
+  existenceTest = getVarPosition(id);
+  if (existenceTest != -999) {
+    callException("setPosition",19,5);
+    return -999;
+  }
+
+  /*if it's not, creates a new position for it*/
+  POSITION * newPosition = createPosition(id,ap);
+  if (newPosition == NULL) { callException("setVarPosition",20,5); return -999; }
+
+  /*inserts the new position on the positions list*/
+  if (positionList->next == NULL) {
+
+      positionList->next = (POSITION*) malloc(sizeof(POSITION)*1);
+      if (positionList->next == NULL) { callException("setPosition: positionList",3,5); return -999; }
+      positionList->next = newPosition;
+      return 1;
+
+  } else {
+
+      int SAFE_LOOP = 0;
+      tempPos = positionList->next;
+
+      while (tempPos->next != NULL) {
+        tempPos = tempPos->next;
+        /*safe loop measure*/
+        SAFE_LOOP++;
+        if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setPosition",10,5); return -999; }
+      }
+      tempPos->next = newPosition;
+  }
+  return 1;
+}
+
 ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2){
   ASM_INSTR* newInstruction = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
@@ -177,6 +258,10 @@ void printASM(){
 void initializeASMList(){
   NUMBER_OF_ASM = -2;
   NUMBER_OF_POSITIONS = 0;
+  ALIGNED_GLOBALS_POINTER = FALSE;
+  MEMORY_POSITION = -1;
   asmList = createRTYPE(NONE,$none,$none,$none);
   tempAsm = createRTYPE(NONE,$none,$none,$none);
+  positionList = createPosition(-2,0);
+  tempPos = createPosition(-1,0);
 }

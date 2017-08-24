@@ -53,6 +53,10 @@ Operation getOperation(triple *tr){
     return G_VAR;
   } else if (strcmp(inputOperation,"G_VET") == 0) {
     return G_VET;
+  } else if (strcmp(inputOperation,"VET") == 0) {
+    return VET;
+  } else if (strcmp(inputOperation,"VAR") == 0) {
+    return VAR;
   } else {
     return FNDECL;
   }
@@ -86,16 +90,22 @@ void asmCode (triple* instruction) {
         addiu $sp $sp 1
         >> ADENDOS NECESSARIOS:
         addiu $paramp $zero y
+        addiu $globalsp $zero x
         */
         y = NUMBER_OF_POSITIONS - instruction->secondOperand;
-
+        x = NUMBER_OF_GLOBALS;
+        addASM ( createITYPE ( ADDIU, $globalsp, $zero, x ) );
         addASM ( createRTYPE ( MOVE, $fp, $sp, $zero ) );
         addASM ( createITYPE ( SW, $ra, $sp, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         addASM ( createITYPE ( ADDIU, $paramp, $zero, y ) );
 
+        if (ALIGNED_GLOBALS_POINTER == FALSE) {
+          x = NUMBER_OF_GLOBALS;
+          addASM ( createITYPE ( ADDIU, $globalsp, $zero, x ) );
+          ALIGNED_GLOBALS_POINTER = TRUE;
+        }
         asmCode(instruction->next);
-
     break;
     case ADD:
     case SUB:
@@ -114,9 +124,7 @@ void asmCode (triple* instruction) {
        addASM ( createITYPE ( ADDIU, $sp, $sp, z ) );
        addASM ( createITYPE ( LW, $fp, $sp, 0 ) );
        addASM ( createJTYPE ( JR, $ra) );
-
        asmCode(instruction->next);
-
     break;
     case CALL:
     break;
@@ -142,12 +150,49 @@ void asmCode (triple* instruction) {
     break;
     case G_VAR:
         /*
-        addiu $globalsp $zero x
+        sw $zero 0($sp)
+        addiu $sp $sp 1
         */
-        x = NUMBER_OF_GLOBALS;
-        addASM ( createITYPE ( ADDIU, $globalsp, $zero, x ) );
+        addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
+        addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+        setVarPosition(instruction->firstOperand,1);
+        asmCode(instruction->next);
     break;
     case G_VET:
+      /*
+      loop n, n = number of parameters
+        sw $zero 0($sp)
+        addiu $sp $sp 1
+      */
+      for (size_t i = 0; i < instruction->secondOperand; i++) {
+        addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
+        addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+      }
+      setVarPosition(instruction->firstOperand,instruction->secondOperand);
+      asmCode(instruction->next);
+    break;
+    case VET:
+        /*
+        loop n, n = number of parameters
+          sw $zero 0($sp)
+          addiu $sp $sp 1
+        */
+        for (size_t i = 0; i < instruction->secondOperand; i++) {
+          addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
+          addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+        }
+        setVarPosition(instruction->firstOperand,instruction->secondOperand);
+        asmCode(instruction->next);
+    break;
+    case VAR:
+        /*
+        sw $zero 0($sp)
+        addiu $sp $sp 1
+        */
+        addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
+        addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+        setVarPosition(instruction->firstOperand,1);
+        asmCode(instruction->next);
     break;
     default:
         callException("asmCode",1,5);
@@ -168,6 +213,6 @@ void generateAssembly(triple* List){
   initializeASMList();
   asmCode(List);
   //adjustASM();
-  //printASM(asmList);
+  printASM(asmList);
 
 }

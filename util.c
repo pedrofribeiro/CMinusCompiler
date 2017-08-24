@@ -148,6 +148,8 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	16. Illegal construction found on a triple.
 	17. Unexpected behavior during the packaging of constants.
 	18. The TripleListHead has been found.
+	19. An entry with exactly the same ID already exists on the list.
+	20. It was not possible to create a new var position.
 	*/
 }
 
