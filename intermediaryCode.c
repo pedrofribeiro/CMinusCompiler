@@ -6,7 +6,7 @@ void evalStmt(TreeNode *node){
 
   switch (node->kind.stmt) {
     case DadoK:
-      printf("[DadoK]\n");
+      VERBOSE printf("[DadoK]\n");
       p0 = node->child[0];
 
       if (p0 == NULL) {
@@ -17,7 +17,7 @@ void evalStmt(TreeNode *node){
       evalProgram(p0);
     break;
     case VarK:
-      printf("[VarK]\n");
+      VERBOSE printf("[VarK]\n");
       if (GLOBAL == TRUE) {
           NUMBER_OF_GLOBALS = NUMBER_OF_GLOBALS + 1;
           addTriple("G_VAR",st_lookupFnStart(node->attr.name),1,SymboltableAddress,ConstantNoAddress);
@@ -28,7 +28,7 @@ void evalStmt(TreeNode *node){
 
     break;
     case VetK:
-      printf("[VetK]\n");
+      VERBOSE printf("[VetK]\n");
       int k = node->child[0]->attr.val;
       if (GLOBAL == TRUE) {
           NUMBER_OF_GLOBALS = NUMBER_OF_GLOBALS + k;
@@ -39,7 +39,7 @@ void evalStmt(TreeNode *node){
       }
     break;
     case ReturnK:
-      printf("[ReturnK]\n");
+      VERBOSE printf("[ReturnK]\n");
       p0 = node->child[0];
 
       if (p0 == NULL){
@@ -76,7 +76,7 @@ void evalStmt(TreeNode *node){
       }
     break;
     case AtribK:
-      printf("[AtribK]\n");
+      VERBOSE printf("[AtribK]\n");
       p0 = node->child[0];
       p1 = node->child[1];
 
@@ -112,7 +112,7 @@ void evalStmt(TreeNode *node){
       }
     break;
     case IfK:
-      printf("[IfK]\n");
+      VERBOSE printf("[IfK]\n");
       p0 = node->child[0];
       p1 = node->child[1];
       p2 = node->child[2];
@@ -145,20 +145,18 @@ void evalStmt(TreeNode *node){
           int elseTriple = gotoTriple+1;
             int adjustment;
             adjustment = adjustTriple(ifTriple,2,elseTriple); /*goes to the triple after the true part*/
-            if (adjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
-            else { callException("evalStmt: IfK",9,4); }
+            if (adjustment != 1) { callException("evalStmt: IfK",9,4); }
           evalProgram(p2);
           int addrToJumpElsePart;
           addrToJumpElsePart = NUMBER_OF_TRIPLES+1;
             int secondAdjustment;
             secondAdjustment = adjustTriple(gotoTriple,1,addrToJumpElsePart);
-            if (secondAdjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
-            else { callException("evalStmt: IfK",9,4); }
+            if (secondAdjustment != 1) { callException("evalStmt: IfK",9,4); }
 
       }
     break;
     case RepeatK:
-      printf("[RepeatK]\n");
+      VERBOSE printf("[RepeatK]\n");
       p0 = node->child[0];
       p1 = node->child[1];
 
@@ -177,12 +175,11 @@ void evalStmt(TreeNode *node){
       addrToJump = NUMBER_OF_TRIPLES+1;
         int adjustment;
         adjustment = adjustTriple(repeatTriple,2,addrToJump);
-        if (adjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
-        else { callException("evalStmt: RepeatK",9,4); }
+        if (adjustment != 1) { callException("evalStmt: RepeatK",9,4); }
 
     break;
     case FunK:
-      printf("[FunK]\n");
+      VERBOSE printf("[FunK]\n");
 
       GLOBAL = FALSE;
       NUMBER_OF_VARS = 0;
@@ -196,12 +193,10 @@ void evalStmt(TreeNode *node){
       evalProgram(p1); /*evaluates the fn code*/
 
       int alignmentOne = adjustTriple(fnTriple,1,NUMBER_OF_VARS);
-      if (alignmentOne == 1) { printf("The number of vars were correctly adjusted.\n"); }
-      else { callException("evalStmt: FunK",9,4); }
+      if (alignmentOne != 1) { callException("evalStmt: FunK",9,4); }
 
       int alignmentTwo = adjustTriple(fnTriple,2,node->numberOfParameters);
-      if (alignmentTwo == 1) { printf("The number of vars were correctly adjusted.\n"); }
-      else { callException("evalStmt: FunK",9,4); }
+      if (alignmentTwo != 1) { callException("evalStmt: FunK",9,4); }
 
       GLOBAL = TRUE;
 
@@ -216,15 +211,15 @@ void evalExp(TreeNode *node){
   TreeNode *q0, *q1;
   switch (node->kind.exp) {
     case ConstK:
-      printf("[ConstK]\n");
+      VERBOSE printf("[ConstK]\n");
       //done as a subcase of another case
     break;
     case IdK:
-      printf("[IdK]\n");
+      VERBOSE printf("[IdK]\n");
       //done as a subcase of another case
     break;
     case IdVetK:
-      printf("[IdVetK]\n");
+      VERBOSE printf("[IdVetK]\n");
       q0 = node->child[0];
 
       if (q0 == NULL){
@@ -254,7 +249,7 @@ void evalExp(TreeNode *node){
 
     break;
     case OpK:
-      printf("[OpK]\n");
+      VERBOSE printf("[OpK]\n");
       q0 = node->child[0];
       q1 = node->child[1];
 
@@ -414,7 +409,7 @@ void evalExp(TreeNode *node){
 
     break;
     case IdFunK:
-      printf("[IdFunK]\n");
+      VERBOSE printf("[IdFunK]\n");
       q0 = node->child[0];
 
       if (q0 == NULL) { /*the function does not take any arguments*/
@@ -493,6 +488,7 @@ void evalProgram(TreeNode *node){
 
 void generateIntermediaryCode(TreeNode * t){
   initializeTripleList();
+  TRACE_TREE_WALK = FALSE;
   evalProgram(t);
   printTripleList();
 }
