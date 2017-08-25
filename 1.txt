@@ -1,6 +1,6 @@
 int vector[10];
 int a;
-int gcd(int u, int v)
+int gcd(int u, int v,int k)
  { if (v==0) return u;
  else return gcd(v, u-u/v*v);
  }

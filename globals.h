@@ -62,6 +62,11 @@ extern char* GUARDAESCOPO;
 /* DEBUGING CONTROLS*/
 int TRACE_TREE_WALK;
 int TRACE_ASM_GEN;
+int TRACE_ANALYSIS;
+
+#ifndef _VERBOSE_3
+#define _VERBOSE_3 if (TRACE_ANALYSIS == TRUE)
+#endif
 
 #ifndef _VERBOSE_4
 #define _VERBOSE_4 if (TRACE_TREE_WALK == TRUE)

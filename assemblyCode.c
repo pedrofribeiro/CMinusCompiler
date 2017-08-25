@@ -173,7 +173,7 @@ void asmCode (triple* instruction) {
             addASM ( createITYPE ( LW, $acc, $zero, displacement ) );
         } else if (instruction->secondOperandType == SymboltableAddress) {
             int base = getVarPosition(instruction->firstOperand);
-            aaaaa //falta coisa aqui
+            //aaaaa //falta coisa aqui
         } else if (instruction->secondOperandType == TripleAddress) {
 
         } else {
@@ -235,7 +235,8 @@ void asmCode (triple* instruction) {
         */
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
-        setVarPosition(instruction->firstOperand,1);
+        int varCreation = setVarPosition(instruction->firstOperand,1);
+        if (varCreation == -999) { callException("asmCode: VAR",20,5); return; }
         asmCode(instruction->next);
     break;
     default:
@@ -259,5 +260,6 @@ void generateAssembly(triple* List){
   asmCode(List);
   //adjustASM();
   printASM(0);
+  printVars();
 
 }

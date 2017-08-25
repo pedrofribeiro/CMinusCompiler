@@ -19,6 +19,7 @@ POSITION* createPosition(int id, int ap){
   POSITION* newPosition = (POSITION*) malloc(sizeof(POSITION)*1);
   if (newPosition == NULL) { callException("createPosition",3,5); return NULL; }
   newPosition->identifier = id;
+  _VERBOSE_5 printf("Memory position %d allocated for id (%d)\n",MEMORY_POSITION,id);
   newPosition->basePosition = getMemoryPosition(ap);
   newPosition->availablePositions = ap;
   newPosition->next = NULL;
@@ -79,6 +80,24 @@ int setVarPosition(int id, int ap){
       tempPos->next = newPosition;
   }
   return 1;
+}
+
+void printVars(){
+  if(positionList == NULL) { callException("printVars",4,5); return; }
+  if(positionList->next == NULL) { callException("printVars",4,5); return; }
+
+  int SAFE_LOOP = 0;
+  tempPos = positionList->next;
+
+  printf("\n\nVariables currently allocated on memory.\n");
+  while (tempPos != NULL) {
+    printf("id (%d), bp(%d), ap (%d)\n",tempPos->identifier,tempPos->basePosition,tempPos->availablePositions);
+    tempPos = tempPos->next;
+    /*safe loop measure*/
+    SAFE_LOOP++;
+    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("printVars",10,5); return; }
+  }
+
 }
 
 ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2){

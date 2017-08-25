@@ -74,6 +74,7 @@ int freeMemoryPosition(int n);
 
 int setVarPosition(int id, int np);
 int getVarPosition(int id);
+void printVars();
 
 ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2);
 ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm);

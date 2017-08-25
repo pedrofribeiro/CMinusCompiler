@@ -181,7 +181,7 @@ static void insertNode( TreeNode * t)
                 }
                 t->numberOfParameters = parametersOfFn;
               }
-              printf("(%s) :: %d\n",t->attr.name,t->numberOfParameters);
+              _VERBOSE_3 printf("called (%s) with %d params\n",t->attr.name,t->numberOfParameters);
           }
         break;
         default:
@@ -209,6 +209,7 @@ static void insertNode( TreeNode * t)
   void buildSymtab(TreeNode * syntaxTree)
   {
     insertSOFunctions = 0;
+    TRACE_ANALYSIS = FALSE;
     traverse(syntaxTree,insertNode,nullProc);
     if (TraceAnalyze)
     { fprintf(listing,"\n SYMBOL TABLE DO COMPILADOR: \n\n");
