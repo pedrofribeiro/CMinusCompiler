@@ -5,7 +5,13 @@
 #include "util.h"
 
 typedef enum INSTR_TYPE {RTYPE, ITYPE, JTYPE, LTYPE} ASM_INSTR_TYPE;
-typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,IF_F,GOTO,V_IN,EQL,DIFE,GRT,LST,GTE,LTE,MOVE,LW,ADDIU,SW,LI,JR,G_VAR,G_VET,VAR,VET,FNDECL,NONE} Operation;
+typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,
+              IF_F,GOTO,V_IN,EQL,DIFE,GRT,
+              LST,GTE,LTE,MOVE,LW,ADDIU,SW,
+              LI,JUMP,BEQ,BNE,BGT,BLT,JR,
+              G_VAR,G_VET,VAR,VET,PARAM,
+              AND,XOR,FNDECL,NONE
+             } Operation;
 typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $paramp, $globalsp, $none} Register;
 
 int NUMBER_OF_ASM;
@@ -79,5 +85,9 @@ void addASM(ASM_INSTR* t);
 int adjustASM(int an, int field, int nv);
 
 void initializeASMList();
+
+char* toChar(Operation op, Register reg);
+
+void printASM();
 
 #endif

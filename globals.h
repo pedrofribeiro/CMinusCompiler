@@ -39,9 +39,6 @@
 /* MAXRESERVED = the number of reserved words */
 #define MAXRESERVED 8
 
-/* Infinite loop barrier*/
-#define SAFE_LOOP_SIZE 100
-
 /* Yacc/Bison generates its own integer values
  * for tokens
  */
@@ -58,6 +55,21 @@ extern int lineno; /* source line number for listing */
 extern char* ESCOPO;
 extern char* GUARDAESCOPO;
 /****************/
+
+/* Infinite loop barrier*/
+#define SAFE_LOOP_SIZE 100
+
+/* DEBUGING CONTROLS*/
+int TRACE_TREE_WALK;
+int TRACE_ASM_GEN;
+
+#ifndef _VERBOSE_4
+#define _VERBOSE_4 if (TRACE_TREE_WALK == TRUE)
+#endif
+
+#ifndef _VERBOSE_5
+#define _VERBOSE_5 if (TRACE_ASM_GEN == TRUE)
+#endif
 
 
 /**************************************************/

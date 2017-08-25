@@ -6,7 +6,7 @@ void evalStmt(TreeNode *node){
 
   switch (node->kind.stmt) {
     case DadoK:
-      VERBOSE printf("[DadoK]\n");
+      _VERBOSE_4 printf("[DadoK]\n");
       p0 = node->child[0];
 
       if (p0 == NULL) {
@@ -17,7 +17,7 @@ void evalStmt(TreeNode *node){
       evalProgram(p0);
     break;
     case VarK:
-      VERBOSE printf("[VarK]\n");
+      _VERBOSE_4 printf("[VarK]\n");
       if (GLOBAL == TRUE) {
           NUMBER_OF_GLOBALS = NUMBER_OF_GLOBALS + 1;
           addTriple("G_VAR",st_lookupFnStart(node->attr.name),1,SymboltableAddress,ConstantNoAddress);
@@ -28,7 +28,7 @@ void evalStmt(TreeNode *node){
 
     break;
     case VetK:
-      VERBOSE printf("[VetK]\n");
+      _VERBOSE_4 printf("[VetK]\n");
       int k = node->child[0]->attr.val;
       if (GLOBAL == TRUE) {
           NUMBER_OF_GLOBALS = NUMBER_OF_GLOBALS + k;
@@ -39,7 +39,7 @@ void evalStmt(TreeNode *node){
       }
     break;
     case ReturnK:
-      VERBOSE printf("[ReturnK]\n");
+      _VERBOSE_4 printf("[ReturnK]\n");
       p0 = node->child[0];
 
       if (p0 == NULL){
@@ -76,7 +76,7 @@ void evalStmt(TreeNode *node){
       }
     break;
     case AtribK:
-      VERBOSE printf("[AtribK]\n");
+      _VERBOSE_4 printf("[AtribK]\n");
       p0 = node->child[0];
       p1 = node->child[1];
 
@@ -112,7 +112,7 @@ void evalStmt(TreeNode *node){
       }
     break;
     case IfK:
-      VERBOSE printf("[IfK]\n");
+      _VERBOSE_4 printf("[IfK]\n");
       p0 = node->child[0];
       p1 = node->child[1];
       p2 = node->child[2];
@@ -156,7 +156,7 @@ void evalStmt(TreeNode *node){
       }
     break;
     case RepeatK:
-      VERBOSE printf("[RepeatK]\n");
+      _VERBOSE_4 printf("[RepeatK]\n");
       p0 = node->child[0];
       p1 = node->child[1];
 
@@ -179,7 +179,7 @@ void evalStmt(TreeNode *node){
 
     break;
     case FunK:
-      VERBOSE printf("[FunK]\n");
+      _VERBOSE_4 printf("[FunK]\n");
 
       GLOBAL = FALSE;
       NUMBER_OF_VARS = 0;
@@ -211,15 +211,15 @@ void evalExp(TreeNode *node){
   TreeNode *q0, *q1;
   switch (node->kind.exp) {
     case ConstK:
-      VERBOSE printf("[ConstK]\n");
+      _VERBOSE_4 printf("[ConstK]\n");
       //done as a subcase of another case
     break;
     case IdK:
-      VERBOSE printf("[IdK]\n");
+      _VERBOSE_4 printf("[IdK]\n");
       //done as a subcase of another case
     break;
     case IdVetK:
-      VERBOSE printf("[IdVetK]\n");
+      _VERBOSE_4 printf("[IdVetK]\n");
       q0 = node->child[0];
 
       if (q0 == NULL){
@@ -249,7 +249,7 @@ void evalExp(TreeNode *node){
 
     break;
     case OpK:
-      VERBOSE printf("[OpK]\n");
+      _VERBOSE_4 printf("[OpK]\n");
       q0 = node->child[0];
       q1 = node->child[1];
 
@@ -409,7 +409,7 @@ void evalExp(TreeNode *node){
 
     break;
     case IdFunK:
-      VERBOSE printf("[IdFunK]\n");
+      _VERBOSE_4 printf("[IdFunK]\n");
       q0 = node->child[0];
 
       if (q0 == NULL) { /*the function does not take any arguments*/

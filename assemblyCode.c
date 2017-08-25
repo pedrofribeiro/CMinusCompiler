@@ -57,6 +57,8 @@ Operation getOperation(triple *tr){
     return VET;
   } else if (strcmp(inputOperation,"VAR") == 0) {
     return VAR;
+  } else if (strcmp(inputOperation,"PARAM") == 0) {
+    return PARAM;
   } else {
     return FNDECL;
   }
@@ -97,6 +99,7 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( ADDIU, $globalsp, $zero, x ) );
         addASM ( createRTYPE ( MOVE, $fp, $sp, $zero ) );
         addASM ( createITYPE ( SW, $ra, $sp, 0 ) );
+        getMemoryPosition(1);
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         addASM ( createITYPE ( ADDIU, $paramp, $zero, y ) );
 
@@ -119,12 +122,41 @@ void asmCode (triple* instruction) {
         lw $fp 0($sp)
         jr $ra
        */
-       z = NUMBER_OF_POSITIONS;
+       z = NUMBER_OF_POSITIONS + 2;
        addASM ( createITYPE ( LW, $ra, $sp, -1 ) );
        addASM ( createITYPE ( ADDIU, $sp, $sp, z ) );
        addASM ( createITYPE ( LW, $fp, $sp, 0 ) );
        addASM ( createJTYPE ( JR, $ra) );
+       freeMemoryPosition(z);
        asmCode(instruction->next);
+    break;
+    case PARAM:
+        if (instruction->firstOperandType == ConstantNoAddress) {
+            /* sw $acc 0($sp)
+               addiu $sp $sp 1 */
+            addASM ( createITYPE ( SW, $acc, $sp, 0 ) );
+            getMemoryPosition(1);
+            addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+        } else if (instruction->firstOperandType == SymboltableAddress) {
+            /* lw $acc var_position_on_memory
+               sw $acc 0($sp)
+               addiu $sp $sp 1
+            */
+            int tvar = getVarPosition(instruction->firstOperand);
+            addASM ( createITYPE ( LW, $acc, $zero, tvar ) );
+            addASM ( createITYPE ( SW, $acc, $sp, 0 ) );
+            getMemoryPosition(1);
+            addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+
+        } else if (instruction->firstOperandType == TripleAddress) {
+          /* sw $acc 0($sp)
+             addiu $sp $sp 1 */
+            addASM ( createITYPE ( SW, $acc, $sp, 0 ) );
+            getMemoryPosition(1);
+            addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+        } else {
+            callException("asmCode: PARAM",1,5);
+        }
     break;
     case CALL:
     break;
@@ -135,6 +167,18 @@ void asmCode (triple* instruction) {
     case GOTO:
     break;
     case V_IN:
+        if (instruction->secondOperandType == ConstantNoAddress) {
+            int base = getVarPosition(instruction->firstOperand);
+            int displacement = base + instruction->secondOperand - 1; //begins at zero
+            addASM ( createITYPE ( LW, $acc, $zero, displacement ) );
+        } else if (instruction->secondOperandType == SymboltableAddress) {
+            int base = getVarPosition(instruction->firstOperand);
+            aaaaa //falta coisa aqui
+        } else if (instruction->secondOperandType == TripleAddress) {
+
+        } else {
+            callException("asmCode: V_IN",1,5);
+        }
     break;
     case EQL:
     break;
@@ -210,9 +254,10 @@ void generateAssembly(triple* List){
     return;
   }
 
+  TRACE_ASM_GEN = FALSE;
   initializeASMList();
   asmCode(List);
   //adjustASM();
-  printASM(asmList);
+  printASM(0);
 
 }
