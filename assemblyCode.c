@@ -99,7 +99,6 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( ADDIU, $globalsp, $zero, x ) );
         addASM ( createRTYPE ( MOVE, $fp, $sp, $zero ) );
         addASM ( createITYPE ( SW, $ra, $sp, 0 ) );
-        getMemoryPosition(1);
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         addASM ( createITYPE ( ADDIU, $paramp, $zero, y ) );
 
@@ -127,7 +126,6 @@ void asmCode (triple* instruction) {
        addASM ( createITYPE ( ADDIU, $sp, $sp, z ) );
        addASM ( createITYPE ( LW, $fp, $sp, 0 ) );
        addASM ( createJTYPE ( JR, $ra) );
-       freeMemoryPosition(z);
        asmCode(instruction->next);
     break;
     case PARAM:
@@ -135,7 +133,6 @@ void asmCode (triple* instruction) {
             /* sw $acc 0($sp)
                addiu $sp $sp 1 */
             addASM ( createITYPE ( SW, $acc, $sp, 0 ) );
-            getMemoryPosition(1);
             addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         } else if (instruction->firstOperandType == SymboltableAddress) {
             /* lw $acc var_position_on_memory
@@ -145,14 +142,12 @@ void asmCode (triple* instruction) {
             int tvar = getVarPosition(instruction->firstOperand);
             addASM ( createITYPE ( LW, $acc, $zero, tvar ) );
             addASM ( createITYPE ( SW, $acc, $sp, 0 ) );
-            getMemoryPosition(1);
             addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
 
         } else if (instruction->firstOperandType == TripleAddress) {
           /* sw $acc 0($sp)
              addiu $sp $sp 1 */
             addASM ( createITYPE ( SW, $acc, $sp, 0 ) );
-            getMemoryPosition(1);
             addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         } else {
             callException("asmCode: PARAM",1,5);
@@ -168,12 +163,9 @@ void asmCode (triple* instruction) {
     break;
     case V_IN:
         if (instruction->secondOperandType == ConstantNoAddress) {
-            int base = getVarPosition(instruction->firstOperand);
-            int displacement = base + instruction->secondOperand - 1; //begins at zero
-            addASM ( createITYPE ( LW, $acc, $zero, displacement ) );
+
         } else if (instruction->secondOperandType == SymboltableAddress) {
-            int base = getVarPosition(instruction->firstOperand);
-            //aaaaa //falta coisa aqui
+
         } else if (instruction->secondOperandType == TripleAddress) {
 
         } else {
@@ -199,7 +191,7 @@ void asmCode (triple* instruction) {
         */
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
-        setVarPosition(instruction->firstOperand,1);
+        setVarPosition(instruction->firstOperand,1,0);
         asmCode(instruction->next);
     break;
     case G_VET:
@@ -212,7 +204,7 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
       }
-      setVarPosition(instruction->firstOperand,instruction->secondOperand);
+      setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
       asmCode(instruction->next);
     break;
     case VET:
@@ -225,7 +217,7 @@ void asmCode (triple* instruction) {
           addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
           addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         }
-        setVarPosition(instruction->firstOperand,instruction->secondOperand);
+        setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
         asmCode(instruction->next);
     break;
     case VAR:
@@ -235,7 +227,7 @@ void asmCode (triple* instruction) {
         */
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
-        int varCreation = setVarPosition(instruction->firstOperand,1);
+        int varCreation = setVarPosition(instruction->firstOperand,1,0);
         if (varCreation == -999) { callException("asmCode: VAR",20,5); return; }
         asmCode(instruction->next);
     break;
@@ -256,6 +248,10 @@ void generateAssembly(triple* List){
   }
 
   TRACE_ASM_GEN = FALSE;
+  FRAME_POINTER = -1;
+  GLOBAL_POINTER = -1;
+  STACK_POINTER = -1;
+
   initializeASMList();
   asmCode(List);
   //adjustASM();

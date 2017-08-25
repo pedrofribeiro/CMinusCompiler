@@ -59,6 +59,11 @@ extern char* GUARDAESCOPO;
 /* Infinite loop barrier*/
 #define SAFE_LOOP_SIZE 100
 
+/* Machine specific control variables*/
+int FRAME_POINTER;
+int GLOBAL_POINTER;
+int STACK_POINTER;
+
 /* DEBUGING CONTROLS*/
 int TRACE_TREE_WALK;
 int TRACE_ASM_GEN;

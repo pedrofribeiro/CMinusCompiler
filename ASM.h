@@ -68,11 +68,14 @@ typedef struct ASM_INSTR {
 ASM_INSTR* asmList;
 ASM_INSTR* tempAsm;
 
+int setFP(int n);
+int getFP();
+int setGP(int n);
+int getGP();
+int setSP(int n);
+int getSP();
 
-int getMemoryPosition(int n);
-int freeMemoryPosition(int n);
-
-int setVarPosition(int id, int np);
+int setVarPosition(int id, int np, int op);
 int getVarPosition(int id);
 void printVars();
 

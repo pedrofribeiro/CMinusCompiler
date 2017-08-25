@@ -1,26 +1,36 @@
 #include "ASM.h"
 
-int getMemoryPosition(int n){
-  if (n < 0) { callException("getMemoryPosition",8,5); return -999; }
-  int nextFreePosition;
-  nextFreePosition = MEMORY_POSITION;
-  MEMORY_POSITION = MEMORY_POSITION + n;
-  return nextFreePosition;
-}
-
-int freeMemoryPosition(int n){
-  if (n < 0) { callException("freeMemoryPosition: n",8,5); return -999; }
-  MEMORY_POSITION = MEMORY_POSITION - n;
-  if (MEMORY_POSITION < 0) { callException("freeMemoryPosition: MEMORY_POSITION",8,5); return -999; }
+int setFP(int n){
+  if (n <= 0) { callException("setFP",23,5); return -999; }
+  FRAME_POINTER = n;
   return 1;
 }
+
+int getFP(){ return FRAME_POINTER; }
+
+int setGP(int n){
+  if (n <= 0) { callException("setGP",23,5); return -999; }
+  GLOBAL_POINTER = n;
+  return 1;
+}
+
+int getGP(){ return FRAME_POINTER; }
+
+int setSP(int n){
+  if (n <= 0) { callException("setSP",23,5); return -999; }
+  STACK_POINTER = n;
+  return 1;
+}
+
+int getSP(){ return FRAME_POINTER; }
+
 
 POSITION* createPosition(int id, int ap){
   POSITION* newPosition = (POSITION*) malloc(sizeof(POSITION)*1);
   if (newPosition == NULL) { callException("createPosition",3,5); return NULL; }
   newPosition->identifier = id;
   _VERBOSE_5 printf("Memory position %d allocated for id (%d)\n",MEMORY_POSITION,id);
-  newPosition->basePosition = getMemoryPosition(ap);
+  newPosition->basePosition = FRAME_POINTER;
   newPosition->availablePositions = ap;
   newPosition->next = NULL;
   return newPosition;
@@ -43,43 +53,80 @@ int getVarPosition(int id){
   return -999;
 }
 
-int setVarPosition(int id, int ap){
+
+int setVarPosition(int id, int ap, int op){
+/*if op == 0, ap is how many positions in memory id needs
+if op == 1, ap is the new base position of id.
+*/
+
   if (id < 0) { callException("setVarPosition",8,5); return -999; }
 
-  /*tests if the var is already on the list*/
-  int existenceTest = 0;
-  existenceTest = getVarPosition(id);
-  if (existenceTest != -999) {
-    callException("setPosition",19,5);
-    return -999;
-  }
+  /*creates a new var*/
+  if (op == 0) {
 
-  /*if it's not, creates a new position for it*/
-  POSITION * newPosition = createPosition(id,ap);
-  if (newPosition == NULL) { callException("setVarPosition",20,5); return -999; }
+      /*tests if the var is already on the list*/
+      int existenceTest = 0;
+      existenceTest = getVarPosition(id);
+      if (existenceTest != -999) {
+        callException("setPosition",19,5);
+        return -999;
+      }
 
-  /*inserts the new position on the positions list*/
-  if (positionList->next == NULL) {
+      /*if it's not, creates a new position for it*/
+      POSITION * newPosition = createPosition(id,ap);
+      if (newPosition == NULL) { callException("setVarPosition",20,5); return -999; }
 
-      positionList->next = (POSITION*) malloc(sizeof(POSITION)*1);
-      if (positionList->next == NULL) { callException("setPosition: positionList",3,5); return -999; }
-      positionList->next = newPosition;
-      return 1;
+      /*inserts the new position on the positions list*/
+      if (positionList->next == NULL) {
 
-  } else {
+          positionList->next = (POSITION*) malloc(sizeof(POSITION)*1);
+          if (positionList->next == NULL) { callException("setVarPosition: positionList",3,5); return -999; }
+          positionList->next = newPosition;
+          return 1;
+
+      } else {
+
+          int SAFE_LOOP = 0;
+          tempPos = positionList->next;
+
+          while (tempPos->next != NULL) {
+            tempPos = tempPos->next;
+            /*safe loop measure*/
+            SAFE_LOOP++;
+            if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setVarPosition",10,5); return -999; }
+          }
+          tempPos->next = newPosition;
+          return 1;
+
+      }
+
+  } else if (op == 1) { /*redefines the base position of an existing var*/
+
+    /*tests if the var is already on the list*/
+    int existenceTest = 0;
+    existenceTest = getVarPosition(id);
+    if (existenceTest == -999) {
+      callException("setPosition",22,5);
+      return -999;
+    }
 
       int SAFE_LOOP = 0;
       tempPos = positionList->next;
 
-      while (tempPos->next != NULL) {
+      while (tempPos != NULL) {
+        if (tempPos->identifier == id) { tempPos->basePosition = ap; return 1; }
         tempPos = tempPos->next;
         /*safe loop measure*/
         SAFE_LOOP++;
-        if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setPosition",10,5); return -999; }
+        if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setVarPosition",10,5); return -999; }
       }
-      tempPos->next = newPosition;
+      return -999;
+
+  } else {
+      callException("setVarPosition",22,5);
   }
-  return 1;
+
+  return -999;
 }
 
 void printVars(){

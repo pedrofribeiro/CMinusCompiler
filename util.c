@@ -151,6 +151,8 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	19. An entry with exactly the same ID already exists on the list.
 	20. It was not possible to create a new var position.
 	21. Undefined translation operation. None of the operands is valid.
+	22. The informed id does not exist on the list.
+	23. Illegal value for a pointer.
 	*/
 }
 
