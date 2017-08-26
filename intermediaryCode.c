@@ -20,10 +20,10 @@ void evalStmt(TreeNode *node){
       _VERBOSE_4 printf("[VarK]\n");
       if (GLOBAL == TRUE) {
           NUMBER_OF_GLOBALS = NUMBER_OF_GLOBALS + 1;
-          addTriple("G_VAR",st_lookupFnStart(node->attr.name),1,SymboltableAddress,ConstantNoAddress);
+          addTriple("G_VAR",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),1,SymboltableAddress,ConstantNoAddress);
       } else {
           NUMBER_OF_VARS = NUMBER_OF_VARS + 1;
-          addTriple("VAR",st_lookupFnStart(node->attr.name),1,SymboltableAddress,ConstantNoAddress);
+          addTriple("VAR",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),1,SymboltableAddress,ConstantNoAddress);
       }
 
     break;
@@ -32,10 +32,10 @@ void evalStmt(TreeNode *node){
       int k = node->child[0]->attr.val;
       if (GLOBAL == TRUE) {
           NUMBER_OF_GLOBALS = NUMBER_OF_GLOBALS + k;
-          addTriple("G_VET",st_lookupFnStart(node->attr.name),k,SymboltableAddress,ConstantNoAddress);
+          addTriple("G_VET",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),k,SymboltableAddress,ConstantNoAddress);
       } else {
           NUMBER_OF_VARS = NUMBER_OF_VARS + k;
-          addTriple("VET",st_lookupFnStart(node->attr.name),k,SymboltableAddress,ConstantNoAddress);
+          addTriple("VET",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),k,SymboltableAddress,ConstantNoAddress);
       }
     break;
     case ReturnK:
@@ -52,7 +52,7 @@ void evalStmt(TreeNode *node){
           addTriple("RETURN",p0->attr.val,-1,ConstantNoAddress,EmptyAddress);
       } else if(p0->kind.exp == IdK) {
           evalProgram(p0);
-          addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
+          addTriple("RETURN",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),-1,SymboltableAddress,EmptyAddress);
       } else if(p0->kind.exp == IdVetK) {
           evalProgram(p0);
           int vectorTriple;
@@ -70,7 +70,7 @@ void evalStmt(TreeNode *node){
           addTriple("RETURN",returnTriple,-1,TripleAddress,EmptyAddress);
       } else if(p0->kind.exp == AtribK) { /*this may need a very serious further analysis*/
           evalProgram(p0);
-          addTriple("RETURN",st_lookupFnStart(p0->attr.name),-1,SymboltableAddress,EmptyAddress);
+          addTriple("RETURN",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),-1,SymboltableAddress,EmptyAddress);
       } else {
           callException("evalStmt: ReturnK",7,4);
       }
@@ -88,21 +88,21 @@ void evalStmt(TreeNode *node){
       rightOperand = NUMBER_OF_TRIPLES;
 
       if ((p0->kind.exp == IdK) && (p1->kind.exp == ConstK)) {
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),p1->attr.val,SymboltableAddress,ConstantNoAddress);
+          addTriple("ATRIB",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),p1->attr.val,SymboltableAddress,ConstantNoAddress);
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == IdK)) {
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),st_lookupFnStart(p1->attr.name),SymboltableAddress,SymboltableAddress);
+          addTriple("ATRIB",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),st_lookupVarPosition(p1->attr.name,CURRENT_FUNCTION),SymboltableAddress,SymboltableAddress);
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == IdVetK)) {
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
+          addTriple("ATRIB",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == OpK)) {
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
+          addTriple("ATRIB",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdK) && (p1->kind.exp == IdFunK)) {
-          addTriple("ATRIB",st_lookupFnStart(p0->attr.name),rightOperand,SymboltableAddress,TripleAddress);
+          addTriple("ATRIB",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),rightOperand,SymboltableAddress,TripleAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == ConstK)) {
           addTriple("ATRIB",leftOperand,p1->attr.val,TripleAddress,ConstantNoAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == IdK)) {
-          addTriple("ATRIB",leftOperand,st_lookupFnStart(p1->attr.name),TripleAddress,SymboltableAddress);
+          addTriple("ATRIB",leftOperand,st_lookupVarPosition(p1->attr.name,CURRENT_FUNCTION),TripleAddress,SymboltableAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == IdVetK)) {
-          addTriple("ATRIB",leftOperand,st_lookupFnStart(p1->attr.name),TripleAddress,SymboltableAddress);
+          addTriple("ATRIB",leftOperand,st_lookupVarPosition(p1->attr.name,CURRENT_FUNCTION),TripleAddress,SymboltableAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == OpK)) {
           addTriple("ATRIB",leftOperand,rightOperand,TripleAddress,TripleAddress);
       } else if ((p0->kind.exp == IdVetK) && (p1->kind.exp == IdFunK)) {
@@ -181,6 +181,7 @@ void evalStmt(TreeNode *node){
     case FunK:
       _VERBOSE_4 printf("[FunK]\n");
 
+      strcpy(CURRENT_FUNCTION,node->attr.name);
       GLOBAL = FALSE;
       NUMBER_OF_VARS = 0;
       p0 = node->child[0]; /* arguments*/
@@ -232,17 +233,17 @@ void evalExp(TreeNode *node){
       indexTriple = NUMBER_OF_TRIPLES;
 
       if (q0->kind.exp == ConstK) {
-          addTriple("V_INDEX",st_lookupFnStart(node->attr.name),q0->attr.val,SymboltableAddress,ConstantNoAddress);
+          addTriple("V_INDEX",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),q0->attr.val,SymboltableAddress,ConstantNoAddress);
       } else if (q0->kind.exp == IdK) {
-          addTriple("V_INDEX",st_lookupFnStart(node->attr.name),st_lookupFnStart(q0->attr.name),SymboltableAddress,SymboltableAddress);
+          addTriple("V_INDEX",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),SymboltableAddress,SymboltableAddress);
       } else if (q0->kind.exp == IdVetK) {
-          addTriple("V_INDEX",st_lookupFnStart(node->attr.name),indexTriple,SymboltableAddress,TripleAddress);
+          addTriple("V_INDEX",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),indexTriple,SymboltableAddress,TripleAddress);
       } else if (q0->kind.exp == OpK) {
-          addTriple("V_INDEX",st_lookupFnStart(node->attr.name),indexTriple,SymboltableAddress,TripleAddress);
+          addTriple("V_INDEX",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),indexTriple,SymboltableAddress,TripleAddress);
       } else if (q0->kind.exp == AtribK) {
-          addTriple("V_INDEX",st_lookupFnStart(node->attr.name),indexTriple,SymboltableAddress,TripleAddress);
+          addTriple("V_INDEX",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),indexTriple,SymboltableAddress,TripleAddress);
       } else if (q0->kind.exp == IdFunK) {
-          addTriple("V_INDEX",st_lookupFnStart(node->attr.name),indexTriple,SymboltableAddress,TripleAddress);
+          addTriple("V_INDEX",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),indexTriple,SymboltableAddress,TripleAddress);
       } else {
         callException("evalExp: IdVetK",7,4);
       }
@@ -256,7 +257,7 @@ void evalExp(TreeNode *node){
       if ((q0->kind.exp == ConstK) && (q1->kind.exp == ConstK)) {
           addTriple(node->attr.name,q0->attr.val,q1->attr.val,ConstantNoAddress,ConstantNoAddress);
       } else if ((q0->kind.exp == ConstK) && (q1->kind.exp == IdK)) {
-          addTriple(node->attr.name,q0->attr.val,st_lookupFnStart(q1->attr.name),ConstantNoAddress,SymboltableAddress);
+          addTriple(node->attr.name,q0->attr.val,st_lookupVarPosition(q1->attr.name,CURRENT_FUNCTION),ConstantNoAddress,SymboltableAddress);
       } else if ((q0->kind.exp == ConstK) && (q1->kind.exp == IdVetK)) {
           evalProgram(q1);
           int vectorTriple;
@@ -275,24 +276,24 @@ void evalExp(TreeNode *node){
       }
 
        else if ((q0->kind.exp == IdK) && (q1->kind.exp == ConstK)) {
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),q1->attr.val,SymboltableAddress,ConstantNoAddress);
+          addTriple(node->attr.name,st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),q1->attr.val,SymboltableAddress,ConstantNoAddress);
       } else if ((q0->kind.exp == IdK) && (q1->kind.exp == IdK)) {
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),st_lookupFnStart(q1->attr.name),SymboltableAddress,SymboltableAddress);
+          addTriple(node->attr.name,st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),st_lookupVarPosition(q1->attr.name,CURRENT_FUNCTION),SymboltableAddress,SymboltableAddress);
       } else if ((q0->kind.exp == IdK) && (q1->kind.exp == IdVetK)) {
           evalProgram(q1);
           int vectorTriple;
           vectorTriple = NUMBER_OF_TRIPLES;
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),vectorTriple,SymboltableAddress,TripleAddress);
+          addTriple(node->attr.name,st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),vectorTriple,SymboltableAddress,TripleAddress);
       } else if ((q0->kind.exp == IdK) && (q1->kind.exp == IdFunK)) {
           evalProgram(q1);
           int idfunkTriple;
           idfunkTriple = NUMBER_OF_TRIPLES;
-          addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),idfunkTriple,SymboltableAddress,TripleAddress);
+          addTriple(node->attr.name,st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),idfunkTriple,SymboltableAddress,TripleAddress);
       } else if ((q0->kind.exp == IdK) && (q1->kind.exp == OpK)) {
          evalProgram(q1);
          int opkTriple;
          opkTriple = NUMBER_OF_TRIPLES;
-         addTriple(node->attr.name,st_lookupFnStart(q0->attr.name),opkTriple,SymboltableAddress,TripleAddress);
+         addTriple(node->attr.name,st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),opkTriple,SymboltableAddress,TripleAddress);
       }
 
        else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == ConstK)) {
@@ -304,7 +305,7 @@ void evalExp(TreeNode *node){
           evalProgram(q0);
           int vectorTriple;
           vectorTriple = NUMBER_OF_TRIPLES;
-          addTriple(node->attr.name,vectorTriple,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
+          addTriple(node->attr.name,vectorTriple,st_lookupVarPosition(q1->attr.name,CURRENT_FUNCTION),TripleAddress,SymboltableAddress);
       } else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == IdVetK)) {
           evalProgram(q0);
           int vectorTriple;
@@ -340,7 +341,7 @@ void evalExp(TreeNode *node){
          evalProgram(q0);
          int idfunkTriple;
          idfunkTriple = NUMBER_OF_TRIPLES;
-         addTriple(node->attr.name,idfunkTriple,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
+         addTriple(node->attr.name,idfunkTriple,st_lookupVarPosition(q1->attr.name,CURRENT_FUNCTION),TripleAddress,SymboltableAddress);
       } else if ((q0->kind.exp == IdFunK) && (q1->kind.exp == IdVetK)) {
          evalProgram(q0);
          int idfunkTriple;
@@ -376,7 +377,7 @@ void evalExp(TreeNode *node){
          evalProgram(q0);
          int opkTriple;
          opkTriple = NUMBER_OF_TRIPLES;
-         addTriple(node->attr.name,opkTriple,st_lookupFnStart(q1->attr.name),TripleAddress,SymboltableAddress);
+         addTriple(node->attr.name,opkTriple,st_lookupVarPosition(q1->attr.name,CURRENT_FUNCTION),TripleAddress,SymboltableAddress);
       } else if ((q0->kind.exp == OpK) && (q1->kind.exp == IdVetK)) {
          evalProgram(q0);
          int opkTriple;
@@ -414,7 +415,7 @@ void evalExp(TreeNode *node){
 
       if (q0 == NULL) { /*the function does not take any arguments*/
 
-        addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+        addTriple("FNCALL",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
 
       } else { /*the function takes on arguments */
 
@@ -428,10 +429,10 @@ void evalExp(TreeNode *node){
               addTriple("PARAM",q0->attr.val,-999,ConstantNoAddress,EmptyAddress);
           } else if (q0->kind.exp == IdK) {
               evalExp(q0);
-              addTriple("PARAM",st_lookupFnStart(q0->attr.name),-999,SymboltableAddress,EmptyAddress);
+              addTriple("PARAM",st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),-999,SymboltableAddress,EmptyAddress);
           } else if (q0->kind.exp == IdVetK) {
               evalExp(q0);
-              addTriple("PARAM",st_lookupFnStart(q0->attr.name),-999,SymboltableAddress,EmptyAddress);
+              addTriple("PARAM",st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),-999,SymboltableAddress,EmptyAddress);
           } else if (q0->kind.exp == OpK) {
               evalExp(q0);
               int paramTriple;
@@ -456,7 +457,7 @@ void evalExp(TreeNode *node){
           }
           k--;
         }
-        addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+        addTriple("FNCALL",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
 
       }
 
@@ -489,6 +490,9 @@ void evalProgram(TreeNode *node){
 void generateIntermediaryCode(TreeNode * t){
   initializeTripleList();
   TRACE_TREE_WALK = FALSE;
+  CURRENT_FUNCTION = (char*) malloc(sizeof(char)*6);
+  if (CURRENT_FUNCTION == NULL) { callException("generateIntermediaryCode: scope",3,4); return; }
+  strcpy(CURRENT_FUNCTION,"global");
   evalProgram(t);
   printTripleList();
 }

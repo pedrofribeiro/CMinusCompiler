@@ -45,6 +45,7 @@ int st_lookup2 ( char * name );
 int st_lookup3 ( char * name );
 int st_lookup4 ( char * name );
 int st_lookupFnStart( char * name );
+int st_lookupVarPosition( char * name, char* scope );
 int st_lookupGlobal( char * name );
 /* Procedure printSymTab prints a formatted
  * listing of the symbol table contents

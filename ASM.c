@@ -110,9 +110,9 @@ if op == 1, ap is the new base position of id.
   } else if (op == 1) { /*redefines the base position of an existing var*/
 
     /*tests if the var is already on the list*/
-    int existenceTest = 0;
-    existenceTest = getVarPosition(id);
-    if (existenceTest == -999) {
+    int nexistenceTest = 0;
+    nexistenceTest = getVarPosition(id);
+    if (nexistenceTest == -999) {
       callException("setPosition",22,5);
       return -999;
     }

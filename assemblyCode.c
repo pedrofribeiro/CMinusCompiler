@@ -233,7 +233,7 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         int gvarCreation;
         gvarCreation = setVarPosition(instruction->firstOperand,1,0);
-        if (gvarCreation == -999) { callException("asmCode: G_VAR",20,5); printf(">> st id(%d)\n",instruction->firstOperand); return; }
+        if (gvarCreation == -999) { callException("asmCode: G_VAR",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
     case G_VET:
@@ -248,7 +248,7 @@ void asmCode (triple* instruction) {
       }
       int gvetCreation;
       gvetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
-      if (gvetCreation == -999) { callException("asmCode: G_VET",20,5); printf(">> %d\n",instruction->firstOperand); return; }
+      if (gvetCreation == -999) { callException("asmCode: G_VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
       asmCode(instruction->next);
     break;
     case VET:
@@ -263,7 +263,7 @@ void asmCode (triple* instruction) {
         }
         int vetCreation;
         vetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
-        if (vetCreation == -999) { callException("asmCode: VET",20,5); printf(">> %d\n",instruction->firstOperand); return; }
+        if (vetCreation == -999) { callException("asmCode: VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
     case VAR:
@@ -275,7 +275,7 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         int varCreation;
         varCreation = setVarPosition(instruction->firstOperand,1,0);
-        if (varCreation == -999) { callException("asmCode: VAR",20,5); printf(">> %d\n",instruction->firstOperand); return; }
+        if (varCreation == -999) { callException("asmCode: VAR",20,5); printf("TN:%d, st id(%d)\n",instruction->tripleNumber,instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
     default:

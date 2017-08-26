@@ -1,3 +1,5 @@
+int x[2];
+int y;
 int soma (int x, int y){
 	return x+y;
 }
