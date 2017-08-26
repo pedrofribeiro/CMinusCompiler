@@ -128,7 +128,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	4. Intermediary Code Generation
 	5. Assembly Code Generation
 	6. Machine Code Generation
-	There are 21 kinds of exceptions:
+	There are 25 kinds of exceptions:
 	1. A default case was assumed when it shouldn't have.
 		 This means that one of the switches used catched an error, probably on a given (current) treeNode.
 	2. A null node has been found.
@@ -153,7 +153,8 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	21. Undefined translation operation. None of the operands is valid.
 	22. The informed id does not exist on the list.
 	23. Illegal value for a pointer.
-	24. Illegal operation.
+	24. Illegal operation found during constant packaging.
+	25. In this architecture, it is IMPOSSIBLE for an operation between triples to occur.
 	*/
 }
 

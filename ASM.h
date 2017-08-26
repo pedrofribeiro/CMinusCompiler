@@ -5,14 +5,15 @@
 #include "util.h"
 
 typedef enum INSTR_TYPE {RTYPE, ITYPE, JTYPE, LTYPE} ASM_INSTR_TYPE;
-typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,
-              IF_F,GOTO,V_IN,EQL,DIFE,GRT,
-              LST,GTE,LTE,MOVE,LW,ADDIU,SW,
-              LI,JUMP,BEQ,BNE,BGT,BLT,JR,
-              G_VAR,G_VET,VAR,VET,PARAM,
-              AND,XOR,FNDECL,NONE
+typedef enum {ADD,SUB,MUL,DIV,RET,
+              CALL,ATR,IF_F,GOTO,V_IN,
+              EQL,DIFE,GRT,LST,GTE,
+              LTE,MOVE,LW,ADDIU,SW,
+              LI,JUMP,BEQ,BNE,BGT,
+              BLT,JR,G_VAR,G_VET,VAR,
+              VET,PARAM,AND,XOR,FNDECL,NONE
              } Operation;
-typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $paramp, $gp, $none} Register;
+typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $paramp, $gp, $none} Register;
 
 int NUMBER_OF_ASM;
 int NUMBER_OF_POSITIONS;

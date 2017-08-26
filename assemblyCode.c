@@ -103,11 +103,56 @@ void asmCode (triple* instruction) {
                 packegedConstants = instruction->firstOperand / instruction->secondOperand;
               break;
               default:
-                callException("asmCode: arithmetic ops",1,5);
+                callException("asmCode: const packaging",1,5);
               break;
             }
-            addASM ( createITYPE (LI, $acc, $zero, packegedConstants) );
+            addASM( createITYPE( LI, $t1, $zero, packegedConstants) );
+
+        } else if ((instruction->firstOperandType == ConstantNoAddress) && (instruction->secondOperandType == SymboltableAddress)) {
+
+            addASM( createITYPE( LI, $t1, $zero, instruction->firstOperand ) );
+            addASM( createITYPE( LW, $t2, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createRTYPE( operation, $acc, $t1, $t2 ) );
+
+        } else if ((instruction->firstOperandType == ConstantNoAddress) && (instruction->secondOperandType == TripleAddress)) {
+
+            addASM( createITYPE( LI, $t1, $zero, instruction->firstOperand ) );
+            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+
+        } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == ConstantNoAddress)) {
+
+            addASM( createITYPE( LW, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t2, $zero, instruction->secondOperand ) );
+            addASM( createRTYPE( operation, $acc, $t1, $t2 ) );
+
+        } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == SymboltableAddress)) {
+
+            addASM( createITYPE( LW, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LW, $t2, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createRTYPE( operation, $acc, $t1, $t2 ) );
+
+        } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == TripleAddress)) {
+
+            addASM( createITYPE( LW, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+
+        } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == ConstantNoAddress)) {
+
+            addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
+            addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
+
+        } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == SymboltableAddress)) {
+
+            addASM( createITYPE( LW, $t1, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
+
+        } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == TripleAddress)) {
+            callException("asmCode: tr op tr",25,5);
+        } else {
+            callException("asmCode: arithmetic ops",1,5);
         }
+
+        asmCode(instruction->next);
     break;
     case RET:
         /*
@@ -186,7 +231,9 @@ void asmCode (triple* instruction) {
         */
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
-        setVarPosition(instruction->firstOperand,1,0);
+        int gvarCreation;
+        gvarCreation = setVarPosition(instruction->firstOperand,1,0);
+        if (gvarCreation == -999) { callException("asmCode: G_VAR",20,5); printf(">> st id(%d)\n",instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
     case G_VET:
@@ -199,7 +246,9 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
       }
-      setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
+      int gvetCreation;
+      gvetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
+      if (gvetCreation == -999) { callException("asmCode: G_VET",20,5); printf(">> %d\n",instruction->firstOperand); return; }
       asmCode(instruction->next);
     break;
     case VET:
@@ -212,7 +261,9 @@ void asmCode (triple* instruction) {
           addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
           addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         }
-        setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
+        int vetCreation;
+        vetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
+        if (vetCreation == -999) { callException("asmCode: VET",20,5); printf(">> %d\n",instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
     case VAR:
@@ -222,7 +273,9 @@ void asmCode (triple* instruction) {
         */
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
-        setVarPosition(instruction->firstOperand,1,0);
+        int varCreation;
+        varCreation = setVarPosition(instruction->firstOperand,1,0);
+        if (varCreation == -999) { callException("asmCode: VAR",20,5); printf(">> %d\n",instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
     default:

@@ -16,7 +16,7 @@ int setFP(int n){
 int getFP(){ return FRAME_POINTER; }
 
 int setGP(int n){
-  if (n <= 0) { callException("setGP",23,5); return -999; }
+  if (n < 0) { callException("setGP",23,5); return -999; }
   GLOBAL_POINTER = n;
   return 1;
 }
@@ -75,7 +75,7 @@ if op == 1, ap is the new base position of id.
       int existenceTest = 0;
       existenceTest = getVarPosition(id);
       if (existenceTest != -999) {
-        callException("setPosition",19,5);
+        callException("setVarPosition",19,5);
         return -999;
       }
 
@@ -343,12 +343,15 @@ char* toChar(Operation op, Register reg){
           case MOVE:
             strcpy(resultString,"MOV");
           break;
+          case JR:
+            strcpy(resultString,"JR");
+          break;
           case NONE:
             strcpy(resultString,"");
           break;
           default:
-            printf("OP: %d",op);
             callException("toChar: op",1,5);
+            printf("MISMATCHED OP: %d\n",op);
             return NULL;
           break;
         }
@@ -377,6 +380,12 @@ char* toChar(Operation op, Register reg){
           break;
           case $paramp:
             strcpy(resultString,"$ap");
+          break;
+          case $t1:
+            strcpy(resultString,"$t1");
+          break;
+          case $t2:
+            strcpy(resultString,"$t2");
           break;
           case $none:
             strcpy(resultString,"");
@@ -426,7 +435,7 @@ void printASM(int printMode){
                   printf("%d: %s %s, %s, %d \n",tempAsm->asmNumber,toChar(tempAsm->itype.cpu_operation,$none),toChar(NONE,tempAsm->itype.rd),toChar(NONE,tempAsm->itype.r1),tempAsm->itype.immediate);
               break;
               case JTYPE:
-                  printf("%d: %s, %d \n",tempAsm->asmNumber,toChar(tempAsm->jtype.cpu_operation,$none),tempAsm->jtype.address);
+                  printf("%d: %s %d \n",tempAsm->asmNumber,toChar(tempAsm->jtype.cpu_operation,$none),tempAsm->jtype.address);
               break;
               case LTYPE:
                   printf("%d: %s %d ",tempAsm->asmNumber,tempAsm->ltype.functionName,tempAsm->ltype.asmAddress);
