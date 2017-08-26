@@ -68,34 +68,46 @@ Operation getOperation(triple *tr){
 
 void asmCode (triple* instruction) {
 
-  if (instruction == NULL) {
-    callException("asmCode",4,5);
-    return;
-  }
+  if (instruction == NULL) { callException("asmCode",4,5); return; }
 
   Operation operation = NONE;
   operation = getOperation(instruction);
+  if (operation == NONE) { callException("asmCode",13,5); return; }
 
-  if (operation == NONE) {
-    callException("asmCode",13,5);
-    return;
-  }
 
-  int x,y,z;
-
+  int z;
   switch (operation) {
     case FNDECL:
-
-
+    //preciso arrumar isso aqui
         NUMBER_OF_POSITIONS = instruction->firstOperand;
-
-
         asmCode(instruction->next);
     break;
     case ADD:
     case SUB:
     case MUL:
     case DIV:
+        if ((instruction->firstOperandType == ConstantNoAddress) && (instruction->secondOperandType == ConstantNoAddress)) {
+
+            int packegedConstants;
+            switch (operation) {
+              case ADD:
+                  packegedConstants = instruction->firstOperand + instruction->secondOperand;
+              break;
+              case SUB:
+                packegedConstants = instruction->firstOperand - instruction->secondOperand;
+              break;
+              case MUL:
+                packegedConstants = instruction->firstOperand * instruction->secondOperand;
+              break;
+              case DIV:
+                packegedConstants = instruction->firstOperand / instruction->secondOperand;
+              break;
+              default:
+                callException("asmCode: arithmetic ops",1,5);
+              break;
+            }
+            addASM ( createITYPE (LI, $acc, $zero, packegedConstants) );
+        }
     break;
     case RET:
         /*

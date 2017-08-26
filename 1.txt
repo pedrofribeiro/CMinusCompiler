@@ -7,7 +7,7 @@ int gcd(int u, int v,int k)
  void main(void)
  { int x; int y; int v[2];
  x = input(); y = input();
- v[2+2] = 2;
+ x = v[2] + 2;
  output(gcd(x,y));
 return;
  }

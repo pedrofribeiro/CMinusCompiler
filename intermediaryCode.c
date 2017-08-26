@@ -299,7 +299,7 @@ void evalExp(TreeNode *node){
           evalProgram(q0);
           int vectorTriple;
           vectorTriple = NUMBER_OF_TRIPLES;
-          addTriple(node->attr.name,vectorTriple,q1->attr.val,vectorTriple,ConstantNoAddress);
+          addTriple(node->attr.name,vectorTriple,q1->attr.val,TripleAddress,ConstantNoAddress);
       } else if ((q0->kind.exp == IdVetK) && (q1->kind.exp == IdK)) {
           evalProgram(q0);
           int vectorTriple;
