@@ -12,8 +12,8 @@ void main (void) {
 	int a;
 	int b;
 	a = 2;
-	b = a+3+4+5+7+8+10+a;
+	b = 3+4;
 	b = soma(a,b);
-	b = sub(a,b);
+	x[2] = soma(a,b);
 return;
 }

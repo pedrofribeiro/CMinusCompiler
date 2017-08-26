@@ -13,7 +13,7 @@ typedef enum {ADD,SUB,MUL,DIV,RET,
               BLT,JR,G_VAR,G_VET,VAR,
               VET,PARAM,AND,XOR,FNDECL,NONE
              } Operation;
-typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $paramp, $gp, $none} Register;
+typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $rv, $paramp, $gp, $none} Register;
 
 int NUMBER_OF_ASM;
 int NUMBER_OF_POSITIONS;

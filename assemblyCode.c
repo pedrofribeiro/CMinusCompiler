@@ -106,7 +106,7 @@ void asmCode (triple* instruction) {
                 callException("asmCode: const packaging",1,5);
               break;
             }
-            addASM( createITYPE( LI, $t1, $zero, packegedConstants) );
+            addASM( createITYPE( LI, $acc, $zero, packegedConstants) );
 
         } else if ((instruction->firstOperandType == ConstantNoAddress) && (instruction->secondOperandType == SymboltableAddress)) {
 
@@ -196,6 +196,48 @@ void asmCode (triple* instruction) {
     case CALL:
     break;
     case ATR:
+
+        if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == ConstantNoAddress) ) {
+
+            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t2, $zero, instruction->secondOperand ) );
+            addASM( createITYPE( LW, $t2, $t1, 0) );
+
+        } else if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == SymboltableAddress) ) {
+
+            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t2, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LW, $t2, $t2, 0) );
+            addASM( createITYPE( LW, $t1, $t2, 0) );
+
+        } else if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == TripleAddress) ) {
+
+            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LW, $t1, $acc, 0) );
+
+        } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == ConstantNoAddress) ) {
+
+            addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
+            addASM( createITYPE( LW, $acc, $t1, 0) );
+
+        } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == SymboltableAddress) ) {
+
+            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LW, $t1, $t1, 0) );
+            addASM( createITYPE( LW, $acc, $t1, 0) );
+
+        } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == TripleAddress) ) {
+
+            addASM( createITYPE( LW, $rv, $acc, 0 ) );
+
+        } else {
+
+            callException("asmCode: ATR",26,5);
+            return;
+
+        }
+        asmCode(instruction->next);
+
     break;
     case IF_F:
     break;

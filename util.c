@@ -155,6 +155,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	23. Illegal value for a pointer.
 	24. Illegal operation found during constant packaging.
 	25. In this architecture, it is IMPOSSIBLE for an operation between triples to occur.
+	25. Impossible attribuition;
 	*/
 }
 

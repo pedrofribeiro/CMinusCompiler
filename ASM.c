@@ -316,6 +316,9 @@ char* toChar(Operation op, Register reg){
           case LW:
             strcpy(resultString,"LW");
           break;
+          case LI:
+            strcpy(resultString,"LI");
+          break;
           case SW:
             strcpy(resultString,"SW");
           break;
@@ -386,6 +389,9 @@ char* toChar(Operation op, Register reg){
           break;
           case $t2:
             strcpy(resultString,"$t2");
+          break;
+          case $rv:
+            strcpy(resultString,"$rv");
           break;
           case $none:
             strcpy(resultString,"");
