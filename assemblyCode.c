@@ -85,28 +85,11 @@ void asmCode (triple* instruction) {
 
   switch (operation) {
     case FNDECL:
-        NUMBER_OF_POSITIONS = instruction->firstOperand;
-        /*
-        move $fp $sp
-        sw $ra 0($sp)
-        addiu $sp $sp 1
-        >> ADENDOS NECESSARIOS:
-        addiu $paramp $zero y
-        addiu $globalsp $zero x
-        */
-        y = NUMBER_OF_POSITIONS - instruction->secondOperand;
-        x = NUMBER_OF_GLOBALS;
-        addASM ( createITYPE ( ADDIU, $globalsp, $zero, x ) );
-        addASM ( createRTYPE ( MOVE, $fp, $sp, $zero ) );
-        addASM ( createITYPE ( SW, $ra, $sp, 0 ) );
-        addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
-        addASM ( createITYPE ( ADDIU, $paramp, $zero, y ) );
 
-        if (ALIGNED_GLOBALS_POINTER == FALSE) {
-          x = NUMBER_OF_GLOBALS;
-          addASM ( createITYPE ( ADDIU, $globalsp, $zero, x ) );
-          ALIGNED_GLOBALS_POINTER = TRUE;
-        }
+
+        NUMBER_OF_POSITIONS = instruction->firstOperand;
+
+
         asmCode(instruction->next);
     break;
     case ADD:
@@ -227,8 +210,7 @@ void asmCode (triple* instruction) {
         */
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
-        int varCreation = setVarPosition(instruction->firstOperand,1,0);
-        if (varCreation == -999) { callException("asmCode: VAR",20,5); return; }
+        setVarPosition(instruction->firstOperand,1,0);
         asmCode(instruction->next);
     break;
     default:
@@ -253,6 +235,14 @@ void generateAssembly(triple* List){
   STACK_POINTER = -1;
 
   initializeASMList();
+
+  /* memory alignment*/
+  if (ALIGNED_MEMORY == FALSE) {
+    addASM ( createITYPE ( ADDIU, $gp, $zero, NUMBER_OF_GLOBALS ) );
+    setGP(NUMBER_OF_GLOBALS);
+    ALIGNED_MEMORY = TRUE;
+  }
+
   asmCode(List);
   //adjustASM();
   printASM(0);

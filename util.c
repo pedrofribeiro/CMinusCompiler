@@ -153,6 +153,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	21. Undefined translation operation. None of the operands is valid.
 	22. The informed id does not exist on the list.
 	23. Illegal value for a pointer.
+	24. Illegal operation.
 	*/
 }
 

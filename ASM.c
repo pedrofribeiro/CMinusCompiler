@@ -1,5 +1,12 @@
 #include "ASM.h"
 
+int requestMemory(int n){
+  if (n < 0) { callException("getMemory",24,5); return -999; }
+  int returnBase = MEMORY;
+  MEMORY = MEMORY + n;
+  return returnBase;
+}
+
 int setFP(int n){
   if (n <= 0) { callException("setFP",23,5); return -999; }
   FRAME_POINTER = n;
@@ -14,7 +21,7 @@ int setGP(int n){
   return 1;
 }
 
-int getGP(){ return FRAME_POINTER; }
+int getGP(){ return GLOBAL_POINTER; }
 
 int setSP(int n){
   if (n <= 0) { callException("setSP",23,5); return -999; }
@@ -22,15 +29,15 @@ int setSP(int n){
   return 1;
 }
 
-int getSP(){ return FRAME_POINTER; }
+int getSP(){ return STACK_POINTER; }
 
 
 POSITION* createPosition(int id, int ap){
   POSITION* newPosition = (POSITION*) malloc(sizeof(POSITION)*1);
   if (newPosition == NULL) { callException("createPosition",3,5); return NULL; }
   newPosition->identifier = id;
-  _VERBOSE_5 printf("Memory position %d allocated for id (%d)\n",MEMORY_POSITION,id);
-  newPosition->basePosition = FRAME_POINTER;
+  _VERBOSE_5 printf("Memory position %d allocated for id (%d)\n",MEMORY,id);
+  newPosition->basePosition = requestMemory(ap);
   newPosition->availablePositions = ap;
   newPosition->next = NULL;
   return newPosition;
@@ -359,7 +366,7 @@ char* toChar(Operation op, Register reg){
           case $ra:
             strcpy(resultString,"$ra");
           break;
-          case $globalsp:
+          case $gp:
             strcpy(resultString,"$gp");
           break;
           case $zero:
@@ -461,8 +468,7 @@ void printASM(int printMode){
 void initializeASMList(){
   NUMBER_OF_ASM = -2;
   NUMBER_OF_POSITIONS = 0;
-  ALIGNED_GLOBALS_POINTER = FALSE;
-  MEMORY_POSITION = 0;
+  ALIGNED_MEMORY = FALSE;
   asmList = createRTYPE(NONE,$none,$none,$none);
   tempAsm = createRTYPE(NONE,$none,$none,$none);
   positionList = createPosition(-2,0);

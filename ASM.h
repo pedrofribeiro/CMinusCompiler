@@ -12,12 +12,10 @@ typedef enum {ADD,SUB,MUL,DIV,RET,CALL,ATR,
               G_VAR,G_VET,VAR,VET,PARAM,
               AND,XOR,FNDECL,NONE
              } Operation;
-typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $paramp, $globalsp, $none} Register;
+typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $paramp, $gp, $none} Register;
 
 int NUMBER_OF_ASM;
 int NUMBER_OF_POSITIONS;
-int ALIGNED_GLOBALS_POINTER;
-int MEMORY_POSITION;
 
 typedef struct POSITION {
   int identifier;
