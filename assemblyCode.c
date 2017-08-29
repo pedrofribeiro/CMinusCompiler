@@ -337,19 +337,8 @@ void generateAssembly(triple* List){
   }
 
   TRACE_ASM_GEN = FALSE;
-  FRAME_POINTER = -1;
-  GLOBAL_POINTER = -1;
-  STACK_POINTER = -1;
-
+  
   initializeASMList();
-
-  /* memory alignment*/
-  if (ALIGNED_MEMORY == FALSE) {
-    addASM ( createITYPE ( ADDIU, $gp, $zero, NUMBER_OF_GLOBALS ) );
-    setGP(NUMBER_OF_GLOBALS);
-    ALIGNED_MEMORY = TRUE;
-  }
-
   asmCode(List);
   //adjustASM();
   printASM(0);

@@ -13,20 +13,9 @@ typedef enum {ADD,SUB,MUL,DIV,RET,
               BLT,JR,G_VAR,G_VET,VAR,
               VET,PARAM,AND,XOR,FNDECL,NONE
              } Operation;
-typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $rv, $paramp, $gp, $none} Register;
+
 
 int NUMBER_OF_ASM;
-int NUMBER_OF_POSITIONS;
-
-typedef struct POSITION {
-  int identifier;
-  int basePosition;
-  int availablePositions;
-  struct POSITION* next;
-} POSITION;
-
-POSITION* tempPos;
-POSITION* positionList;
 
 typedef struct ASM_RTYPE {
   Operation cpu_operation;
@@ -66,17 +55,6 @@ typedef struct ASM_INSTR {
 
 ASM_INSTR* asmList;
 ASM_INSTR* tempAsm;
-
-int setFP(int n);
-int getFP();
-int setGP(int n);
-int getGP();
-int setSP(int n);
-int getSP();
-
-int setVarPosition(int id, int np, int op);
-int getVarPosition(int id);
-void printVars();
 
 ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2);
 ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm);

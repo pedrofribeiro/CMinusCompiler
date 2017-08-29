@@ -156,6 +156,9 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	24. Illegal operation found during constant packaging.
 	25. In this architecture, it is IMPOSSIBLE for an operation between triples to occur.
 	25. Impossible attribuition;
+	26. There is not enough memory for allocating the demanded space.
+	27. Could not allocate a register. The register bank is full.
+	28. Inconsistent memory pair given.
 	*/
 }
 
