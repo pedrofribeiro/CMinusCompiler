@@ -335,6 +335,7 @@ void generateAssembly(triple* List){
 
   TRACE_ASM_GEN = FALSE;
 
+  initializeRegisterBank();
   initializeMemory();
   initializeVariables();
   initializeASMList();
@@ -342,6 +343,8 @@ void generateAssembly(triple* List){
   //adjustASM();
   printASM(0);
   printVars();
+  printRegisterBank();
+  printMemory();
 
   /*cleaning up*/
   cleanTriples();

@@ -45,6 +45,8 @@ int allocateMemory(int n);
 int allocateRegister();
 void memoryHandler(int position, int value);
 int requestMemory(int identifier, int numberOfPositions);
+void printMemory();
+void printRegisterBank();
 
 void setFP();
 int getFP();

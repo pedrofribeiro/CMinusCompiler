@@ -36,6 +36,7 @@ void initializeRegisterBank(){
     REGISTER_BANK[i]->isFree = (i < RESERVED_REGISTERS) ? TRUE : FALSE;;
     REGISTER_BANK[i]->storesTriple = -1;
     REGISTER_BANK[i]->storesVar = -1;
+    REGISTER_BANK[i]->contents = -1;
   }
   tempRegister = malloc(sizeof(REGISTER)*1);
   if (tempRegister == NULL) { callException("initializeRegisterBank",3,5); return; }
@@ -120,11 +121,35 @@ int requestMemory(int identifier, int numberOfPositions){
   int finalPosition = initialPosition + numberOfPositions - 1;
 
   int i;
-  for (i = initialPosition; i < finalPosition; i++) {
+  for (i = initialPosition; i <= finalPosition; i++) {
     MEMORY[i]->storesVar = identifier;
   }
 
   return initialPosition;
+}
+
+
+void printMemory(){
+  size_t i;
+  printf("\n\nDATA MEMORY\n");
+  for (i = 0; i < MEMORY_SIZE; i++) {
+    if (MEMORY[i]->isFree == TRUE)
+      printf("%d [        ]\n",MEMORY[i]->positionNumber);
+    else
+      printf("%d [ %d: %d ]\n",MEMORY[i]->positionNumber,MEMORY[i]->storesVar,MEMORY[i]->contents);
+  }
+}
+
+
+void printRegisterBank(){
+  size_t i;
+  printf("\n\nREGISTER BANK\n");
+  for (i = 0; i < REGISTER_BANK_SIZE; i++) {
+    if (REGISTER_BANK[i]->isFree == TRUE)
+      printf("%d [             ]\n",REGISTER_BANK[i]->regNumber);
+    else
+      printf("%d [ (%d|%d) : %d ]\n",REGISTER_BANK[i]->regNumber,REGISTER_BANK[i]->storesVar,REGISTER_BANK[i]->storesTriple,REGISTER_BANK[i]->contents);
+  }
 }
 
 
