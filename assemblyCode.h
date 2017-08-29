@@ -9,6 +9,8 @@ Operation getOperation(triple* tr);
 
 void asmCode(triple *tr);
 
+void cleanTriples();
+
 void generateAssembly(triple* List);
 
 #endif

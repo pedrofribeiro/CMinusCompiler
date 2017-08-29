@@ -2,7 +2,7 @@
 
 triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot){
   triple* newTriple;
-  newTriple = (triple*) malloc(sizeof(triple)*1);
+  newTriple = malloc(sizeof(triple)*1);
   if(newTriple == NULL){
     callException("createTriple",3,4);
     return NULL;

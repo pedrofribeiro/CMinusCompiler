@@ -2,29 +2,30 @@
 #define _RUN_TIME_ENVIRONMENT_
 
 #include <stdarg.h>
+#include "globals.h"
+#include "util.h"
 
 typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $rv, $paramp, $gp, $none} Register;
-
-int NUMBER_OF_VARIABLES;
 
 typedef struct VARIABLE {
   int identifier;
   int basePosition;
   int availablePositions;
-  struct POSITION* next;
+  struct VARIABLE* next;
 } VARIABLE;
 
 VARIABLE* tempVar;
-VARIABLE* variblesList;
+VARIABLE* variablesList;
 
 typedef struct REGISTER {
   int regNumber;
   int isFree;
   int storesTriple;
   int storesVar;
+  int contents;
 }REGISTER;
 
-REGISTER* REGISTER_BANK;
+REGISTER** REGISTER_BANK;
 REGISTER* tempRegister;
 
 typedef struct MEMORY_UNIT {
@@ -34,17 +35,26 @@ typedef struct MEMORY_UNIT {
   int contents;
 }MEMORY_UNIT;
 
-MEMORY_UNIT* MEMORY;
+MEMORY_UNIT** MEMORY;
 MEMORY_UNIT* tempMemory;
 
-int setFP(int n);
+void initializeMemory();
+void initializeRegisterBank();
+void initializeVariables();
+void cleanRuntimeEnvironment();
+int allocateMemory(int n);
+int allocateRegister();
+int useMemory(int argNumber, ...);
+
+void setFP();
 int getFP();
-int setGP(int n);
+void setGP();
 int getGP();
-int setSP(int n);
+void setSP();
 int getSP();
 
-int setVarPosition(int id, int np, int op);
+VARIABLE* createPosition(int id, int ap);
+int setVarPosition(int id, int np);
 int getVarPosition(int id);
 void printVars();
 

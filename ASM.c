@@ -2,7 +2,7 @@
 
 
 ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2){
-  ASM_INSTR* newInstruction = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
+  ASM_INSTR* newInstruction = malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
     callException("createRTYPE",3,5);
     return NULL;
@@ -20,7 +20,7 @@ ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2){
 }
 
 ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm){
-  ASM_INSTR* newInstruction = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
+  ASM_INSTR* newInstruction = malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
     callException("createITYPE",3,5);
     return NULL;
@@ -38,7 +38,7 @@ ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm){
 }
 
 ASM_INSTR* createJTYPE(Operation cop, int addr){
-  ASM_INSTR* newInstruction = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
+  ASM_INSTR* newInstruction = malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
     callException("createJTYPE",3,5);
     return NULL;
@@ -54,7 +54,7 @@ ASM_INSTR* createJTYPE(Operation cop, int addr){
 }
 
 ASM_INSTR* createLTYPE(char cop[], int addr){
-  ASM_INSTR* newInstruction = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
+  ASM_INSTR* newInstruction = malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
     callException("createLTYPE",3,5);
     return NULL;
@@ -77,7 +77,7 @@ void addASM(ASM_INSTR* newInstruction){
   }
 
   if (asmList->next == NULL) {
-      asmList->next = (ASM_INSTR*) malloc(sizeof(ASM_INSTR)*1);
+      asmList->next = malloc(sizeof(ASM_INSTR)*1);
       if (asmList->next == NULL) {
         callException("addASM",3,5);
         return;
@@ -134,7 +134,7 @@ int adjustASM(int an, int field, int nv){
 char* toChar(Operation op, Register reg){
 
   int control;
-  char* resultString = (char*) malloc(sizeof(char)*6);
+  char* resultString = malloc(sizeof(char)*6);
 
   if ((op != NONE) && (reg == $none)) control = 1;
   else if ((op == NONE) && (reg != $none)) control = 2;
@@ -326,11 +326,15 @@ void printASM(int printMode){
 	}
 }
 
-
 void initializeASMList(){
   NUMBER_OF_ASM = -2;
   asmList = createRTYPE(NONE,$none,$none,$none);
   tempAsm = createRTYPE(NONE,$none,$none,$none);
-  positionList = createPosition(-2,0);
-  tempPos = createPosition(-1,0);
+}
+
+void cleanASM(){
+  free(asmList);
+  asmList = NULL;
+  free(tempAsm);
+  tempAsm = NULL;
 }

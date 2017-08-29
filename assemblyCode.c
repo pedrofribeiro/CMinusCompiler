@@ -74,12 +74,10 @@ void asmCode (triple* instruction) {
   operation = getOperation(instruction);
   if (operation == NONE) { callException("asmCode",13,5); return; }
 
+  int i;
 
-  int z;
   switch (operation) {
     case FNDECL:
-    //preciso arrumar isso aqui
-        NUMBER_OF_POSITIONS = instruction->firstOperand;
         asmCode(instruction->next);
     break;
     case ADD:
@@ -161,9 +159,8 @@ void asmCode (triple* instruction) {
         lw $fp 0($sp)
         jr $ra
        */
-       z = NUMBER_OF_POSITIONS + 2;
        addASM ( createITYPE ( LW, $ra, $sp, -1 ) );
-       addASM ( createITYPE ( ADDIU, $sp, $sp, z ) );
+       addASM ( createITYPE ( ADDIU, $sp, $sp, 99999 ) );
        addASM ( createITYPE ( LW, $fp, $sp, 0 ) );
        addASM ( createJTYPE ( JR, $ra) );
        asmCode(instruction->next);
@@ -274,7 +271,7 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         int gvarCreation;
-        gvarCreation = setVarPosition(instruction->firstOperand,1,0);
+        gvarCreation = setVarPosition(instruction->firstOperand,1);
         if (gvarCreation == -999) { callException("asmCode: G_VAR",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
@@ -283,13 +280,12 @@ void asmCode (triple* instruction) {
       loop n, n = number of parameters
         sw $zero 0($sp)
         addiu $sp $sp 1
-      */
-      for (size_t i = 0; i < instruction->secondOperand; i++) {
-        addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
-        addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
-      }
+        for (i = 0; i < instruction->secondOperand; i++) {
+      }*/
+      addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
+      addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
       int gvetCreation;
-      gvetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
+      gvetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand);
       if (gvetCreation == -999) { callException("asmCode: G_VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
       asmCode(instruction->next);
     break;
@@ -299,12 +295,13 @@ void asmCode (triple* instruction) {
           sw $zero 0($sp)
           addiu $sp $sp 1
         */
-        for (size_t i = 0; i < instruction->secondOperand; i++) {
+
+        for (i = 0; i < instruction->secondOperand; i++) {
           addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
           addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         }
         int vetCreation;
-        vetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand,0);
+        vetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand);
         if (vetCreation == -999) { callException("asmCode: VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
@@ -316,7 +313,7 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
         int varCreation;
-        varCreation = setVarPosition(instruction->firstOperand,1,0);
+        varCreation = setVarPosition(instruction->firstOperand,1);
         if (varCreation == -999) { callException("asmCode: VAR",20,5); printf("TN:%d, st id(%d)\n",instruction->tripleNumber,instruction->firstOperand); return; }
         asmCode(instruction->next);
     break;
@@ -337,11 +334,18 @@ void generateAssembly(triple* List){
   }
 
   TRACE_ASM_GEN = FALSE;
-  
+
+  initializeMemory();
+  initializeVariables();
   initializeASMList();
   asmCode(List);
   //adjustASM();
   printASM(0);
   printVars();
+
+  /*cleaning up*/
+  cleanTriples();
+  cleanRuntimeEnvironment();
+  cleanASM();
 
 }

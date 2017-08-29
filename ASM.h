@@ -3,6 +3,7 @@
 
 #include "globals.h"
 #include "util.h"
+#include "runtime.h"
 
 typedef enum INSTR_TYPE {RTYPE, ITYPE, JTYPE, LTYPE} ASM_INSTR_TYPE;
 typedef enum {ADD,SUB,MUL,DIV,RET,
@@ -70,5 +71,7 @@ void initializeASMList();
 char* toChar(Operation op, Register reg);
 
 void printASM();
+
+void cleanASM();
 
 #endif

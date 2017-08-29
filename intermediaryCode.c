@@ -487,6 +487,13 @@ void evalProgram(TreeNode *node){
   evalProgram(node->sibling); /*recursive descent*/
 }
 
+void cleanTriples(){
+  free(tripleList);
+  tripleList = NULL;
+  free(tempTriple);
+  tempTriple = NULL;
+}
+
 void generateIntermediaryCode(TreeNode * t){
   initializeTripleList();
   TRACE_TREE_WALK = FALSE;
