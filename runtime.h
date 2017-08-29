@@ -1,7 +1,6 @@
 #ifndef _RUN_TIME_ENVIRONMENT_
 #define _RUN_TIME_ENVIRONMENT_
 
-#include <stdarg.h>
 #include "globals.h"
 #include "util.h"
 
@@ -44,7 +43,8 @@ void initializeVariables();
 void cleanRuntimeEnvironment();
 int allocateMemory(int n);
 int allocateRegister();
-int useMemory(int argNumber, ...);
+void memoryHandler(int position, int value);
+int requestMemory(int identifier, int numberOfPositions);
 
 void setFP();
 int getFP();

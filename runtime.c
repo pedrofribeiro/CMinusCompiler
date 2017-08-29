@@ -43,7 +43,9 @@ void initializeRegisterBank(){
 
 void initializeVariables(){
   variablesList = createPosition(-2,0);
+  if (variablesList == NULL) { callException("initializeVariables",20,5); return; }
   tempVar = createPosition(-1,0);
+  if (tempVar == NULL) { callException("initializeVariables",20,5); return; }
 }
 
 void cleanRuntimeEnvironment(){
@@ -62,7 +64,7 @@ void cleanRuntimeEnvironment(){
 }
 
 int allocateMemory(int n){
-  if (n <= 0) { callException("allocateMemory",8,5); return -999; }
+  if (n < 0) { callException("allocateMemory",8,5); return -999; } //cannot be <= because of 2 control variables.
 
   int freePositions = 0;
   int beginsAt = -1;
@@ -104,24 +106,23 @@ int allocateRegister(){
   return -999;
 }
 
+void memoryHandler(int position, int value){
+  if (position > MEMORY_SIZE) { callException("memoryHandler",8,5); return; }
+  MEMORY[position]->contents = value;
+}
 
-int useMemory(int argNumber, ...){
-  if (argNumber > MEMORY_SIZE) { callException("useMemory",8,5); return -999; }
+int requestMemory(int identifier, int numberOfPositions){
+  if (numberOfPositions > MEMORY_SIZE) { callException("requestMemory",8,5); return -999; }
 
-  va_list listOfArguments;
-  va_start(listOfArguments, argNumber);
-
-  int initialPosition = allocateMemory(argNumber/2);
-  if (initialPosition == -999) { callException("useMemory",26,5); return -999; }
-  int finalPosition = initialPosition + (argNumber/2) - 1;
+  int initialPosition = allocateMemory(numberOfPositions);
+  if (initialPosition == -999) { callException("requestMemory",26,5); return -999; }
+  int finalPosition = initialPosition + numberOfPositions - 1;
 
   int i;
   for (i = initialPosition; i < finalPosition; i++) {
-    MEMORY[i]->storesVar = va_arg(listOfArguments, int);
-    MEMORY[i]->contents = va_arg(listOfArguments, int);
+    MEMORY[i]->storesVar = identifier;
   }
 
-  va_end(listOfArguments);
   return initialPosition;
 }
 
@@ -156,12 +157,9 @@ VARIABLE* createPosition(int id, int ap){
   VARIABLE* newVariable = malloc(sizeof(VARIABLE)*1);
   if (newVariable == NULL) { callException("createPosition",3,5); return NULL; }
   newVariable->identifier = id;
-  newVariable->basePosition = useMemory(2,id,0);
+  newVariable->basePosition = requestMemory(id,ap);
+  if(newVariable->basePosition == -999) { callException("createPosition",26,5); return NULL; }
   newVariable->availablePositions = ap;
-  size_t i;
-  for (i = 0; i < ap; i++) {
-    useMemory(2,id,0); //the search is linear, the first occurrence shall always be the base of the vector
-  }
   newVariable->next = NULL;
   return newVariable;
 }

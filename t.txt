@@ -1,4 +1,4 @@
-int x[2];
+int x[200];
 int y;
 int soma (int x, int y){
 	return x+y;
