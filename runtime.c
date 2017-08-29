@@ -80,6 +80,7 @@ int allocateMemory(int n){
         beginsAt = i;
       }
     }
+    SAFE_LOOP++;
     if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("allocateMemory",10,5); return -999; }
   }
 
