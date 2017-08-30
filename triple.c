@@ -99,6 +99,8 @@ void printTripleList(){
       printf("%d: (%s, t(%d), _)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->firstOperand);
     else if((tempTriple->firstOperandType == EmptyAddress) && (tempTriple->secondOperandType == EmptyAddress))
       printf("%d: (%s, _, _)\n",tempTriple->tripleNumber, tempTriple->operation);
+    else if((tempTriple->firstOperandType == EmptyAddress) && (tempTriple->secondOperandType == SymboltableAddress))
+      printf("%d: (%s, _, st[%d])\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->secondOperand);
     else callException("printTripleList",5,4);
 
     tempTriple = tempTriple->next;

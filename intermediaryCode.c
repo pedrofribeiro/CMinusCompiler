@@ -43,34 +43,34 @@ void evalStmt(TreeNode *node){
       p0 = node->child[0];
 
       if (p0 == NULL){
-        addTriple("RETURN",-1,-1,EmptyAddress,EmptyAddress);
+        addTriple("RETURN",-1,st_lookupFnStart(CURRENT_FUNCTION),EmptyAddress,SymboltableAddress);
         return;
       }
 
       if (p0->kind.exp == ConstK) {
           evalProgram(p0);
-          addTriple("RETURN",p0->attr.val,-1,ConstantNoAddress,EmptyAddress);
+          addTriple("RETURN",p0->attr.val,st_lookupFnStart(CURRENT_FUNCTION),ConstantNoAddress,SymboltableAddress);
       } else if(p0->kind.exp == IdK) {
           evalProgram(p0);
-          addTriple("RETURN",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),-1,SymboltableAddress,EmptyAddress);
+          addTriple("RETURN",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),st_lookupFnStart(CURRENT_FUNCTION),SymboltableAddress,SymboltableAddress);
       } else if(p0->kind.exp == IdVetK) {
           evalProgram(p0);
           int vectorTriple;
           vectorTriple = NUMBER_OF_TRIPLES;
-          addTriple("RETURN",vectorTriple,-1,TripleAddress,EmptyAddress);
+          addTriple("RETURN",vectorTriple,st_lookupFnStart(CURRENT_FUNCTION),TripleAddress,SymboltableAddress);
       } else if(p0->kind.exp == IdFunK) {
           evalProgram(p0);
           int returnTriple;
           returnTriple = NUMBER_OF_TRIPLES;
-          addTriple("RETURN",returnTriple,-1,TripleAddress,EmptyAddress);
+          addTriple("RETURN",returnTriple,st_lookupFnStart(CURRENT_FUNCTION),TripleAddress,SymboltableAddress);
       } else if(p0->kind.exp == OpK) {
           evalProgram(p0);
           int returnTriple;
           returnTriple = NUMBER_OF_TRIPLES;
-          addTriple("RETURN",returnTriple,-1,TripleAddress,EmptyAddress);
+          addTriple("RETURN",returnTriple,st_lookupFnStart(CURRENT_FUNCTION),TripleAddress,SymboltableAddress);
       } else if(p0->kind.exp == AtribK) { /*this may need a very serious further analysis*/
           evalProgram(p0);
-          addTriple("RETURN",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),-1,SymboltableAddress,EmptyAddress);
+          addTriple("RETURN",st_lookupVarPosition(p0->attr.name,CURRENT_FUNCTION),st_lookupFnStart(CURRENT_FUNCTION),SymboltableAddress,SymboltableAddress);
       } else {
           callException("evalStmt: ReturnK",7,4);
       }

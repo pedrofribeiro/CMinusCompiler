@@ -26,6 +26,7 @@ void initializeMemory(){
 void initializeRegisterBank(){
   REGISTER_COUNTER = 0;
   OCCUPIED_REGS = 0;
+  REGS_TO_FREE = 0;
   REGISTER_BANK = malloc(sizeof(REGISTER)*REGISTER_BANK_SIZE);
   if (REGISTER_BANK == NULL) { callException("initializeRegisterBank",3,5); return; }
   size_t i;
@@ -137,14 +138,15 @@ void listToDeallocate(int rn){
   if ( tempRegister[0]->isFree == TRUE ){
       tempRegister[0]->isFree = FALSE;
       tempRegister[0]->regNumber = rn;
+      REGS_TO_FREE++;
   } else {
       int size = OCCUPIED_REGS + 1;
       tempRegister = realloc(tempRegister,sizeof(REGISTER)*size);
-      tempRegister[OCCUPIED_REGS] = malloc(sizeof(REGISTER)*1);
-      tempRegister[OCCUPIED_REGS]->isFree = FALSE;
-      tempRegister[OCCUPIED_REGS]->regNumber = rn;
+      tempRegister[REGS_TO_FREE] = malloc(sizeof(REGISTER)*1);
+      tempRegister[REGS_TO_FREE]->isFree = FALSE;
+      tempRegister[REGS_TO_FREE]->regNumber = rn;
+      REGS_TO_FREE++;
   }
-  printf("allocated regs: %d\n",OCCUPIED_REGS);
 }
 
 int deallocateRegister(int n){
@@ -155,12 +157,9 @@ int deallocateRegister(int n){
 }
 
 int deallocateRegisters(){
-  size_t i;
-  printf("allocated regs: %d\n",OCCUPIED_REGS);
-  for (i = 0; i < OCCUPIED_REGS; i++) {
-    REGISTER_BANK[tempRegister[i]->regNumber]->isFree = TRUE;
+  while (REGS_TO_FREE > 0) {
+    REGISTER_BANK[tempRegister[--REGS_TO_FREE]->regNumber]->isFree = TRUE;
   }
-  OCCUPIED_REGS = 0;
   return 1;
 }
 
@@ -210,7 +209,7 @@ void printMemory(){
 
 void printRegisterBank(){
   size_t i;
-  printf("\n\nREGISTER BANK\n");
+  printf("\n\nREGISTER BANK\n (var|tri|con)\n");
   for (i = 0; i < REGISTER_BANK_SIZE; i++) {
     if (REGISTER_BANK[i]->isFree == TRUE)
       printf("%d [             ]\n",REGISTER_BANK[i]->regNumber);

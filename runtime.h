@@ -7,6 +7,7 @@
 typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $rv, $paramp, $gp, $none} Register;
 
 int OCCUPIED_REGS;
+int REGS_TO_FREE;
 
 typedef struct VARIABLE {
   int identifier;
