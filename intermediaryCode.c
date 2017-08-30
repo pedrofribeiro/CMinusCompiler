@@ -426,23 +426,23 @@ void evalExp(TreeNode *node){
 
           if (q0->kind.exp == ConstK) {
               evalExp(q0);
-              addTriple("PARAM",q0->attr.val,-999,ConstantNoAddress,EmptyAddress);
+              addTriple("PARAM",q0->attr.val,st_lookupFnStart(node->attr.name),ConstantNoAddress,SymboltableAddress);
           } else if (q0->kind.exp == IdK) {
               evalExp(q0);
-              addTriple("PARAM",st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),-999,SymboltableAddress,EmptyAddress);
+              addTriple("PARAM",st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),st_lookupFnStart(node->attr.name),SymboltableAddress,SymboltableAddress);
           } else if (q0->kind.exp == IdVetK) {
               evalExp(q0);
-              addTriple("PARAM",st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),-999,SymboltableAddress,EmptyAddress);
+              addTriple("PARAM",st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),st_lookupFnStart(node->attr.name),SymboltableAddress,SymboltableAddress);
           } else if (q0->kind.exp == OpK) {
               evalExp(q0);
               int paramTriple;
               paramTriple = NUMBER_OF_TRIPLES;
-              addTriple("PARAM",paramTriple,-999,TripleAddress,EmptyAddress);
+              addTriple("PARAM",paramTriple,st_lookupFnStart(node->attr.name),TripleAddress,SymboltableAddress);
           } else if (q0->kind.exp == IdFunK) {
               evalExp(q0);
               int paramTriple;
               paramTriple = NUMBER_OF_TRIPLES;
-              addTriple("PARAM",paramTriple,-999,TripleAddress,EmptyAddress);
+              addTriple("PARAM",paramTriple,st_lookupFnStart(node->attr.name),TripleAddress,SymboltableAddress);
           } else {
               callException("evalExp: IdFunK",7,4);
               break;

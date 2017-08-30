@@ -136,7 +136,7 @@ int st_lookupFnStart( char * name )
 { int h = hash(name);
   BucketList l =  hashTable[h];
   while (l != NULL) {
-    if( strcmp(name,l->name) == 0 ) {
+    if ((strcmp(name,l->name) == 0) && (l->idType == 4)) {
        return l->memloc;
     }
     l = l->next;

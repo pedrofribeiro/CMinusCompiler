@@ -282,10 +282,10 @@ void printASM(int printMode){
         case 0:
             switch (tempAsm->type) {
               case RTYPE:
-                  printf("%d: %s %s, %s, %s \n",tempAsm->asmNumber,toChar(tempAsm->rtype.cpu_operation,$none),toChar(NONE,tempAsm->rtype.rd),toChar(NONE,tempAsm->rtype.r1),toChar(NONE,tempAsm->rtype.r2));
+                  printf("%d: %s %s %s %s \n",tempAsm->asmNumber,toChar(tempAsm->rtype.cpu_operation,$none),toChar(NONE,tempAsm->rtype.rd),toChar(NONE,tempAsm->rtype.r1),toChar(NONE,tempAsm->rtype.r2));
               break;
               case ITYPE:
-                  printf("%d: %s %s, %s, %d \n",tempAsm->asmNumber,toChar(tempAsm->itype.cpu_operation,$none),toChar(NONE,tempAsm->itype.rd),toChar(NONE,tempAsm->itype.r1),tempAsm->itype.immediate);
+                  printf("%d: %s %s %s %d \n",tempAsm->asmNumber,toChar(tempAsm->itype.cpu_operation,$none),toChar(NONE,tempAsm->itype.rd),toChar(NONE,tempAsm->itype.r1),tempAsm->itype.immediate);
               break;
               case JTYPE:
                   printf("%d: %s %d \n",tempAsm->asmNumber,toChar(tempAsm->jtype.cpu_operation,$none),tempAsm->jtype.address);
@@ -301,13 +301,13 @@ void printASM(int printMode){
         case 1:
             switch (tempAsm->type) {
               case RTYPE:
-                  printf("%d: %d %d, %d, %d \n",tempAsm->asmNumber,tempAsm->rtype.cpu_operation,tempAsm->rtype.rd,tempAsm->rtype.r1,tempAsm->rtype.r2);
+                  printf("%d: %d %d %d %d \n",tempAsm->asmNumber,tempAsm->rtype.cpu_operation,tempAsm->rtype.rd,tempAsm->rtype.r1,tempAsm->rtype.r2);
               break;
               case ITYPE:
-                  printf("%d: %d %d, %d, %d \n",tempAsm->asmNumber,tempAsm->itype.cpu_operation,tempAsm->itype.rd,tempAsm->itype.r1,tempAsm->itype.immediate);
+                  printf("%d: %d %d %d %d \n",tempAsm->asmNumber,tempAsm->itype.cpu_operation,tempAsm->itype.rd,tempAsm->itype.r1,tempAsm->itype.immediate);
               break;
               case JTYPE:
-                  printf("%d: %d, %d \n",tempAsm->asmNumber,tempAsm->jtype.cpu_operation,tempAsm->jtype.address);
+                  printf("%d: %d %d \n",tempAsm->asmNumber,tempAsm->jtype.cpu_operation,tempAsm->jtype.address);
               break;
               case LTYPE:
                   printf("%d: %s %d ",tempAsm->asmNumber,tempAsm->ltype.functionName,tempAsm->ltype.asmAddress);
@@ -325,6 +325,74 @@ void printASM(int printMode){
       tempAsm = tempAsm->next;
 	}
 }
+
+
+Operation getOperation(triple *tr){
+
+  if (tr == NULL) {
+      callException("getOperation",3,5);
+      return NONE;
+  }
+
+  char inputOperation[6];
+  sprintf(inputOperation,"%s",tr->operation);
+
+  if (strcmp(inputOperation,tr->operation) != 0) {
+    callException("getOperation",12,5);
+    return NONE;
+  }
+
+  /* finding out the operation*/
+  if (strcmp(inputOperation,"+") == 0) {
+    return ADD;
+  } else if (strcmp(inputOperation,"-") == 0) {
+    return SUB;
+  } else if (strcmp(inputOperation,"*") == 0) {
+    return MUL;
+  } else if (strcmp(inputOperation,"/") == 0) {
+    return DIV;
+  } else if (strcmp(inputOperation,"RETURN") == 0) {
+    return RET;
+  } else if (strcmp(inputOperation,"FNCALL") == 0) {
+    return CALL;
+  } else if (strcmp(inputOperation,"ATRIB") == 0) {
+    return ATR;
+  } else if (strcmp(inputOperation,"IF_F") == 0) {
+    return IF_F;
+  } else if (strcmp(inputOperation,"GOTO") == 0) {
+    return GOTO;
+  } else if (strcmp(inputOperation,"V_INDEX") == 0) {
+    return V_IN;
+  } else if (strcmp(inputOperation,"==") == 0) {
+    return EQL;
+  } else if (strcmp(inputOperation,"!=") == 0) {
+    return DIFE;
+  } else if (strcmp(inputOperation,">") == 0) {
+    return GRT;
+  } else if (strcmp(inputOperation,"<") == 0) {
+    return LST;
+  } else if (strcmp(inputOperation,">=") == 0) {
+    return GTE;
+  } else if (strcmp(inputOperation,"<=") == 0) {
+    return LTE;
+  } else if (strcmp(inputOperation,"G_VAR") == 0) {
+    return G_VAR;
+  } else if (strcmp(inputOperation,"G_VET") == 0) {
+    return G_VET;
+  } else if (strcmp(inputOperation,"VET") == 0) {
+    return VET;
+  } else if (strcmp(inputOperation,"VAR") == 0) {
+    return VAR;
+  } else if (strcmp(inputOperation,"PARAM") == 0) {
+    return PARAM;
+  } else {
+    return FNDECL;
+  }
+
+  return NONE;
+}
+
+
 
 void initializeASMList(){
   NUMBER_OF_ASM = -2;

@@ -2,7 +2,7 @@
 
 /*
 Runtime environment for the CMinus Compiler
-ALL MEMORY STRUCTURES' (registers and data & instruction memories) CONTROL are defined here.
+ALL MEMORY STRUCTURES' (registers, data and instruction memories) CONTROLS are defined here.
 */
 
 void initializeMemory(){
@@ -25,6 +25,7 @@ void initializeMemory(){
 
 void initializeRegisterBank(){
   REGISTER_COUNTER = 0;
+  CONTINUOUS_REG_ALLOCATION = RESERVED_REGISTERS;
   REGISTER_BANK = malloc(sizeof(REGISTER)*REGISTER_BANK_SIZE);
   if (REGISTER_BANK == NULL) { callException("initializeRegisterBank",3,5); return; }
   size_t i;
@@ -64,6 +65,7 @@ void cleanRuntimeEnvironment(){
   variablesList = NULL;
 }
 
+
 int allocateMemory(int n){
   if (n < 0) { callException("allocateMemory",8,5); return -999; } //cannot be <= because of 2 control variables.
 
@@ -72,7 +74,6 @@ int allocateMemory(int n){
   int initialPosition = -1;
 
   int SAFE_LOOP = 0;
-
   while (freePositions < n) {
     size_t i;
     for (i = 0; i < MEMORY_SIZE; i++) {
@@ -91,7 +92,6 @@ int allocateMemory(int n){
   for (i = initialPosition; i < initialPosition+n; i++) {
     MEMORY[i]->isFree = FALSE;
   }
-
   return initialPosition;
 }
 
@@ -104,9 +104,17 @@ int allocateRegister(){
       return i;
     }
   }
-  callException("allocateRegister",27,5);
   return -999;
 }
+
+
+int deallocateRegister(int n){
+  if (n > REGISTER_BANK_SIZE) { callException("deallocateRegister",8,5); return -999;}
+  if (n < RESERVED_REGISTERS) { callException("deallocateRegister",8,5); return -999;}
+  REGISTER_BANK[n]->isFree = TRUE;
+  return 1;
+}
+
 
 void memoryHandler(int position, int value){
   if (position > MEMORY_SIZE) { callException("memoryHandler",8,5); return; }
@@ -128,6 +136,16 @@ int requestMemory(int identifier, int numberOfPositions){
   return initialPosition;
 }
 
+int freeMemory(int initialPosition, int finalPosition){
+  if( finalPosition >= MEMORY_SIZE ) { callException("freeMemory",8,5); return -999; }
+  if( initialPosition < 0 ) { callException("freeMemory",8,5); return -999; }
+  if( finalPosition < initialPosition ) { callException("freeMemory",28,5); return -999; }
+
+  for (size_t i = initialPosition; i <= finalPosition; i++) {
+    MEMORY[i]->isFree = TRUE;
+  }
+  return 1;
+}
 
 void printMemory(){
   size_t i;

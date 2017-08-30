@@ -6,6 +6,8 @@
 
 typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $rv, $paramp, $gp, $none} Register;
 
+int CONTINUOUS_REG_ALLOCATION;
+
 typedef struct VARIABLE {
   int identifier;
   int basePosition;

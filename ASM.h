@@ -3,6 +3,7 @@
 
 #include "globals.h"
 #include "util.h"
+#include "triple.h"
 #include "runtime.h"
 
 typedef enum INSTR_TYPE {RTYPE, ITYPE, JTYPE, LTYPE} ASM_INSTR_TYPE;
@@ -61,6 +62,8 @@ ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2);
 ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm);
 ASM_INSTR* createJTYPE(Operation cop, int addr);
 ASM_INSTR* createLTYPE(char cop[], int addr);
+
+Operation getOperation(triple *tr);
 
 void addASM(ASM_INSTR* t);
 
