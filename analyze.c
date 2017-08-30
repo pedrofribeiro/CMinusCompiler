@@ -133,7 +133,8 @@ static void insertNode( TreeNode * t)
         break;
         case AtribK:
           if(st_lookup(t->child[0]->attr.name) == -1){ //Verifica apenas o nome, para nao gerar erro com globais
-            typeError(t, "ERRO ENCONTRADO. ATRIBUICAO FEITA A VAR NAO DECLARADA.");
+            if(st_lookupGlobal(t->child[0]->attr.name) == -1) // << Done recently.
+              typeError(t, "ERRO ENCONTRADO. ATRIBUICAO FEITA A VAR NAO DECLARADA.");
           }
         break;
         default:
@@ -145,17 +146,19 @@ static void insertNode( TreeNode * t)
       {
         case IdK:
           if(st_lookup2(t->attr.name) == -1) { //Verifica apenas o nome, para nao gerar erro com globais
-            typeError(t, "ERRO ENCONTRADO. USO DE VARIAVEL NAO DECLARADA.");
+            if (st_lookupGlobal(t->attr.name) == -1) // << Done recently.
+              typeError(t, "ERRO ENCONTRADO. USO DE VARIAVEL NAO DECLARADA.");
           } else {
             st_insert(t->attr.name,location++, t->lineno, t->type, t->kind.exp, ESCOPO);
           }
         break;
         case IdVetK:
           if(st_lookup2(t->attr.name) == -1) { //Verifica apenas o nome, para nao gerar erro com globais
-            typeError(t, "ERRO ENCONTRADO. USO DE VETOR NAO DECLARADO.");
-            t->child[0] = NULL;
-            t->child[1] = NULL;
-            t->child[2] = NULL;
+              if (st_lookupGlobal(t->attr.name) == -1) // << Done recently.
+                typeError(t, "ERRO ENCONTRADO. USO DE VETOR NAO DECLARADO.");
+                //t->child[0] = NULL;
+                //t->child[1] = NULL;
+                //t->child[2] = NULL;
           } else {
             st_insert(t->attr.name, location++, t->lineno, t->type, t->kind.exp, ESCOPO);
           }

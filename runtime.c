@@ -141,7 +141,8 @@ int freeMemory(int initialPosition, int finalPosition){
   if( initialPosition < 0 ) { callException("freeMemory",8,5); return -999; }
   if( finalPosition < initialPosition ) { callException("freeMemory",28,5); return -999; }
 
-  for (size_t i = initialPosition; i <= finalPosition; i++) {
+  size_t i;
+  for (i = initialPosition; i <= finalPosition; i++) {
     MEMORY[i]->isFree = TRUE;
   }
   return 1;
