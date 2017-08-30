@@ -144,6 +144,7 @@ void listToDeallocate(int rn){
       tempRegister[OCCUPIED_REGS]->isFree = FALSE;
       tempRegister[OCCUPIED_REGS]->regNumber = rn;
   }
+  printf("allocated regs: %d\n",OCCUPIED_REGS);
 }
 
 int deallocateRegister(int n){
@@ -155,9 +156,11 @@ int deallocateRegister(int n){
 
 int deallocateRegisters(){
   size_t i;
+  printf("allocated regs: %d\n",OCCUPIED_REGS);
   for (i = 0; i < OCCUPIED_REGS; i++) {
     REGISTER_BANK[tempRegister[i]->regNumber]->isFree = TRUE;
   }
+  OCCUPIED_REGS = 0;
   return 1;
 }
 

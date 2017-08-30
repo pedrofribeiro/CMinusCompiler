@@ -107,7 +107,7 @@ void asmCode (triple* instruction) {
         } else {
             callException("asmCode: arithmetic ops",1,5);
         }
-        //deallocateRegisters();
+        deallocateRegisters();
         asmCode(instruction->next);
     break;
     case RET:
