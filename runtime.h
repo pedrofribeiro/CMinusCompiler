@@ -6,7 +6,7 @@
 
 typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $rv, $paramp, $gp, $none} Register;
 
-int CONTINUOUS_REG_ALLOCATION;
+int OCCUPIED_REGS;
 
 typedef struct VARIABLE {
   int identifier;
@@ -23,11 +23,12 @@ typedef struct REGISTER {
   int isFree;
   int storesTriple;
   int storesVar;
+  int storesConst;
   int contents;
 }REGISTER;
 
 REGISTER** REGISTER_BANK;
-REGISTER* tempRegister;
+REGISTER** tempRegister;
 
 typedef struct MEMORY_UNIT {
   int positionNumber;
@@ -44,7 +45,11 @@ void initializeRegisterBank();
 void initializeVariables();
 void cleanRuntimeEnvironment();
 int allocateMemory(int n);
+int freeMemory(int initialPosition, int finalPosition);
 int allocateRegister();
+int deallocateRegister(int n);
+void listToDeallocate(int rn);
+int deallocateRegisters();
 void memoryHandler(int position, int value);
 int requestMemory(int identifier, int numberOfPositions);
 void printMemory();

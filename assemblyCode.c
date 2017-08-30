@@ -9,6 +9,7 @@ void asmCode (triple* instruction) {
   if (operation == NONE) { callException("asmCode",13,5); return; }
 
   int i;
+  int t1, t2, t3;
 
   switch (operation) {
     case FNDECL:
@@ -38,52 +39,75 @@ void asmCode (triple* instruction) {
                 callException("asmCode: const packaging",1,5);
               break;
             }
-            addASM( createITYPE( LI, $acc, $zero, packegedConstants) );
+
+            t1 = allocateRegister(2,instruction->firstOperand);
+            listToDeallocate(t1);
+            addASM( createITYPE( LI, t1, $zero, packegedConstants) );
 
         } else if ((instruction->firstOperandType == ConstantNoAddress) && (instruction->secondOperandType == SymboltableAddress)) {
 
-            addASM( createITYPE( LI, $t1, $zero, instruction->firstOperand ) );
-            addASM( createITYPE( LW, $t2, $zero, getVarPosition(instruction->secondOperand) ) );
-            addASM( createRTYPE( operation, $acc, $t1, $t2 ) );
+            t1 = allocateRegister(2,instruction->firstOperand);
+            t2 = allocateRegister(1,instruction->secondOperand);
+            listToDeallocate(t1);
+            listToDeallocate(t2);
+            addASM( createITYPE( LI, t1, $zero, instruction->firstOperand ) );
+            addASM( createITYPE( LW, t2, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createRTYPE( operation, $acc, t1, t2 ) );
 
         } else if ((instruction->firstOperandType == ConstantNoAddress) && (instruction->secondOperandType == TripleAddress)) {
 
-            addASM( createITYPE( LI, $t1, $zero, instruction->firstOperand ) );
-            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+            t1 = allocateRegister(2,instruction->firstOperand);
+            listToDeallocate(t1);
+            addASM( createITYPE( LI, t1, $zero, instruction->firstOperand ) );
+            addASM( createRTYPE( operation, $acc, t1, $acc ) );
 
         } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == ConstantNoAddress)) {
 
-            addASM( createITYPE( LW, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
-            addASM( createITYPE( LI, $t2, $zero, instruction->secondOperand ) );
-            addASM( createRTYPE( operation, $acc, $t1, $t2 ) );
+            t1 = allocateRegister(1,instruction->firstOperand);
+            t2 = allocateRegister(2,instruction->firstOperand);
+            listToDeallocate(t1);
+            listToDeallocate(t2);
+            addASM( createITYPE( LW, t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, t2, $zero, instruction->secondOperand ) );
+            addASM( createRTYPE( operation, $acc, t1, t2 ) );
 
         } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == SymboltableAddress)) {
 
-            addASM( createITYPE( LW, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
-            addASM( createITYPE( LW, $t2, $zero, getVarPosition(instruction->secondOperand) ) );
-            addASM( createRTYPE( operation, $acc, $t1, $t2 ) );
+            t1 = allocateRegister(1,instruction->firstOperand);
+            t2 = allocateRegister(1,instruction->firstOperand);
+            listToDeallocate(t1);
+            listToDeallocate(t2);
+            addASM( createITYPE( LW, t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LW, t2, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createRTYPE( operation, $acc, t1, t2 ) );
 
         } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == TripleAddress)) {
 
-            addASM( createITYPE( LW, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
-            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+            t1 = allocateRegister(1,instruction->firstOperand);
+            listToDeallocate(t1);
+            addASM( createITYPE( LW, t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createRTYPE( operation, $acc, t1, $acc ) );
 
         } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == ConstantNoAddress)) {
 
-            addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
-            addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
+            t1 = allocateRegister(2,instruction->secondOperand);
+            listToDeallocate(t1);
+            addASM( createITYPE( LI, t1, $zero, instruction->secondOperand ) );
+            addASM( createRTYPE( operation, $acc, $acc, t1 ) );
 
         } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == SymboltableAddress)) {
 
-            addASM( createITYPE( LW, $t1, $zero, getVarPosition(instruction->secondOperand) ) );
-            addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
+            t1 = allocateRegister(1,instruction->secondOperand);
+            listToDeallocate(t1);
+            addASM( createITYPE( LW, t1, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createRTYPE( operation, $acc, $acc, t1 ) );
 
         } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == TripleAddress)) {
             callException("asmCode: tr op tr",25,5);
         } else {
             callException("asmCode: arithmetic ops",1,5);
         }
-
+        //deallocateRegisters();
         asmCode(instruction->next);
     break;
     case RET:
@@ -130,32 +154,46 @@ void asmCode (triple* instruction) {
 
         if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == ConstantNoAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
-            addASM( createITYPE( LI, $t2, $zero, instruction->secondOperand ) );
-            addASM( createITYPE( LW, $t2, $t1, 0) );
+            t1 = allocateRegister(1,instruction->firstOperand);
+            listToDeallocate(t1);
+            t2 = allocateRegister(2,instruction->secondOperand);
+            listToDeallocate(t2);
+            addASM( createITYPE( LI, t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, t2, $zero, instruction->secondOperand ) );
+            addASM( createITYPE( LW, t2, t1, 0) );
 
         } else if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == SymboltableAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
-            addASM( createITYPE( LI, $t2, $zero, getVarPosition(instruction->secondOperand) ) );
-            addASM( createITYPE( LW, $t2, $t2, 0) );
-            addASM( createITYPE( LW, $t1, $t2, 0) );
+            t1 = allocateRegister(1,instruction->firstOperand);
+            listToDeallocate(t1);
+            t2 = allocateRegister(1,instruction->secondOperand);
+            listToDeallocate(t2);
+            addASM( createITYPE( LI, t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, t2, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LW, t2, t2, 0) );
+            addASM( createITYPE( LW, t1, t2, 0) );
 
         } else if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == TripleAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
-            addASM( createITYPE( LW, $t1, $acc, 0) );
+            t1 = allocateRegister(1,instruction->firstOperand);
+            listToDeallocate(t1);
+            addASM( createITYPE( LI, t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LW, t1, $acc, 0) );
 
         } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == ConstantNoAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
-            addASM( createITYPE( LW, $acc, $t1, 0) );
+            t1 = allocateRegister(2,instruction->secondOperand);
+            listToDeallocate(t1);
+            addASM( createITYPE( LI, t1, $zero, instruction->secondOperand ) );
+            addASM( createITYPE( LW, $acc, t1, 0) );
 
         } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == SymboltableAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->secondOperand) ) );
-            addASM( createITYPE( LW, $t1, $t1, 0) );
-            addASM( createITYPE( LW, $acc, $t1, 0) );
+            t1 = allocateRegister(1,instruction->secondOperand);
+            listToDeallocate(t1);
+            addASM( createITYPE( LI, t1, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LW, t1, t1, 0) );
+            addASM( createITYPE( LW, $acc, t1, 0) );
 
         } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == TripleAddress) ) {
 

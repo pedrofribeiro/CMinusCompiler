@@ -25,7 +25,7 @@ void initializeMemory(){
 
 void initializeRegisterBank(){
   REGISTER_COUNTER = 0;
-  CONTINUOUS_REG_ALLOCATION = RESERVED_REGISTERS;
+  OCCUPIED_REGS = 0;
   REGISTER_BANK = malloc(sizeof(REGISTER)*REGISTER_BANK_SIZE);
   if (REGISTER_BANK == NULL) { callException("initializeRegisterBank",3,5); return; }
   size_t i;
@@ -34,13 +34,22 @@ void initializeRegisterBank(){
     if (REGISTER_BANK[i] == NULL) { callException("initializeRegisterBank",3,5); return; }
     REGISTER_BANK[i]->regNumber = REGISTER_COUNTER;
     REGISTER_COUNTER = REGISTER_COUNTER + 1;
-    REGISTER_BANK[i]->isFree = (i < RESERVED_REGISTERS) ? TRUE : FALSE;;
+    if (i < RESERVED_REGISTERS) REGISTER_BANK[i]->isFree = FALSE;
+    else REGISTER_BANK[i]->isFree = TRUE;
     REGISTER_BANK[i]->storesTriple = -1;
     REGISTER_BANK[i]->storesVar = -1;
+    REGISTER_BANK[i]->storesConst = -1;
     REGISTER_BANK[i]->contents = -1;
   }
   tempRegister = malloc(sizeof(REGISTER)*1);
   if (tempRegister == NULL) { callException("initializeRegisterBank",3,5); return; }
+    tempRegister[0] = malloc(sizeof(REGISTER)*1);
+    tempRegister[0]->regNumber = -1;
+    tempRegister[0]->isFree = TRUE;
+    tempRegister[0]->storesVar = -1;
+    tempRegister[0]->storesTriple = -1;
+    tempRegister[0]->storesConst = -1;
+    tempRegister[0]->contents = -1;
 }
 
 void initializeVariables(){
@@ -96,25 +105,61 @@ int allocateMemory(int n){
 }
 
 
-int allocateRegister(){
+int allocateRegister(int type, int id){
   int i;
   for (i = RESERVED_REGISTERS; i < REGISTER_BANK_SIZE; i++) {
     if (REGISTER_BANK[i]->isFree == TRUE) {
       REGISTER_BANK[i]->isFree = FALSE;
-      return i;
+      if (type == 0){
+          REGISTER_BANK[i]->storesVar = -1;
+          REGISTER_BANK[i]->storesTriple = id;
+          REGISTER_BANK[i]->storesConst = -1;
+      } else if (type == 1) {
+          REGISTER_BANK[i]->storesVar = id;
+          REGISTER_BANK[i]->storesTriple = -1;
+          REGISTER_BANK[i]->storesConst = -1;
+      } else {
+        REGISTER_BANK[i]->storesVar = -1;
+        REGISTER_BANK[i]->storesTriple = -1;
+        REGISTER_BANK[i]->storesConst = id;
+      }
+      OCCUPIED_REGS++;
+      return REGISTER_BANK[i]->regNumber;
     }
   }
   return -999;
 }
 
 
+void listToDeallocate(int rn){
+  if (rn > REGISTER_BANK_SIZE) { callException("listToDeallocate",8,5); return;}
+  if (rn < RESERVED_REGISTERS) { callException("listToDeallocate",8,5); return;}
+  if ( tempRegister[0]->isFree == TRUE ){
+      tempRegister[0]->isFree = FALSE;
+      tempRegister[0]->regNumber = rn;
+  } else {
+      int size = OCCUPIED_REGS + 1;
+      tempRegister = realloc(tempRegister,sizeof(REGISTER)*size);
+      tempRegister[OCCUPIED_REGS] = malloc(sizeof(REGISTER)*1);
+      tempRegister[OCCUPIED_REGS]->isFree = FALSE;
+      tempRegister[OCCUPIED_REGS]->regNumber = rn;
+  }
+}
+
 int deallocateRegister(int n){
-  if (n > REGISTER_BANK_SIZE) { callException("deallocateRegister",8,5); return -999;}
-  if (n < RESERVED_REGISTERS) { callException("deallocateRegister",8,5); return -999;}
+  if (n > REGISTER_BANK_SIZE) { callException("listToDeallocate",8,5); return -999;}
+  if (n < RESERVED_REGISTERS) { callException("listToDeallocate",8,5); return -999;}
   REGISTER_BANK[n]->isFree = TRUE;
   return 1;
 }
 
+int deallocateRegisters(){
+  size_t i;
+  for (i = 0; i < OCCUPIED_REGS; i++) {
+    REGISTER_BANK[tempRegister[i]->regNumber]->isFree = TRUE;
+  }
+  return 1;
+}
 
 void memoryHandler(int position, int value){
   if (position > MEMORY_SIZE) { callException("memoryHandler",8,5); return; }
@@ -167,7 +212,7 @@ void printRegisterBank(){
     if (REGISTER_BANK[i]->isFree == TRUE)
       printf("%d [             ]\n",REGISTER_BANK[i]->regNumber);
     else
-      printf("%d [ (%d|%d) : %d ]\n",REGISTER_BANK[i]->regNumber,REGISTER_BANK[i]->storesVar,REGISTER_BANK[i]->storesTriple,REGISTER_BANK[i]->contents);
+      printf("%d [ (%d|%d|%d) : %d ]\n",REGISTER_BANK[i]->regNumber,REGISTER_BANK[i]->storesVar,REGISTER_BANK[i]->storesTriple,REGISTER_BANK[i]->storesConst,REGISTER_BANK[i]->contents);
   }
 }
 
