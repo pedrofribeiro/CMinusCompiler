@@ -15,6 +15,12 @@ void asmCode (triple* instruction) {
     case FNDECL:
 
     break;
+    case EQL:
+    case DIFE:
+    case GRT:
+    case LST:
+    case GTE:
+    case LTE:
     case ADD:
     case SUB:
     case MUL:
@@ -34,6 +40,24 @@ void asmCode (triple* instruction) {
               break;
               case DIV:
                 packegedConstants = instruction->firstOperand / instruction->secondOperand;
+              break;
+              case EQL:
+                packegedConstants = instruction->firstOperand == instruction->secondOperand;
+              break;
+              case DIFE:
+                packegedConstants = instruction->firstOperand != instruction->secondOperand;
+              break;
+              case GRT:
+                packegedConstants = instruction->firstOperand > instruction->secondOperand;
+              break;
+              case LST:
+                packegedConstants = instruction->firstOperand < instruction->secondOperand;
+              break;
+              case GTE:
+                packegedConstants = instruction->firstOperand >= instruction->secondOperand;
+              break;
+              case LTE:
+                packegedConstants = instruction->firstOperand <= instruction->secondOperand;
               break;
               default:
                 callException("asmCode: const packaging",1,5);
@@ -182,7 +206,7 @@ void asmCode (triple* instruction) {
             /*this only happens if a vector is receiving its value from an operation
               vectors have a SPECIAL dedicated $reg for its parameter return, its $rv
             */
-            addASM ( createITYPE ( SW, $rv, $acc, $zero ) );
+            addASM( createITYPE( SW, $rv, $acc, $zero ) );
 
         } else {
             callException("asmCode: ATR",26,5);
@@ -191,8 +215,10 @@ void asmCode (triple* instruction) {
 
     break;
     case IF_F:
+        addASM( createRTYPE( BEQ, $acc, $zero, 222 ) );
     break;
     case GOTO:
+        addASM( createJTYPE( JUMP, 111 ) );
     break;
     case V_IN:
         if (instruction->secondOperandType == ConstantNoAddress) {
@@ -220,25 +246,13 @@ void asmCode (triple* instruction) {
             callException("asmCode: V_IN",1,5);
         }
     break;
-    case EQL:
-    break;
-    case DIFE:
-    break;
-    case GRT:
-    break;
-    case LST:
-    break;
-    case GTE:
-    break;
-    case LTE:
-    break;
     case G_VAR:
         /*
         sw $zero 0($sp)
         addiu $sp $sp 1
         */
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
-        addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+        addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
         int gvarCreation;
         gvarCreation = setVarPosition(instruction->firstOperand,1);
         if (gvarCreation == -999) { callException("asmCode: G_VAR",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
@@ -248,14 +262,15 @@ void asmCode (triple* instruction) {
       /*
       loop n, n = number of parameters
         sw $zero 0($sp)
-        addiu $sp $sp 1
+        addiu $sp $sp 1*/
         for (i = 0; i < instruction->secondOperand; i++) {
-      }*/
-      addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
-      addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+            addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
+            addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
+        }
       int gvetCreation;
       gvetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand);
       if (gvetCreation == -999) { callException("asmCode: G_VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
+
     break;
     case VET:
         /*
@@ -265,12 +280,13 @@ void asmCode (triple* instruction) {
         */
 
         for (i = 0; i < instruction->secondOperand; i++) {
-          addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
-          addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+            addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
+            addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
         }
         int vetCreation;
         vetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand);
         if (vetCreation == -999) { callException("asmCode: VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
+
     break;
     case VAR:
         /*
@@ -278,10 +294,11 @@ void asmCode (triple* instruction) {
         addiu $sp $sp 1
         */
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
-        addASM ( createITYPE ( ADDIU, $sp, $sp, 1 ) );
+        addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
         int varCreation;
         varCreation = setVarPosition(instruction->firstOperand,1);
         if (varCreation == -999) { callException("asmCode: VAR",20,5); printf("TN:%d, st id(%d)\n",instruction->tripleNumber,instruction->firstOperand); return; }
+
     break;
     default:
         callException("asmCode",1,5);
@@ -309,7 +326,7 @@ void generateAssembly(triple* List){
   //adjustASM();
   printASM(0);
   printVars();
-  printRegisterBank();
+  //printRegisterBank();
   printMemory();
 
   /*cleaning up*/

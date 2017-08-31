@@ -61,7 +61,7 @@ extern char* GUARDAESCOPO;
 
 
 /* Machine specific control variables*/
-#define MEMORY_SIZE 100
+#define MEMORY_SIZE 50
 #define RESERVED_MEMORY 0
 #define REGISTER_BANK_SIZE 32
 #define RESERVED_REGISTERS 9 /*$zero, $one, $acc, $sp, $fp, $ra, $rv, $paramp, $gp */

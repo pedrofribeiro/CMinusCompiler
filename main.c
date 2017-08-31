@@ -36,8 +36,8 @@ FILE * listing;
 
 /* allocate and set tracing flags */
 int EchoSource = TRUE;
-int TraceScan = TRUE;
-int TraceParse = TRUE;
+int TraceScan = FALSE;
+int TraceParse = FALSE;
 int TraceAnalyze = TRUE;
 int TraceIntermCode = TRUE;
 int TraceASM = TRUE;
@@ -60,11 +60,12 @@ int main( int argc, char * argv[] )
   { fprintf(stderr,"O ARQUIVO: %s NAO FOI ENCONTRADO.\n",pgm);
     exit(1);
   }
-  listing = stdout; /* send listing to screen */
-  fprintf(listing,"\n\n\nPROCESSO DE COMPILACAO INICIADO. %s\n\n",pgm);
-  fprintf(listing,"\n\n===================================\n\n");
-  fprintf(listing,"ANALISE LEXICA.");
-  fprintf(listing,"\n===================================\n\n");
+
+    listing = stdout; /* send listing to screen */
+    fprintf(listing,"\n\n\nPROCESSO DE COMPILACAO INICIADO. %s\n\n",pgm);
+    fprintf(listing,"\n\n===================================\n\n");
+    fprintf(listing,"ANALISE LEXICA.");
+    fprintf(listing,"\n===================================\n\n");
 
 #if NO_PARSE
   while (getToken()!=ENDFILE);
