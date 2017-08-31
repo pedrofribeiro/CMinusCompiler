@@ -1,3 +1,4 @@
+int x[2];
 int soma (int x, int y){
 	return x+y;
 }
@@ -12,5 +13,6 @@ void main (void) {
 	a = 2;
 	b = a+3+4;
 	b = soma(a,b);
+	x[a+1] = a+2;
 return;
 }

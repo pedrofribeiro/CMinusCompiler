@@ -196,6 +196,9 @@ char* toChar(Operation op, Register reg){
           case JR:
             strcpy(resultString,"JR");
           break;
+          case JAL:
+            strcpy(resultString,"JAL");
+          break;
           case NONE:
             strcpy(resultString,"");
           break;
