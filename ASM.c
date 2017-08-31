@@ -138,8 +138,8 @@ char* toChar(Operation op, Register reg){
 
   if ((op != NONE) && (reg == $none)) control = 1;
   else if ((op == NONE) && (reg != $none)) control = 2;
-  else if ((op != NONE) && (reg != $none)){ callException("toChar",21,5); return NULL; }
-  else if ((op == NONE) && (reg == $none)){ callException("toChar",21,5); return NULL; }
+  else if ((op != NONE) && (reg != $none)){ callException("toChar: dif",21,5); return NULL; }
+  else if ((op == NONE) && (reg == $none)){ callException("toChar: eq",21,5); return NULL; }
 
   switch (control) {
     case 1:
@@ -244,8 +244,7 @@ char* toChar(Operation op, Register reg){
             strcpy(resultString,"");
           break;
           default:
-            callException("toChar: reg",1,5);
-            return NULL;
+            sprintf(resultString,"$t%d",reg);
           break;
         }
 

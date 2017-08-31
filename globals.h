@@ -64,7 +64,7 @@ extern char* GUARDAESCOPO;
 #define MEMORY_SIZE 100
 #define RESERVED_MEMORY 0
 #define REGISTER_BANK_SIZE 32
-#define RESERVED_REGISTERS 4 //zero,sp,fp,gp
+#define RESERVED_REGISTERS 9 /*$zero, $one, $acc, $sp, $fp, $ra, $rv, $paramp, $gp */
 
 int MEMORY_COUNTER;
 int REGISTER_COUNTER;

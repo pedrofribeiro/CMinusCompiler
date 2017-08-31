@@ -131,6 +131,10 @@ int allocateRegister(int type, int id){
   return -999;
 }
 
+void setRegister(int rn, int value){
+  if (rn > REGISTER_BANK_SIZE) { callException("setRegister",8,5); return;}
+  REGISTER_BANK[rn]->contents = value;
+}
 
 void listToDeallocate(int rn){
   if (rn > REGISTER_BANK_SIZE) { callException("listToDeallocate",8,5); return;}

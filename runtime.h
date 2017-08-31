@@ -4,7 +4,12 @@
 #include "globals.h"
 #include "util.h"
 
-typedef enum {$acc, $zero, $sp, $fp, $ra, $t1, $t2, $rv, $paramp, $gp, $none} Register;
+typedef enum {$zero, $one, $acc, $sp, $fp,
+              $ra, $rv, $paramp, $gp, $t1,
+              $t2, $t3, $t4, $t5, $t6, $t7,
+              $t8, $t9, $t10, $t11, $t12,
+              $t13, $t14, $t15, $t16, $t17,
+              $t18, $t19, $t20, $t21, $t22, $none} Register;
 
 int OCCUPIED_REGS;
 int REGS_TO_FREE;
@@ -47,10 +52,11 @@ void initializeVariables();
 void cleanRuntimeEnvironment();
 int allocateMemory(int n);
 int freeMemory(int initialPosition, int finalPosition);
-int allocateRegister();
+int allocateRegister(int type, int id);
 int deallocateRegister(int n);
 void listToDeallocate(int rn);
 int deallocateRegisters();
+void setRegister(int rn, int value);
 void memoryHandler(int position, int value);
 int requestMemory(int identifier, int numberOfPositions);
 void printMemory();
