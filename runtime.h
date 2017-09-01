@@ -77,6 +77,7 @@ int setNamePosition(int id, int np);
 int getNamePosition(int id);
 void printVars();
 
-
+void initializeAlignments();
+void setAlignment(int asmNumber, int destination);
 
 #endif

@@ -76,7 +76,7 @@ void asmCode (triple* instruction) {
             addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
             if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
-              logicalBranch(operation);
+              logicalBranch(operation, instruction->next->secondOperand);
             else
               addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
             setRegister(2,instruction->firstOperand);
@@ -86,7 +86,7 @@ void asmCode (triple* instruction) {
 
             addASM( createITYPE( LI, $t1, $zero, instruction->firstOperand ) );
             if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
-              logicalBranch(operation);
+              logicalBranch(operation, instruction->next->secondOperand);
             else
               addASM( createRTYPE( operation, $acc, $t1, $acc ) );
             setRegister(9,instruction->firstOperand);
@@ -97,7 +97,7 @@ void asmCode (triple* instruction) {
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
             addASM( createITYPE( LI, $acc, $zero, instruction->secondOperand ) );
             if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
-              logicalBranch(operation);
+              logicalBranch(operation, instruction->next->secondOperand);
             else
               addASM( createRTYPE( operation, $acc, $t1, $acc ) );
             setRegister(9,getNamePosition(instruction->firstOperand));
@@ -110,7 +110,7 @@ void asmCode (triple* instruction) {
             addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $acc, $acc, 0 ) );
             if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
-              logicalBranch(operation);
+              logicalBranch(operation, instruction->next->secondOperand);
             else
               addASM( createRTYPE( operation, $acc, $t1, $acc ) );
             setRegister(9,getNamePosition(instruction->firstOperand));
@@ -121,7 +121,7 @@ void asmCode (triple* instruction) {
             addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
             if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
-              logicalBranch(operation);
+              logicalBranch(operation, instruction->next->secondOperand);
             else
               addASM( createRTYPE( operation, $acc, $t1, $acc ) );
             setRegister(9,getNamePosition(instruction->firstOperand));
@@ -131,7 +131,7 @@ void asmCode (triple* instruction) {
 
             addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
             if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
-              logicalBranch(operation);
+              logicalBranch(operation, instruction->next->secondOperand);
             else
               addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
             setRegister($t1,instruction->secondOperand);
@@ -141,7 +141,7 @@ void asmCode (triple* instruction) {
             addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
             if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
-              logicalBranch(operation);
+              logicalBranch(operation, instruction->next->secondOperand);
             else
               addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
             setRegister($t1,getNamePosition(instruction->secondOperand));
@@ -239,7 +239,8 @@ void asmCode (triple* instruction) {
         //addASM( createITYPE( BEQ, $acc, $zero, 222 ) );
     break;
     case GOTO:
-        addASM( createJTYPE( JUMP, 111 ) );
+        addASM( createJTYPE( JUMP, instruction->firstOperand ) );
+        toBeAligned(currentASMNumber());
     break;
     case V_IN:
         if (instruction->secondOperandType == ConstantNoAddress) {
@@ -341,13 +342,26 @@ void generateAssembly(triple* List){
   }
 
   TRACE_ASM_GEN = FALSE;
+
   RuntimeEnvironmentStart();
   initializeASMList();
+
   while (List != NULL) {
     asmCode(List);
+    /*marcar no gerador de código intermediário quais as triplas que vão precisar de ajustes
+    e ficar de sentinela nesse ponto, dentro do loop. Comparando o número da tripla corrente
+    com os números das triplas que precisarão de ajustes. Se der match, basta setar o Alignment
+    com o número do currentASMNumber() e pronto!
+    */
+
+    if (seekAlignment(List->tripleNumber) == 1) {
+      setAlignment(List->tripleNumber,currentASMNumber());
+    }
+
     List = List->next;
   }
-  //adjustASM();
+
+  Align();
   printASM(0);
   printVars();
   cleanTriples();

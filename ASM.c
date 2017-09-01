@@ -9,6 +9,7 @@ ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2){
   }
   NUMBER_OF_ASM = NUMBER_OF_ASM + 1;
   newInstruction->type = RTYPE;
+  newInstruction->needsAlignment = FALSE;
   newInstruction->rtype.cpu_operation = cop;
   newInstruction->rtype.rd = rd;
   newInstruction->rtype.r1 = r1;
@@ -28,6 +29,7 @@ ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm){
   }
   NUMBER_OF_ASM = NUMBER_OF_ASM + 1;
   newInstruction->type = ITYPE;
+  newInstruction->needsAlignment = FALSE;
   newInstruction->itype.cpu_operation = cop;
   newInstruction->itype.rd = rd;
   newInstruction->itype.r1 = r1;
@@ -47,6 +49,7 @@ ASM_INSTR* createJTYPE(Operation cop, int addr){
   }
   NUMBER_OF_ASM = NUMBER_OF_ASM + 1;
   newInstruction->type = JTYPE;
+  newInstruction->needsAlignment = FALSE;
   newInstruction->jtype.cpu_operation = cop;
   newInstruction->jtype.address = addr;
   newInstruction->asmNumber = NUMBER_OF_ASM;
@@ -64,6 +67,7 @@ ASM_INSTR* createLTYPE(char cop[], int addr){
   }
   NUMBER_OF_ASM = NUMBER_OF_ASM + 1;
   newInstruction->type = LTYPE;
+  newInstruction->needsAlignment = FALSE;
   strcpy(newInstruction->ltype.functionName,cop);
   newInstruction->ltype.asmAddress = addr;
   newInstruction->asmNumber = NUMBER_OF_ASM;
@@ -128,6 +132,7 @@ int adjustASM(int an, int field, int nv){
       if (field == 1) { tempAsm->itype.immediate = nv; }
       else if (field == 2) { tempAsm->jtype.address = nv; }
       else if (field == 3) { tempAsm->ltype.asmAddress = nv; }
+      printf("Endereço de salto alterado para %d.\n",nv);
       return 1;
     } else { tempAsm = tempAsm->next; }
     /*safe loop measure*/
@@ -276,31 +281,51 @@ char* toChar(Operation op, Register reg){
 }
 
 
-void logicalBranch(Operation op){
+void toBeAligned(int asmNumber){
+  if ((asmNumber < 0) || (asmNumber > NUMBER_OF_ASM)) { callException("toBeAligned",8,5); return; }
+
+  int SAFE_LOOP = 0;
+  tempAsm = asmList->next;
+
+  while (tempAsm != NULL) {
+    if (tempAsm->asmNumber == asmNumber) {
+      tempAsm->needsAlignment = TRUE;
+      printf("A instrução %d precisa ter seu endereço de destino alinhado.\n",asmNumber);
+    }
+
+    SAFE_LOOP++;
+    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("toBeAligned",10,5); return; }
+
+    tempAsm = tempAsm->next;
+  }
+}
+
+void logicalBranch(Operation op, int tripleNumber){
   switch (op) {
     case EQL:
       addASM( createRTYPE( SUB, $acc, $acc, $t1 ) );
-      addASM( createITYPE( BNE, $acc, $zero, 0000 ) );
+      addASM( createITYPE( BNE, $acc, $zero, tripleNumber ) );
     break;
     case DIFE:
       addASM( createRTYPE( SUB, $acc, $acc, $t1 ) );
-      addASM( createITYPE( BEQ, $acc, $zero, 1111 ) );
+      addASM( createITYPE( BEQ, $acc, $zero, tripleNumber ) );
     break;
     case GRT:
-      addASM( createITYPE( BLE, $acc, $t1, 2222 ) );
+      addASM( createITYPE( BLE, $acc, $t1, tripleNumber ) );
     break;
     case LST:
-      addASM( createITYPE( BGE, $acc, $t1, 3333 ) );
+      addASM( createITYPE( BGE, $acc, $t1, tripleNumber ) );
     break;
     case GTE:
-      addASM( createITYPE( BLT, $acc, $t1, 4444 ) );
+      addASM( createITYPE( BLT, $acc, $t1, tripleNumber ) );
     break;
     case LTE:
-      addASM( createITYPE( BGT, $acc, $t1, 5555 ) );
+      addASM( createITYPE( BGT, $acc, $t1, tripleNumber ) );
     break;
     default:
     break;
   }
+  toBeAligned(currentASMNumber());
 }
 
 
@@ -434,6 +459,136 @@ Operation getOperation(triple *tr){
   return NONE;
 }
 
+
+void initializeAlignments(){
+  AlignmentList = malloc(sizeof(Alignment)*1);
+  if (AlignmentList == NULL) { callException("initializeAlignments",3,5); return; }
+  AlignmentList->asmNumber = -1;
+  AlignmentList->tripleNumber = -1;
+  AlignmentList->kind = -1;
+  AlignmentList->next = NULL;
+  tempAlignment = malloc(sizeof(Alignment)*1);
+  if (tempAlignment == NULL) { callException("initializeAlignments",3,5); return; }
+  tempAlignment->asmNumber = -1;
+  tempAlignment->tripleNumber = -1;
+  tempAlignment->kind = -1;
+  tempAlignment->next = NULL;
+  printf("Alinhamentos inicializados\n");
+}
+
+
+void needsAlignment(int tripleNumber, int kind){
+  if (AlignmentList == NULL) { callException("needsAlignment",4,5); return; }
+
+  Alignment* newAlignment = malloc(sizeof(Alignment)*1);
+  if (newAlignment == NULL) { callException("needsAlignment",3,5); return; }
+  newAlignment->asmNumber = -1;
+  newAlignment->tripleNumber = tripleNumber;
+  newAlignment->kind = kind;
+  newAlignment->next = NULL;
+
+  if(AlignmentList->next == NULL)
+    AlignmentList->next = newAlignment;
+  else{
+    int SAFE_LOOP = 0;
+    tempAlignment = AlignmentList->next;
+
+    while (tempAlignment->next != NULL) {
+      tempAlignment = tempAlignment->next;
+      SAFE_LOOP++;
+      if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("needsAlignment",10,5); return; }
+    }
+    tempAlignment->next = newAlignment;
+  }
+  printf("Alinhamento criado para a tripla %d\n",tripleNumber);
+}
+
+
+void setAlignment(int tripleNumber, int asmNumber){
+  if (tripleNumber > NUMBER_OF_TRIPLES) { callException("setAlignment",8,5); return; }
+  if (AlignmentList == NULL) { callException("setAlignment",4,5); return; }
+  if (AlignmentList->next == NULL) { callException("setAlignment",4,5); return; }
+
+  int SAFE_LOOP = 0;
+  tempAlignment = AlignmentList->next;
+
+  while (tempAlignment != NULL) {
+    if (tempAlignment->tripleNumber == tripleNumber) {
+      tempAlignment->asmNumber = asmNumber;
+      printf("Alinhamento da tripla %d ajustado para ASM %d\n",tripleNumber,asmNumber);
+      return;
+    }
+    SAFE_LOOP++;
+    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setAlignment",10,5); return; }
+    tempAlignment = tempAlignment->next;
+  }
+}
+
+int seekAlignment(int tripleNumber){
+  int SAFE_LOOP = 0;
+  tempAlignment = AlignmentList->next;
+
+  while (tempAlignment != NULL) {
+    if (tempAlignment->tripleNumber == tripleNumber) {
+      printf("Alinhamento necessario encontrado para a tripla %d\n",tripleNumber);
+      return 1;
+    }
+    SAFE_LOOP++;
+    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("seekAlignment",10,5); return -999; }
+    tempAlignment = tempAlignment->next;
+  }
+  return -999;
+}
+
+void Align(){
+  if (AlignmentList == NULL) { callException("Align",4,5); return; }
+  if (AlignmentList->next == NULL) { callException("Align",4,5); return; }
+
+  int SAFE_LOOP = 0;
+  tempAlignment = AlignmentList->next;
+  tempAsm = asmList->next;
+
+  while (tempAsm != NULL) {
+
+    tempAlignment = AlignmentList->next;
+
+    if (tempAsm->needsAlignment == FALSE){
+      tempAsm = tempAsm->next;
+      continue;
+    }
+
+    while (tempAlignment != NULL) {
+
+        if (tempAsm->type == JTYPE) {
+              if (tempAsm->jtype.address == tempAlignment->tripleNumber) {
+                    adjustASM(tempAsm->asmNumber,2,tempAlignment->asmNumber);
+                    printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
+                    tempAlignment = tempAlignment->next;
+                    break;
+              } else {
+                    tempAlignment = tempAlignment->next;
+                    continue;
+              }
+        } else if (tempAsm->type == ITYPE) {
+              if (tempAsm->itype.immediate == tempAlignment->tripleNumber) {
+                    adjustASM(tempAsm->asmNumber,1,tempAlignment->asmNumber);
+                    printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
+                    tempAlignment = tempAlignment->next;
+                    break;
+              } else {
+                    tempAlignment = tempAlignment->next;
+                    continue;
+              }
+        }
+        tempAlignment = tempAlignment->next;
+    }
+
+    tempAsm = tempAsm->next;
+    SAFE_LOOP++;
+    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("Align",10,5); return; }
+
+  }
+}
 
 
 void initializeASMList(){

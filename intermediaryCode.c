@@ -131,7 +131,9 @@ void evalStmt(TreeNode *node){
         int adjustment;
         adjustment = adjustTriple(ifTriple,2,elseTriple); /*goes to the triple after the true part*/
         if (adjustment != 1) { callException("evalStmt: IfK",9,4); }
-
+      //new code <
+      needsAlignment(elseTriple,1);
+      //new code >
       } else { /*there is an else part*/
 
           evalProgram(p0);
@@ -145,13 +147,18 @@ void evalStmt(TreeNode *node){
             int adjustment;
             adjustment = adjustTriple(ifTriple,2,elseTriple); /*goes to the triple after the true part*/
             if (adjustment != 1) { callException("evalStmt: IfK",9,4); }
+        //new code <
+        needsAlignment(elseTriple,1);
+        //new code >
           evalProgram(p2);
           int addrToJumpElsePart;
           addrToJumpElsePart = NUMBER_OF_TRIPLES+1;
             int secondAdjustment;
             secondAdjustment = adjustTriple(gotoTriple,1,addrToJumpElsePart);
             if (secondAdjustment != 1) { callException("evalStmt: IfK",9,4); }
-
+        //new code <
+        needsAlignment(addrToJumpElsePart,2);
+        //new code >
       }
     break;
     case RepeatK:
@@ -175,7 +182,10 @@ void evalStmt(TreeNode *node){
         int adjustment;
         adjustment = adjustTriple(repeatTriple,2,addrToJump);
         if (adjustment != 1) { callException("evalStmt: RepeatK",9,4); }
-
+    //new code <
+    needsAlignment(addrToJump,1);
+    needsAlignment(testTriple,2);
+    //new code >
     break;
     case FunK:
       _VERBOSE_4 printf("[FunK]\n");
@@ -495,10 +505,13 @@ void cleanTriples(){
 
 void generateIntermediaryCode(TreeNode * t){
   initializeTripleList();
+  initializeAlignments();
+
   TRACE_TREE_WALK = FALSE;
-  CURRENT_FUNCTION = (char*) malloc(sizeof(char)*6);
+  CURRENT_FUNCTION = malloc(sizeof(char)*10);
   if (CURRENT_FUNCTION == NULL) { callException("generateIntermediaryCode: scope",3,4); return; }
   strcpy(CURRENT_FUNCTION,"global");
+
   evalProgram(t);
   printTripleList();
 }

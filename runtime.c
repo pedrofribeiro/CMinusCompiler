@@ -348,5 +348,4 @@ void printVars(){
     SAFE_LOOP++;
     if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("printVars",10,5); return; }
   }
-
 }

@@ -3,6 +3,7 @@
 
 #include "globals.h"
 #include "symtab.h"
+#include "ASM.h"
 
 void evalStmt(TreeNode *node);
 

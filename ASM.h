@@ -20,6 +20,16 @@ typedef enum {ADD,SUB,MUL,DIV,RET,
 
 int NUMBER_OF_ASM;
 
+typedef struct Alignment {
+  int tripleNumber;
+  int asmNumber;
+  int kind;
+  struct Alignment* next;
+}Alignment;
+
+Alignment* AlignmentList;
+Alignment* tempAlignment;
+
 typedef struct ASM_RTYPE {
   Operation cpu_operation;
   Register rd;
@@ -46,6 +56,7 @@ typedef struct ASM_LTYPE {
 
 typedef struct ASM_INSTR {
   ASM_INSTR_TYPE type;
+  int needsAlignment;
   union{
     ASM_RTYPE rtype;
     ASM_ITYPE itype;
@@ -74,12 +85,19 @@ void initializeASMList();
 
 char* toChar(Operation op, Register reg);
 
-void logicalBranch(Operation op);
+void logicalBranch(Operation op, int tripleNumber);
 
 void printASM();
 
 void cleanASM();
 
 int currentASMNumber();
+
+void initializeAlignments();
+void toBeAligned(int asmNumber);
+int seekAlignment(int tripleNumber);
+void needsAlignment(int tripleNumber, int kind);
+void setAlignment(int tripleNumber, int asmNumber);
+void Align();
 
 #endif
