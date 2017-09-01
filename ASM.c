@@ -579,6 +579,16 @@ void Align(){
                     tempAlignment = tempAlignment->next;
                     continue;
               }
+        } else if (tempAsm->type == LTYPE) {
+              if (tempAsm->ltype.asmAddress == tempAlignment->tripleNumber) {
+                    adjustASM(tempAsm->asmNumber,3,tempAlignment->asmNumber);
+                    printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
+                    tempAlignment = tempAlignment->next;
+                    break;
+              } else {
+                    tempAlignment = tempAlignment->next;
+                    continue;
+              }
         }
         tempAlignment = tempAlignment->next;
     }

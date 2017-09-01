@@ -186,6 +186,7 @@ void evalStmt(TreeNode *node){
     needsAlignment(addrToJump,1);
     needsAlignment(testTriple,2);
     //new code >
+    
     break;
     case FunK:
       _VERBOSE_4 printf("[FunK]\n");
@@ -198,6 +199,10 @@ void evalStmt(TreeNode *node){
 
       addTriple(node->attr.name,-999,-999,EmptyAddress,EmptyAddress);
       int fnTriple = NUMBER_OF_TRIPLES;
+
+      //new code <
+      needsAlignment(fnTriple+1,1); //subsequent instruction after the LTYPE
+      //new code >
 
       evalProgram(p0); /*evaluates the arguments*/
       evalProgram(p1); /*evaluates the fn code*/

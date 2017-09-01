@@ -30,6 +30,8 @@ triple* addTriple(char op[], int fo, int so, operandType fot, operandType sot);
 
 int adjustTriple(int tn, int ope, int nv);
 
+int returnFunctionTriple(char* functionName);
+
 void printTripleList();
 
 void initializeTripleList();

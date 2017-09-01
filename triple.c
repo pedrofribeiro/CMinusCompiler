@@ -115,6 +115,23 @@ void printTripleList(){
   }
 }
 
+
+int returnFunctionTriple(char* functionName){
+  if (functionName == NULL) { callException("returnFunctionTriple",25,5); return -999; }
+  if (tripleList == NULL) { callException("printTripleList",4,4); return; }
+
+  int SAFE_LOOP = 0;
+  tempTriple = tripleList->next;
+
+  while (tempTriple != NULL) {
+    if (strcmp(tempTriple->operation,functionName) == 0) {
+      return tempTriple->tripleNumber;
+    }
+    tempTriple = tempTriple->next;
+  }
+  return -999;
+}
+
 void initializeTripleList(){
   NUMBER_OF_TRIPLES = -2;
   NUMBER_OF_VARS = 0;

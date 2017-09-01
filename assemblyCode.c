@@ -190,7 +190,12 @@ void asmCode (triple* instruction) {
         }
     break;
     case CALL:
-        addASM ( createJTYPE ( JAL, getNamePosition(instruction->firstOperand)) );
+        /* preciso encontrar um modo da chamada de função carregar consigo o nome da função
+          ou ainda, um meio de retornar um nome a partir de um id na tabela de símbolos, e
+          usar isso na função returnFunctionTriple().
+        */
+        addASM ( createJTYPE ( JAL, returnFunctionTriple("soma")) );
+        toBeAligned(currentASMNumber());
     break;
     case ATR:
 
