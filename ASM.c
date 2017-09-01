@@ -19,6 +19,7 @@ ASM_INSTR* createRTYPE(Operation cop, Register rd, Register r1, Register r2){
   return newInstruction;
 }
 
+
 ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm){
   ASM_INSTR* newInstruction = malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
@@ -37,6 +38,7 @@ ASM_INSTR* createITYPE(Operation cop, Register rd, Register r1, int imm){
   return newInstruction;
 }
 
+
 ASM_INSTR* createJTYPE(Operation cop, int addr){
   ASM_INSTR* newInstruction = malloc(sizeof(ASM_INSTR)*1);
   if (newInstruction == NULL) {
@@ -52,6 +54,7 @@ ASM_INSTR* createJTYPE(Operation cop, int addr){
   _VERBOSE_5 printf("[J] %d: %d %d \n",newInstruction->asmNumber,newInstruction->jtype.cpu_operation,newInstruction->jtype.address);
   return newInstruction;
 }
+
 
 ASM_INSTR* createLTYPE(char cop[], int addr){
   ASM_INSTR* newInstruction = malloc(sizeof(ASM_INSTR)*1);
@@ -69,8 +72,13 @@ ASM_INSTR* createLTYPE(char cop[], int addr){
   return newInstruction;
 }
 
-void addASM(ASM_INSTR* newInstruction){
 
+int currentASMNumber(){
+  return NUMBER_OF_ASM;
+}
+
+
+void addASM(ASM_INSTR* newInstruction){
   if (newInstruction == NULL) {
     callException("addASM",14,5);
     return;
@@ -103,6 +111,7 @@ void addASM(ASM_INSTR* newInstruction){
 
 }
 
+
 int adjustASM(int an, int field, int nv){
   if ((an <= 0) || (an > NUMBER_OF_ASM)) {
     callException("adjustASM: number of asm",8,5);
@@ -131,8 +140,8 @@ int adjustASM(int an, int field, int nv){
   return -1;
 }
 
-char* toChar(Operation op, Register reg){
 
+char* toChar(Operation op, Register reg){
   int control;
   char* resultString = malloc(sizeof(char)*6);
 
@@ -183,6 +192,12 @@ char* toChar(Operation op, Register reg){
           break;
           case BLT:
             strcpy(resultString,"BLT");
+          break;
+          case BGE:
+            strcpy(resultString,"BGE");
+          break;
+          case BLE:
+            strcpy(resultString,"BLE");
           break;
           case AND:
             strcpy(resultString,"AND");
@@ -243,23 +258,53 @@ char* toChar(Operation op, Register reg){
           case $rv:
             strcpy(resultString,"$rv");
           break;
+          case $one:
+            strcpy(resultString,"$one");
+          break;
           case $none:
             strcpy(resultString,"");
           break;
           default:
-            sprintf(resultString,"$t%d",reg);
+            callException("toChar: op",13,5);
+            printf("FOUND: < %d > \n",reg);
           break;
         }
 
     break;
   }
-
   return resultString;
-
 }
 
-void printASM(int printMode){
 
+void logicalBranch(Operation op){
+  switch (op) {
+    case EQL:
+      addASM( createRTYPE( SUB, $acc, $acc, $t1 ) );
+      addASM( createITYPE( BNE, $acc, $zero, 0000 ) );
+    break;
+    case DIFE:
+      addASM( createRTYPE( SUB, $acc, $acc, $t1 ) );
+      addASM( createITYPE( BEQ, $acc, $zero, 1111 ) );
+    break;
+    case GRT:
+      addASM( createITYPE( BLE, $acc, $t1, 2222 ) );
+    break;
+    case LST:
+      addASM( createITYPE( BGE, $acc, $t1, 3333 ) );
+    break;
+    case GTE:
+      addASM( createITYPE( BLT, $acc, $t1, 4444 ) );
+    break;
+    case LTE:
+      addASM( createITYPE( BGT, $acc, $t1, 5555 ) );
+    break;
+    default:
+    break;
+  }
+}
+
+
+void printASM(int printMode){
   if (asmList == NULL) {
       callException("printASM",4,5);
       return;
@@ -267,19 +312,15 @@ void printASM(int printMode){
       callException("printASM",4,5);
       return;
   }
-
   int SAFE_LOOP = 0;
   tempAsm = asmList->next;
-
   while (tempAsm != NULL) {
-
       /*safe loop measure*/
       SAFE_LOOP++;
       if(SAFE_LOOP > SAFE_LOOP_SIZE){
         callException("printASM",10,5);
         return;
       }
-
       switch (printMode) {
         case 0:
             switch (tempAsm->type) {
@@ -290,10 +331,13 @@ void printASM(int printMode){
                   printf("%d: %s %s %s %d \n",tempAsm->asmNumber,toChar(tempAsm->itype.cpu_operation,$none),toChar(NONE,tempAsm->itype.rd),toChar(NONE,tempAsm->itype.r1),tempAsm->itype.immediate);
               break;
               case JTYPE:
-                  printf("%d: %s %d \n",tempAsm->asmNumber,toChar(tempAsm->jtype.cpu_operation,$none),tempAsm->jtype.address);
+                  if (tempAsm->jtype.cpu_operation == JR)
+                    printf("%d: %s %s \n",tempAsm->asmNumber,toChar(tempAsm->jtype.cpu_operation,$none),toChar(NONE,tempAsm->jtype.address));
+                  else
+                    printf("%d: %s %d \n",tempAsm->asmNumber,toChar(tempAsm->jtype.cpu_operation,$none),tempAsm->jtype.address);
               break;
               case LTYPE:
-                  printf("%d: %s %d ",tempAsm->asmNumber,tempAsm->ltype.functionName,tempAsm->ltype.asmAddress);
+                  printf("%d: %s %d \n",tempAsm->asmNumber,tempAsm->ltype.functionName,tempAsm->ltype.asmAddress);
               break;
               default:
                   callException("printASM",15,5);
@@ -312,7 +356,7 @@ void printASM(int printMode){
                   printf("%d: %d %d \n",tempAsm->asmNumber,tempAsm->jtype.cpu_operation,tempAsm->jtype.address);
               break;
               case LTYPE:
-                  printf("%d: %s %d ",tempAsm->asmNumber,tempAsm->ltype.functionName,tempAsm->ltype.asmAddress);
+                  printf("%d: %s %d \n",tempAsm->asmNumber,tempAsm->ltype.functionName,tempAsm->ltype.asmAddress);
               break;
               default:
                   callException("printASM",15,5);
@@ -330,20 +374,16 @@ void printASM(int printMode){
 
 
 Operation getOperation(triple *tr){
-
   if (tr == NULL) {
       callException("getOperation",3,5);
       return NONE;
   }
-
   char inputOperation[6];
   sprintf(inputOperation,"%s",tr->operation);
-
   if (strcmp(inputOperation,tr->operation) != 0) {
     callException("getOperation",12,5);
     return NONE;
   }
-
   /* finding out the operation*/
   if (strcmp(inputOperation,"+") == 0) {
     return ADD;
@@ -400,6 +440,7 @@ void initializeASMList(){
   NUMBER_OF_ASM = -2;
   asmList = createRTYPE(NONE,$none,$none,$none);
   tempAsm = createRTYPE(NONE,$none,$none,$none);
+  addASM( createJTYPE( JUMP, 2222) );
 }
 
 void cleanASM(){

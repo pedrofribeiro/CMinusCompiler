@@ -14,7 +14,7 @@ typedef enum {ADD,SUB,MUL,DIV,RET,
               LI,JUMP,BEQ,BNE,BGT,
               BLT,JR,JAL,G_VAR,G_VET,
               VAR,VET,PARAM,AND,XOR,
-              FNDECL,NONE
+              BGE,BLE,FNDECL,NONE
              } Operation;
 
 
@@ -74,8 +74,12 @@ void initializeASMList();
 
 char* toChar(Operation op, Register reg);
 
+void logicalBranch(Operation op);
+
 void printASM();
 
 void cleanASM();
+
+int currentASMNumber();
 
 #endif

@@ -61,6 +61,9 @@ void memoryHandler(int position, int value);
 int requestMemory(int identifier, int numberOfPositions);
 void printMemory();
 void printRegisterBank();
+void RuntimeEnvironmentStart();
+void RuntimeEnvironmentStop();
+
 
 void setFP();
 int getFP();
@@ -70,8 +73,8 @@ void setSP();
 int getSP();
 
 VARIABLE* createPosition(int id, int ap);
-int setVarPosition(int id, int np);
-int getVarPosition(int id);
+int setNamePosition(int id, int np);
+int getNamePosition(int id);
 void printVars();
 
 

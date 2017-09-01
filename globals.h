@@ -57,19 +57,18 @@ extern char* GUARDAESCOPO;
 /****************/
 
 /* Infinite loop barrier*/
-#define SAFE_LOOP_SIZE 100
+#define SAFE_LOOP_SIZE 200
 
 
 /* Machine specific control variables*/
-#define MEMORY_SIZE 50
+#define MEMORY_SIZE 30
 #define RESERVED_MEMORY 0
-#define REGISTER_BANK_SIZE 32
+#define REGISTER_BANK_SIZE 15
 #define RESERVED_REGISTERS 9 /*$zero, $one, $acc, $sp, $fp, $ra, $rv, $paramp, $gp */
 
 int MEMORY_COUNTER;
 int REGISTER_COUNTER;
 char* CURRENT_FUNCTION;
-
 
 /* DEBUGING CONTROLS*/
 int TRACE_TREE_WALK;

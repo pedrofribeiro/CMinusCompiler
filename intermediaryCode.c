@@ -130,8 +130,7 @@ void evalStmt(TreeNode *node){
         int elseTriple = NUMBER_OF_TRIPLES+1;
         int adjustment;
         adjustment = adjustTriple(ifTriple,2,elseTriple); /*goes to the triple after the true part*/
-        if (adjustment == 1) { printf("The operand address was correctly adjusted.\n"); }
-        else { callException("evalStmt: IfK",9,4); }
+        if (adjustment != 1) { callException("evalStmt: IfK",9,4); }
 
       } else { /*there is an else part*/
 
@@ -415,7 +414,7 @@ void evalExp(TreeNode *node){
 
       if (q0 == NULL) { /*the function does not take any arguments*/
 
-        addTriple("FNCALL",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+        addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
 
       } else { /*the function takes on arguments */
 
@@ -457,7 +456,7 @@ void evalExp(TreeNode *node){
           }
           k--;
         }
-        addTriple("FNCALL",st_lookupVarPosition(node->attr.name,CURRENT_FUNCTION),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+        addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
 
       }
 

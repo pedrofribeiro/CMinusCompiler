@@ -26,11 +26,11 @@ gcc -g -o tiny *.c -ly -lfl -Wall
 echo -------------------------------------------------------------------------------------------------------------
 
 #./tiny selectionSort.txt
-#./tiny 1.txt
-#./tiny fib.txt
-#./tiny sort.txt
-#./tiny foo.txt
-./tiny t.txt
+#./tiny gcd.cm
+#./tiny fib.cm
+#./tiny sort.cm
+#./tiny foo.cm
+./tiny soma.cm
 
 echo =============================================================================================================
 echo Fim

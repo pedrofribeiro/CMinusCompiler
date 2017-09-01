@@ -26,7 +26,7 @@ triple* tempTriple;
 
 triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot);
 
-void addTriple(char op[], int fo, int so, operandType fot, operandType sot);
+triple* addTriple(char op[], int fo, int so, operandType fot, operandType sot);
 
 int adjustTriple(int tn, int ope, int nv);
 

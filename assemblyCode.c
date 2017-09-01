@@ -9,11 +9,14 @@ void asmCode (triple* instruction) {
   if (operation == NONE) { callException("asmCode",13,5); return; }
 
   int i;
-  int t1, t2, t3;
 
   switch (operation) {
     case FNDECL:
-
+      addASM( createLTYPE( instruction->operation, currentASMNumber()+1 ) );
+      addASM( createITYPE( SW, $ra, $sp, 0 ) );
+      addASM( createRTYPE( ADD, $sp, $sp, $one ) );
+      setNamePosition(st_lookupFnStart(instruction->operation),1);
+      requestMemory(st_lookupFnStart(instruction->operation),1);
     break;
     case EQL:
     case DIFE:
@@ -70,77 +73,90 @@ void asmCode (triple* instruction) {
         } else if ((instruction->firstOperandType == ConstantNoAddress) && (instruction->secondOperandType == SymboltableAddress)) {
 
             addASM( createITYPE( LI, $acc, $zero, instruction->firstOperand ) );
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
-            addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
+            if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
+              logicalBranch(operation);
+            else
+              addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
             setRegister(2,instruction->firstOperand);
-            setRegister(9,getVarPosition(instruction->secondOperand));
+            setRegister(9,getNamePosition(instruction->secondOperand));
 
         } else if ((instruction->firstOperandType == ConstantNoAddress) && (instruction->secondOperandType == TripleAddress)) {
 
             addASM( createITYPE( LI, $t1, $zero, instruction->firstOperand ) );
-            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+            if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
+              logicalBranch(operation);
+            else
+              addASM( createRTYPE( operation, $acc, $t1, $acc ) );
             setRegister(9,instruction->firstOperand);
 
         } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == ConstantNoAddress)) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
             addASM( createITYPE( LI, $acc, $zero, instruction->secondOperand ) );
-            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
-            setRegister(9,getVarPosition(instruction->firstOperand));
+            if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
+              logicalBranch(operation);
+            else
+              addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+            setRegister(9,getNamePosition(instruction->firstOperand));
             setRegister(2,instruction->secondOperand);
 
         } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == SymboltableAddress)) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
-            addASM( createITYPE( LI, $acc, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $acc, $acc, 0 ) );
-            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
-            setRegister(9,getVarPosition(instruction->firstOperand));
-            setRegister(2,getVarPosition(instruction->secondOperand));
+            if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
+              logicalBranch(operation);
+            else
+              addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+            setRegister(9,getNamePosition(instruction->firstOperand));
+            setRegister(2,getNamePosition(instruction->secondOperand));
 
         } else if ((instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == TripleAddress)) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
-            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
-            setRegister(9,getVarPosition(instruction->firstOperand));
+            if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
+              logicalBranch(operation);
+            else
+              addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+            setRegister(9,getNamePosition(instruction->firstOperand));
             setRegister(2,instruction->secondOperand);
 
         } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == ConstantNoAddress)) {
 
             addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
-            addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
+            if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
+              logicalBranch(operation);
+            else
+              addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
             setRegister($t1,instruction->secondOperand);
 
         } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == SymboltableAddress)) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
-            addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
-            setRegister($t1,getVarPosition(instruction->secondOperand));
+            if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
+              logicalBranch(operation);
+            else
+              addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
+            setRegister($t1,getNamePosition(instruction->secondOperand));
 
         } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == TripleAddress)) {
-            callException("asmCode: tr op tr",25,5);
+            addASM( createRTYPE( operation, $acc, $t1, $acc ) );
         } else {
             callException("asmCode: arithmetic ops",1,5);
         }
     break;
     case RET:
-        /*
-        lw $ra -1($sp)
-        addiu $sp $sp Z, Z = #args + #vars + #PositionsUsedByVectors + old $fp + ret. addrs
-        lw $fp 0($sp)
-        jr $ra
-       */
-       addASM ( createRTYPE ( SUB, $t1, $sp, $one ) );
-       addASM ( createITYPE ( LW, $ra, $t1, 0 ) );
-       addASM ( createITYPE ( ADDIU, $sp, $sp, 99999 ) );
-       addASM ( createITYPE ( LW, $fp, $sp, 0 ) );
-       addASM ( createJTYPE ( JR, $ra) );
-
+        addASM( createRTYPE( MOVE, $t1, $acc, $zero ) );
+        addASM( createRTYPE( SUB, $t1, $sp, $one ) );
+        addASM( createITYPE( LW, $ra, $t1, 0 ) );
+        addASM( createJTYPE( JR, $ra ) );
     break;
     case PARAM:
         if (instruction->firstOperandType == ConstantNoAddress) {
@@ -149,46 +165,51 @@ void asmCode (triple* instruction) {
             addASM ( createITYPE ( LI, $t1, $zero, instruction->firstOperandType ) );
             addASM ( createITYPE ( SW, $sp, $t1, 0 ) );
             addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
+            requestMemory(currentASMNumber(), 1);
+
         } else if (instruction->firstOperandType == SymboltableAddress) {
             /* lw $acc var_position_on_memory
                sw $acc 0($sp)
                addiu $sp $sp 1
             */
-            addASM ( createITYPE ( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM ( createITYPE ( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM ( createITYPE ( LW, $t1, $t1, 0 ) );
             addASM ( createITYPE ( SW, $sp, $t1, 0 ) );
             addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
+            requestMemory(instruction->firstOperand, 1);
 
         } else if (instruction->firstOperandType == TripleAddress) {
           /* sw $acc 0($sp)
              addiu $sp $sp 1 */
             addASM ( createITYPE ( SW, $sp, $acc, 0 ) );
             addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
+            requestMemory(instruction->tripleNumber, 1);
+
         } else {
             callException("asmCode: PARAM",1,5);
         }
     break;
     case CALL:
-        addASM ( createJTYPE ( JAL, 5555) );
+        addASM ( createJTYPE ( JAL, getNamePosition(instruction->firstOperand)) );
     break;
     case ATR:
 
         if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == ConstantNoAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createITYPE( LI, $acc, $zero, instruction->secondOperand ) );
             addASM( createITYPE( SW, $t1, $acc, 0) );
 
         } else if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == SymboltableAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
-            addASM( createITYPE( LI, $acc, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $acc, $acc, 0) );
             addASM( createITYPE( SW, $t1, $acc, 0) );
 
         } else if ( (instruction->firstOperandType == SymboltableAddress) && (instruction->secondOperandType == TripleAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createITYPE( SW, $t1, $acc, 0) );
 
         } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == ConstantNoAddress) ) {
@@ -198,12 +219,12 @@ void asmCode (triple* instruction) {
 
         } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == SymboltableAddress) ) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0) );
             addASM( createITYPE( SW, $acc, $t1, 0) );
 
         } else if ( (instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == TripleAddress) ) {
-            /*this only happens if a vector is receiving its value from an operation
+            /*this only happens if a vector is receiving its value from an operation.
               vectors have a SPECIAL dedicated $reg for its parameter return, its $rv
             */
             addASM( createITYPE( SW, $rv, $acc, $zero ) );
@@ -215,7 +236,7 @@ void asmCode (triple* instruction) {
 
     break;
     case IF_F:
-        addASM( createRTYPE( BEQ, $acc, $zero, 222 ) );
+        //addASM( createITYPE( BEQ, $acc, $zero, 222 ) );
     break;
     case GOTO:
         addASM( createJTYPE( JUMP, 111 ) );
@@ -224,21 +245,21 @@ void asmCode (triple* instruction) {
         if (instruction->secondOperandType == ConstantNoAddress) {
 
             addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
-            addASM( createITYPE( LI, $acc, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
             addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
 
         } else if (instruction->secondOperandType == SymboltableAddress) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->secondOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
             addASM( createITYPE( LW, $t1, $t1, 0 ) );
-            addASM( createITYPE( LI, $acc, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
             addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
 
         } else if (instruction->secondOperandType == TripleAddress) {
 
-            addASM( createITYPE( LI, $t1, $zero, getVarPosition(instruction->firstOperand) ) );
+            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
             addASM( createRTYPE( ADD, $acc, $t1, $acc ) );
             addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
 
@@ -251,11 +272,13 @@ void asmCode (triple* instruction) {
         sw $zero 0($sp)
         addiu $sp $sp 1
         */
-        addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
-        addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
+        addASM( createITYPE ( SW, $sp, $zero, 0 ) );
+        addASM( createRTYPE ( ADD, $sp, $sp, $one ) );
         int gvarCreation;
-        gvarCreation = setVarPosition(instruction->firstOperand,1);
+        gvarCreation = setNamePosition(instruction->firstOperand,1);
         if (gvarCreation == -999) { callException("asmCode: G_VAR",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
+        setGP(currentASMNumber());
+        addASM( createRTYPE( LI, $gp, $zero, getGP() ) );
 
     break;
     case G_VET:
@@ -268,8 +291,10 @@ void asmCode (triple* instruction) {
             addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
         }
       int gvetCreation;
-      gvetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand);
+      gvetCreation = setNamePosition(instruction->firstOperand,instruction->secondOperand);
       if (gvetCreation == -999) { callException("asmCode: G_VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
+      setGP(currentASMNumber());
+      addASM( createRTYPE( LI, $gp, $zero, getGP() ) );
 
     break;
     case VET:
@@ -278,13 +303,12 @@ void asmCode (triple* instruction) {
           sw $zero 0($sp)
           addiu $sp $sp 1
         */
-
         for (i = 0; i < instruction->secondOperand; i++) {
             addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
             addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
         }
         int vetCreation;
-        vetCreation = setVarPosition(instruction->firstOperand,instruction->secondOperand);
+        vetCreation = setNamePosition(instruction->firstOperand,instruction->secondOperand);
         if (vetCreation == -999) { callException("asmCode: VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
 
     break;
@@ -296,7 +320,7 @@ void asmCode (triple* instruction) {
         addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
         int varCreation;
-        varCreation = setVarPosition(instruction->firstOperand,1);
+        varCreation = setNamePosition(instruction->firstOperand,1);
         if (varCreation == -999) { callException("asmCode: VAR",20,5); printf("TN:%d, st id(%d)\n",instruction->tripleNumber,instruction->firstOperand); return; }
 
     break;
@@ -317,21 +341,17 @@ void generateAssembly(triple* List){
   }
 
   TRACE_ASM_GEN = FALSE;
-
-  initializeRegisterBank();
-  initializeMemory();
-  initializeVariables();
+  RuntimeEnvironmentStart();
   initializeASMList();
-  asmCode(List);
+  while (List != NULL) {
+    asmCode(List);
+    List = List->next;
+  }
   //adjustASM();
   printASM(0);
   printVars();
-  //printRegisterBank();
-  printMemory();
-
-  /*cleaning up*/
   cleanTriples();
-  cleanRuntimeEnvironment();
   cleanASM();
+  RuntimeEnvironmentStop();
 
 }

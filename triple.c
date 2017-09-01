@@ -18,10 +18,10 @@ triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot
   return newTriple;
 }
 
-void addTriple(char op[], int fo, int so, operandType fot, operandType sot) {
+triple* addTriple(char op[], int fo, int so, operandType fot, operandType sot) {
   if(tripleList->next == NULL){
     tripleList->next = createTriple(op,fo,so,fot,sot);
-    return;
+    return NULL;
   }
   int SAFE_LOOP = 0;
   tempTriple = tripleList->next;
@@ -31,10 +31,11 @@ void addTriple(char op[], int fo, int so, operandType fot, operandType sot) {
     SAFE_LOOP++;
     if(SAFE_LOOP > SAFE_LOOP_SIZE){
       callException("addTriple",10,4);
-      return;
+      return NULL;
     }
   }
   tempTriple->next = createTriple(op,fo,so,fot,sot);
+  return tempTriple->next;
 }
 
 int adjustTriple(int tn, int ope, int nv){

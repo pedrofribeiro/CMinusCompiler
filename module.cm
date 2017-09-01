@@ -1,0 +1,35 @@
+int module(int divisor, int dividend){
+
+  int remainder;
+  int quotient;
+
+  quotient = divisor / dividend;
+  remainder = divisor - quotient*dividend;
+
+  return remainder;
+}
+
+int isPrime(int n){
+  int k;
+  int result;
+  k = 2;
+
+  while (k <= n-1) {
+    result = module(n,k);
+    if(result == 0){
+      return 0;
+    }
+    k = k + 1;
+  }
+  return 1;
+}
+
+void main(void){
+
+  int a;
+  int primeA;
+  a = 15;
+  primeA = isPrime(a);
+
+  return;
+}

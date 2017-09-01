@@ -5,6 +5,21 @@ Runtime environment for the CMinus Compiler
 ALL MEMORY STRUCTURES' (registers, data and instruction memories) CONTROLS are defined here.
 */
 
+void RuntimeEnvironmentStart(){
+  initializeRegisterBank();
+  initializeMemory();
+  initializeVariables();
+  setSP(0);
+  setFP(0);
+  setGP(0);
+}
+
+void RuntimeEnvironmentStop(){
+  printRegisterBank();
+  printMemory();
+  cleanRuntimeEnvironment();
+}
+
 void initializeMemory(){
   MEMORY_COUNTER = 0;
   MEMORY = malloc(sizeof(MEMORY_UNIT)*MEMORY_SIZE);
@@ -260,9 +275,9 @@ VARIABLE* createPosition(int id, int ap){
   return newVariable;
 }
 
-int getVarPosition(int id){
+int getNamePosition(int id){
   if ((id == -2) || (id == -1)) return -999; /*special control variables have those ids*/
-  else if (id < 0) { callException("getVarPosition",8,5); return -999; }
+  else if (id < 0) { callException("getNamePosition",8,5); return -999; }
 
   tempVar = variablesList->next;
   int SAFE_LOOP = 0;
@@ -272,32 +287,32 @@ int getVarPosition(int id){
     tempVar = tempVar->next;
     /*safe loop measure*/
     SAFE_LOOP++;
-    if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("getVarPosition",10,5); return -999; }
+    if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("getNamePosition",10,5); return -999; }
   }
   return -999;
 }
 
 
-int setVarPosition(int id, int ap){
-  if (id < 0) { callException("setVarPosition",8,5); return -999; }
+int setNamePosition(int id, int ap){
+  if (id < 0) { callException("setNamePosition",8,5); return -999; }
 
       /*tests if the var is already on the list*/
       int existenceTest = 0;
-      existenceTest = getVarPosition(id);
+      existenceTest = getNamePosition(id);
       if (existenceTest != -999) {
-        callException("setVarPosition",19,5);
+        callException("setNamePosition",19,5);
         return -999;
       }
 
       /*if it's not, creates a new position for it*/
       VARIABLE * newVariable = createPosition(id,ap);
-      if (newVariable == NULL) { callException("setVarPosition",20,5); return -999; }
+      if (newVariable == NULL) { callException("setNamePosition",20,5); return -999; }
 
       /*inserts the new position on the positions list*/
       if (variablesList->next == NULL) {
 
           variablesList->next = malloc(sizeof(VARIABLE)*1);
-          if (variablesList->next == NULL) { callException("setVarPosition: variablesList",3,5); return -999; }
+          if (variablesList->next == NULL) { callException("setNamePosition: variablesList",3,5); return -999; }
           variablesList->next = newVariable;
           return 1;
 
@@ -310,7 +325,7 @@ int setVarPosition(int id, int ap){
             tempVar = tempVar->next;
             /*safe loop measure*/
             SAFE_LOOP++;
-            if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setVarPosition",10,5); return -999; }
+            if(SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setNamePosition",10,5); return -999; }
           }
           tempVar->next = newVariable;
           return 1;
