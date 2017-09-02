@@ -1,5 +1,0 @@
-1. Exponentiation by squaring
-2. A Linear Time Majority Vote Algorithm
-3. Kadane’s algorithm
-4. Vector multiplication algorithm
-5. Some linear algebra algorithm

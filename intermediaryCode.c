@@ -427,6 +427,38 @@ void evalExp(TreeNode *node){
       _VERBOSE_4 printf("[IdFunK]\n");
       q0 = node->child[0];
 
+      /*treating the two special functions input() and output() differently.*/
+      if (strcmp(node->attr.name,"input") == 0){
+          addTriple("INPUT",-1,-1,EmptyAddress,EmptyAddress);
+          break;
+      } else if (strcmp(node->attr.name,"output") == 0) {
+
+            if (q0->kind.exp == ConstK) {
+                evalExp(q0);
+                addTriple("OUTPUT",q0->attr.val,-1,ConstantNoAddress,EmptyAddress);
+            } else if (q0->kind.exp == IdK) {
+                evalExp(q0);
+                addTriple("OUTPUT",st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),-1,SymboltableAddress,EmptyAddress);
+            } else if (q0->kind.exp == IdVetK) {
+                evalExp(q0);
+                addTriple("OUTPUT",st_lookupVarPosition(q0->attr.name,CURRENT_FUNCTION),-1,SymboltableAddress,EmptyAddress);
+            } else if (q0->kind.exp == OpK) {
+                evalExp(q0);
+                int paramTriple;
+                paramTriple = NUMBER_OF_TRIPLES;
+                addTriple("OUTPUT",paramTriple,-1,TripleAddress,EmptyAddress);
+            } else if (q0->kind.exp == IdFunK) {
+                evalExp(q0);
+                int paramTriple;
+                paramTriple = NUMBER_OF_TRIPLES;
+                addTriple("OUTPUT",paramTriple,-1,TripleAddress,EmptyAddress);
+            } else {
+                callException("evalExp: IdFunK",7,4);
+                break;
+            }
+          break;
+      }
+
       if (q0 == NULL) { /*the function does not take any arguments*/
 
         addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);

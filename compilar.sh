@@ -25,7 +25,6 @@ gcc -g -o tiny *.c -ly -lfl -Wall
 
 echo -------------------------------------------------------------------------------------------------------------
 
-#./tiny selectionSort.txt
 #./tiny gcd.cm
 #./tiny fib.cm
 #./tiny sort.cm

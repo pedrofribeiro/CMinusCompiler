@@ -72,7 +72,7 @@ static void insertNode( TreeNode * t)
   if(insertSOFunctions == 0) {
     insertSOFunctions = 1;
     //void st_insert( char * name, int loc, int lineno, ExpType dataType, StmtKind idType, char* scope);
-    st_insert("input", 0, location++, 0, 4, "input");
+    st_insert("input", 0, location++, 1, 4, "input");
     st_insert("output", 1, location++, 0, 4, "output");
   }
   switch (t->nodekind)
