@@ -219,6 +219,12 @@ char* toChar(Operation op, Register reg){
           case JAL:
             strcpy(resultString,"JAL");
           break;
+          case INPUT:
+            strcpy(resultString,"IPT");
+          break;
+          case OUTPUT:
+            strcpy(resultString,"OTP");
+          break;
           case NONE:
             strcpy(resultString,"");
           break;
@@ -265,6 +271,9 @@ char* toChar(Operation op, Register reg){
           break;
           case $one:
             strcpy(resultString,"$one");
+          break;
+          case $output:
+            strcpy(resultString,"$otp");
           break;
           case $none:
             strcpy(resultString,"");
@@ -452,6 +461,10 @@ Operation getOperation(triple *tr){
     return VAR;
   } else if (strcmp(inputOperation,"PARAM") == 0) {
     return PARAM;
+  } else if (strcmp(inputOperation,"OUTPUT") == 0) {
+    return OUTPUT;
+  } else if (strcmp(inputOperation,"INPUT") == 0) {
+    return INPUT;
   } else {
     return FNDECL;
   }

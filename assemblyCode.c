@@ -324,6 +324,24 @@ void asmCode (triple* instruction) {
         if (varCreation == -999) { callException("asmCode: VAR",20,5); printf("TN:%d, st id(%d)\n",instruction->tripleNumber,instruction->firstOperand); return; }
 
     break;
+    case INPUT:
+        addASM( createRTYPE( INPUT, $acc, $zero, $zero ) );
+    break;
+    case OUTPUT:
+        if (instruction->firstOperandType == ConstantNoAddress) {
+            addASM( createITYPE( LI, $t1, $zero, instruction->firstOperand ) );
+            addASM( createRTYPE( MOVE, $output, $t1, $zero ) );
+        } else if (instruction->firstOperandType == SymboltableAddress) {
+            addASM( createITYPE( LI, $t1, $zero, instruction->firstOperand ) );
+            addASM( createITYPE( LW, $t1, $t1, 0 ) );
+            addASM( createRTYPE( MOVE, $output, $t1, $zero ) );
+        } else if (instruction->firstOperandType == TripleAddress) {
+            addASM( createRTYPE( MOVE, $output, $acc, $zero ) );
+        } else {
+          callException("asmCode: output",1,5); return;
+        }
+
+    break;
     default:
         callException("asmCode",1,5);
     break;

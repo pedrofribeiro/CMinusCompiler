@@ -9,7 +9,8 @@ typedef enum {$zero, $one, $acc, $sp, $fp,
               $t2, $t3, $t4, $t5, $t6, $t7,
               $t8, $t9, $t10, $t11, $t12,
               $t13, $t14, $t15, $t16, $t17,
-              $t18, $t19, $t20, $t21, $t22, $none} Register;
+              $t18, $t19, $t20, $t21, $t22,
+              $output, $none} Register;
 
 int OCCUPIED_REGS;
 int REGS_TO_FREE;

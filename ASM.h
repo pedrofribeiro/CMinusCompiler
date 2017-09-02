@@ -14,7 +14,8 @@ typedef enum {ADD,SUB,MUL,DIV,RET,
               LI,JUMP,BEQ,BNE,BGT,
               BLT,JR,JAL,G_VAR,G_VET,
               VAR,VET,PARAM,AND,XOR,
-              BGE,BLE,FNDECL,NONE
+              BGE,BLE,FNDECL,INPUT,OUTPUT,
+              NONE
              } Operation;
 
 
