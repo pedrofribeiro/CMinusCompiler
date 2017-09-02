@@ -186,7 +186,7 @@ void evalStmt(TreeNode *node){
     needsAlignment(addrToJump,1);
     needsAlignment(testTriple,2);
     //new code >
-    
+
     break;
     case FunK:
       _VERBOSE_4 printf("[FunK]\n");
@@ -201,7 +201,7 @@ void evalStmt(TreeNode *node){
       int fnTriple = NUMBER_OF_TRIPLES;
 
       //new code <
-      needsAlignment(fnTriple+1,1); //subsequent instruction after the LTYPE
+      needsAlignment(fnTriple,1);
       //new code >
 
       evalProgram(p0); /*evaluates the arguments*/
@@ -430,6 +430,7 @@ void evalExp(TreeNode *node){
       if (q0 == NULL) { /*the function does not take any arguments*/
 
         addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+        setTripleFnName(NUMBER_OF_TRIPLES,node->attr.name);
 
       } else { /*the function takes on arguments */
 
@@ -472,6 +473,7 @@ void evalExp(TreeNode *node){
           k--;
         }
         addTriple("FNCALL",st_lookupFnStart(node->attr.name),node->numberOfParameters,SymboltableAddress,ConstantNoAddress);
+        setTripleFnName(NUMBER_OF_TRIPLES,node->attr.name);
 
       }
 

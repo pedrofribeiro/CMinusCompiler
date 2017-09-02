@@ -77,7 +77,7 @@ ASM_INSTR* createLTYPE(char cop[], int addr){
 }
 
 
-int currentASMNumber(){
+int getCurrentASMNumber(){
   return NUMBER_OF_ASM;
 }
 
@@ -132,7 +132,7 @@ int adjustASM(int an, int field, int nv){
       if (field == 1) { tempAsm->itype.immediate = nv; }
       else if (field == 2) { tempAsm->jtype.address = nv; }
       else if (field == 3) { tempAsm->ltype.asmAddress = nv; }
-      printf("Endereço de salto alterado para %d.\n",nv);
+      _VERBOSE_5 printf("Endereço de salto alterado para %d.\n",nv);
       return 1;
     } else { tempAsm = tempAsm->next; }
     /*safe loop measure*/
@@ -290,7 +290,7 @@ void toBeAligned(int asmNumber){
   while (tempAsm != NULL) {
     if (tempAsm->asmNumber == asmNumber) {
       tempAsm->needsAlignment = TRUE;
-      printf("A instrução %d precisa ter seu endereço de destino alinhado.\n",asmNumber);
+      _VERBOSE_5 printf("A instrução %d precisa ter seu endereço de destino alinhado.\n",asmNumber);
     }
 
     SAFE_LOOP++;
@@ -325,7 +325,7 @@ void logicalBranch(Operation op, int tripleNumber){
     default:
     break;
   }
-  toBeAligned(currentASMNumber());
+  toBeAligned(getCurrentASMNumber());
 }
 
 
@@ -473,7 +473,7 @@ void initializeAlignments(){
   tempAlignment->tripleNumber = -1;
   tempAlignment->kind = -1;
   tempAlignment->next = NULL;
-  printf("Alinhamentos inicializados\n");
+  _VERBOSE_5 printf("Alinhamentos inicializados\n");
 }
 
 
@@ -500,7 +500,7 @@ void needsAlignment(int tripleNumber, int kind){
     }
     tempAlignment->next = newAlignment;
   }
-  printf("Alinhamento criado para a tripla %d\n",tripleNumber);
+  _VERBOSE_5 printf("Alinhamento criado para a tripla %d\n",tripleNumber);
 }
 
 
@@ -515,7 +515,7 @@ void setAlignment(int tripleNumber, int asmNumber){
   while (tempAlignment != NULL) {
     if (tempAlignment->tripleNumber == tripleNumber) {
       tempAlignment->asmNumber = asmNumber;
-      printf("Alinhamento da tripla %d ajustado para ASM %d\n",tripleNumber,asmNumber);
+      _VERBOSE_5 printf("Alinhamento da tripla %d ajustado para ASM %d\n",tripleNumber,asmNumber);
       return;
     }
     SAFE_LOOP++;
@@ -530,7 +530,7 @@ int seekAlignment(int tripleNumber){
 
   while (tempAlignment != NULL) {
     if (tempAlignment->tripleNumber == tripleNumber) {
-      printf("Alinhamento necessario encontrado para a tripla %d\n",tripleNumber);
+      _VERBOSE_5 printf("Alinhamento necessario encontrado para a tripla %d\n",tripleNumber);
       return 1;
     }
     SAFE_LOOP++;
@@ -562,7 +562,7 @@ void Align(){
         if (tempAsm->type == JTYPE) {
               if (tempAsm->jtype.address == tempAlignment->tripleNumber) {
                     adjustASM(tempAsm->asmNumber,2,tempAlignment->asmNumber);
-                    printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
+                    _VERBOSE_5 printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
                     tempAlignment = tempAlignment->next;
                     break;
               } else {
@@ -572,7 +572,7 @@ void Align(){
         } else if (tempAsm->type == ITYPE) {
               if (tempAsm->itype.immediate == tempAlignment->tripleNumber) {
                     adjustASM(tempAsm->asmNumber,1,tempAlignment->asmNumber);
-                    printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
+                    _VERBOSE_5 printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
                     tempAlignment = tempAlignment->next;
                     break;
               } else {
@@ -582,7 +582,7 @@ void Align(){
         } else if (tempAsm->type == LTYPE) {
               if (tempAsm->ltype.asmAddress == tempAlignment->tripleNumber) {
                     adjustASM(tempAsm->asmNumber,3,tempAlignment->asmNumber);
-                    printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
+                    _VERBOSE_5 printf("Endereço de salto do ASM %d foi de t(%d) para ASM %d\n",tempAsm->asmNumber,tempAlignment->tripleNumber,tempAlignment->asmNumber);
                     tempAlignment = tempAlignment->next;
                     break;
               } else {
@@ -605,7 +605,8 @@ void initializeASMList(){
   NUMBER_OF_ASM = -2;
   asmList = createRTYPE(NONE,$none,$none,$none);
   tempAsm = createRTYPE(NONE,$none,$none,$none);
-  addASM( createJTYPE( JUMP, 2222) );
+  addASM( createJTYPE( JUMP, returnFunctionTriple("main")) );
+  toBeAligned(getCurrentASMNumber());
 }
 
 void cleanASM(){

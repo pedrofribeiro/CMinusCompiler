@@ -12,9 +12,7 @@ void asmCode (triple* instruction) {
 
   switch (operation) {
     case FNDECL:
-      addASM( createLTYPE( instruction->operation, currentASMNumber()+1 ) );
-      addASM( createITYPE( SW, $ra, $sp, 0 ) );
-      addASM( createRTYPE( ADD, $sp, $sp, $one ) );
+      addASM( createLTYPE( instruction->operation, getCurrentASMNumber()+1 ) );
       setNamePosition(st_lookupFnStart(instruction->operation),1);
       requestMemory(st_lookupFnStart(instruction->operation),1);
     break;
@@ -165,7 +163,7 @@ void asmCode (triple* instruction) {
             addASM ( createITYPE ( LI, $t1, $zero, instruction->firstOperandType ) );
             addASM ( createITYPE ( SW, $sp, $t1, 0 ) );
             addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
-            requestMemory(currentASMNumber(), 1);
+            requestMemory(getCurrentASMNumber(), 1);
 
         } else if (instruction->firstOperandType == SymboltableAddress) {
             /* lw $acc var_position_on_memory
@@ -190,12 +188,8 @@ void asmCode (triple* instruction) {
         }
     break;
     case CALL:
-        /* preciso encontrar um modo da chamada de função carregar consigo o nome da função
-          ou ainda, um meio de retornar um nome a partir de um id na tabela de símbolos, e
-          usar isso na função returnFunctionTriple().
-        */
-        addASM ( createJTYPE ( JAL, returnFunctionTriple("soma")) );
-        toBeAligned(currentASMNumber());
+        addASM ( createJTYPE ( JAL, returnFunctionTriple(instruction->functionName)) );
+        toBeAligned(getCurrentASMNumber());
     break;
     case ATR:
 
@@ -245,7 +239,7 @@ void asmCode (triple* instruction) {
     break;
     case GOTO:
         addASM( createJTYPE( JUMP, instruction->firstOperand ) );
-        toBeAligned(currentASMNumber());
+        toBeAligned(getCurrentASMNumber());
     break;
     case V_IN:
         if (instruction->secondOperandType == ConstantNoAddress) {
@@ -283,7 +277,7 @@ void asmCode (triple* instruction) {
         int gvarCreation;
         gvarCreation = setNamePosition(instruction->firstOperand,1);
         if (gvarCreation == -999) { callException("asmCode: G_VAR",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
-        setGP(currentASMNumber());
+        setGP(getCurrentASMNumber());
         addASM( createRTYPE( LI, $gp, $zero, getGP() ) );
 
     break;
@@ -299,7 +293,7 @@ void asmCode (triple* instruction) {
       int gvetCreation;
       gvetCreation = setNamePosition(instruction->firstOperand,instruction->secondOperand);
       if (gvetCreation == -999) { callException("asmCode: G_VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
-      setGP(currentASMNumber());
+      setGP(getCurrentASMNumber());
       addASM( createRTYPE( LI, $gp, $zero, getGP() ) );
 
     break;
@@ -356,11 +350,11 @@ void generateAssembly(triple* List){
     /*marcar no gerador de código intermediário quais as triplas que vão precisar de ajustes
     e ficar de sentinela nesse ponto, dentro do loop. Comparando o número da tripla corrente
     com os números das triplas que precisarão de ajustes. Se der match, basta setar o Alignment
-    com o número do currentASMNumber() e pronto!
+    com o número do getCurrentASMNumber() e pronto!
     */
 
     if (seekAlignment(List->tripleNumber) == 1) {
-      setAlignment(List->tripleNumber,currentASMNumber());
+      setAlignment(List->tripleNumber,getCurrentASMNumber());
     }
 
     List = List->next;

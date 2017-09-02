@@ -91,7 +91,7 @@ void printASM();
 
 void cleanASM();
 
-int currentASMNumber();
+int getCurrentASMNumber();
 
 void initializeAlignments();
 void toBeAligned(int asmNumber);

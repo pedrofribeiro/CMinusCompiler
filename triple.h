@@ -18,6 +18,7 @@ typedef struct triple{
   operandType firstOperandType;
   operandType secondOperandType;
   int tripleNumber;
+  char functionName[6];
   struct triple* next;
 }triple;
 
@@ -26,9 +27,11 @@ triple* tempTriple;
 
 triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot);
 
-triple* addTriple(char op[], int fo, int so, operandType fot, operandType sot);
+void addTriple(char op[], int fo, int so, operandType fot, operandType sot);
 
 int adjustTriple(int tn, int ope, int nv);
+
+int setTripleFnName(int tripleNumber, char name[]);
 
 int returnFunctionTriple(char* functionName);
 
