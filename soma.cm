@@ -3,15 +3,9 @@ int soma(int a, int b){
 }
 
 void main (void) {
-	int x;
+	int x[2];
 	int y;
-	x = 2;
-	y = input();
-	while( x < 0){
-		x = x+1;
-		y = y + x;
-		x = soma(x,y);
-	}
-	output(soma(x,x));
+	y = 2;
+	y = soma(y,y);
 return;
 }

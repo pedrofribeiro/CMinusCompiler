@@ -15,6 +15,11 @@ triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot
   newTriple->secondOperandType = sot;
   newTriple->tripleNumber = NUMBER_OF_TRIPLES;
   strcpy(newTriple->functionName,"NONE");
+  size_t i;
+  for (i = 0; i < 3; i++) {
+    strcpy(newTriple->params[i].parameterName,"NONE");
+    newTriple->params[i].parameterSTAddress = -1;
+  }
   newTriple->next = NULL;
   return newTriple;
 }
@@ -43,7 +48,7 @@ int adjustTriple(int tn, int ope, int nv){
     callException("adjustTriple: number of triple",8,4);
     return -999;
   }
-  if ((ope < 1) || (ope > 2)){
+  if ((ope < 1) || (ope > 3)){
     callException("adjustTriple: operand",8,4);
     return -999;
   }
@@ -65,9 +70,34 @@ int adjustTriple(int tn, int ope, int nv){
   return -999;
 }
 
+int insertParameter(int tn, int paramIndex, char paramName[], int paramAddr){
+  if ((tn <= 0) || (tn > NUMBER_OF_TRIPLES)) {
+    callException("adjustTriple: number of triple",8,4);
+    return -999;
+  }
+
+  int SAFE_LOOP = 0;
+  tempTriple = tripleList->next;
+  while (tempTriple->next != NULL) {
+    if (tempTriple->tripleNumber == tn) {
+      tempTriple->params[paramIndex].parameterSTAddress = paramAddr;
+      strcpy(tempTriple->params[paramIndex].parameterName,paramName);
+      _VERBOSE_4 printf("NAME (%s), ST (%d)\n",tempTriple->params[paramIndex].parameterName,tempTriple->params[paramIndex].parameterSTAddress);
+      return 1;
+    } else { tempTriple = tempTriple->next; }
+    /*safe loop measure*/
+    SAFE_LOOP++;
+    if(SAFE_LOOP > SAFE_LOOP_SIZE){
+      callException("insertParameters",10,4);
+      return -999;
+    }
+  }
+  return -999;
+}
+
 int setTripleFnName(int tripleNumber, char name[]){
-  if (tripleNumber > NUMBER_OF_TRIPLES) { callException("setTripleFnName",8,5); return -999; }
-  if (name == NULL) { callException("setTripleFnName",25,5); return -999; }
+  if (tripleNumber > NUMBER_OF_TRIPLES) { callException("setTripleFnName",8,4); return -999; }
+  if (name == NULL) { callException("setTripleFnName",25,4); return -999; }
 
   int SAFE_LOOP = 0;
   tempTriple = tripleList->next;
@@ -75,11 +105,11 @@ int setTripleFnName(int tripleNumber, char name[]){
   while (tempTriple != NULL) {
     if (tempTriple->tripleNumber == tripleNumber) {
       strcpy(tempTriple->functionName,name);
-      if (strcmp(tempTriple->functionName,"NONE") == 0) { callException("setTripleFnName",9,5); return -999; }
+      if (strcmp(tempTriple->functionName,"NONE") == 0) { callException("setTripleFnName",9,4); return -999; }
       break;
     }
     SAFE_LOOP++;
-    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setTripleFnName",10,5); return -999; }
+    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setTripleFnName",10,4); return -999; }
     tempTriple = tempTriple->next;
   }
   return 1;
@@ -122,6 +152,8 @@ void printTripleList(){
       printf("%d: (%s, _, _)\n",tempTriple->tripleNumber, tempTriple->operation);
     else if((tempTriple->firstOperandType == EmptyAddress) && (tempTriple->secondOperandType == SymboltableAddress))
       printf("%d: (%s, _, st[%d])\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->secondOperand);
+    else if((tempTriple->firstOperandType == EmptyAddress) && (tempTriple->secondOperandType == ConstantNoAddress))
+      printf("%d: (%s, _, %d)\n",tempTriple->tripleNumber, tempTriple->operation, tempTriple->secondOperand);
     else callException("printTripleList",5,4);
 
     tempTriple = tempTriple->next;
@@ -137,7 +169,7 @@ void printTripleList(){
 
 
 int returnFunctionTriple(char* functionName){
-  if (functionName == NULL) { callException("returnFunctionTriple",25,5); return -999; }
+  if (functionName == NULL) { callException("returnFunctionTriple",25,4); return -999; }
   if (tripleList == NULL) { callException("returnFunctionTriple",4,4); return -999; }
 
   int SAFE_LOOP = 0;
@@ -148,11 +180,31 @@ int returnFunctionTriple(char* functionName){
       return tempTriple->tripleNumber;
     }
     SAFE_LOOP++;
-    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("returnFunctionTriple",10,5); return -999; }
+    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("returnFunctionTriple",10,4); return -999; }
     tempTriple = tempTriple->next;
   }
   return -999;
 }
+
+
+triple* getTriple(char* functionName){
+  if (functionName == NULL) { callException("returnFunctionTriple",25,4); return NULL; }
+  if (tripleList == NULL) { callException("returnFunctionTriple",4,4); return NULL; }
+
+  int SAFE_LOOP = 0;
+  tempTriple = tripleList->next;
+
+  while (tempTriple != NULL) {
+    if (strcmp(tempTriple->operation,functionName) == 0) {
+      return tempTriple;
+    }
+    SAFE_LOOP++;
+    if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("returnFunctionTriple",10,4); return NULL; }
+    tempTriple = tempTriple->next;
+  }
+  return NULL;
+}
+
 
 void initializeTripleList(){
   NUMBER_OF_TRIPLES = -2;

@@ -228,6 +228,10 @@ char* toChar(Operation op, Register reg){
           case NONE:
             strcpy(resultString,"");
           break;
+          case LST:
+            printf("PASSOU UM LST DE ALGUM LUGAR\n");
+            return NULL;
+          break;
           default:
             callException("toChar: op",1,5);
             printf("MISMATCHED OP: %d\n",op);

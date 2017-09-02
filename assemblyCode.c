@@ -8,13 +8,17 @@ void asmCode (triple* instruction) {
   operation = getOperation(instruction);
   if (operation == NONE) { callException("asmCode",13,5); return; }
 
-  int i;
+  triple* tripleHandler = malloc(sizeof(triple)*1);
+  if (tripleHandler == NULL) { callException("generateAssembly",3,5); return; }
 
   switch (operation) {
     case FNDECL:
+
       addASM( createLTYPE( instruction->operation, getCurrentASMNumber()+1 ) );
+
       setNamePosition(st_lookupFnStart(instruction->operation),1);
       requestMemory(st_lookupFnStart(instruction->operation),1);
+
     break;
     case EQL:
     case DIFE:
@@ -146,6 +150,10 @@ void asmCode (triple* instruction) {
 
         } else if ((instruction->firstOperandType == TripleAddress) && (instruction->secondOperandType == TripleAddress)) {
             addASM( createRTYPE( operation, $acc, $t1, $acc ) );
+            // if ((operation == EQL) || (operation == DIFE) || (operation == GRT) || (operation == LST) || (operation == GTE) || (operation == LTE))
+            //   logicalBranch(operation, instruction->next->secondOperand);
+            // else
+            //   addASM( createRTYPE( operation, $acc, $acc, $t1 ) );
         } else {
             callException("asmCode: arithmetic ops",1,5);
         }
@@ -160,7 +168,7 @@ void asmCode (triple* instruction) {
         if (instruction->firstOperandType == ConstantNoAddress) {
             /* sw $acc 0($sp)
                addiu $sp $sp 1 */
-            addASM ( createITYPE ( LI, $t1, $zero, instruction->firstOperandType ) );
+            addASM ( createITYPE ( LI, $t1, $zero, instruction->firstOperand) );
             addASM ( createITYPE ( SW, $sp, $t1, 0 ) );
             addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
             requestMemory(getCurrentASMNumber(), 1);
@@ -186,6 +194,18 @@ void asmCode (triple* instruction) {
         } else {
             callException("asmCode: PARAM",1,5);
         }
+
+        /*loading the parameters into the correct addresses*/
+        tripleHandler = getTriple(instruction->functionName);
+        addASM( createRTYPE( MOVE, $fp, $sp, $zero ) );
+        int i;
+        for (i = 0; i < instruction->secondOperand; i++) {
+          addASM( createRTYPE( SUB, $sp, $sp, $one ) );
+          addASM( createITYPE( LI, $t1, $zero, getNamePosition(tripleHandler->params[i].parameterSTAddress) ) );
+          addASM( createITYPE( LW, $t1, $sp, 0 ) );
+        }
+        addASM( createRTYPE( MOVE, $sp, $fp, $zero ) );
+
     break;
     case CALL:
         addASM ( createJTYPE ( JAL, returnFunctionTriple(instruction->functionName)) );
@@ -242,29 +262,63 @@ void asmCode (triple* instruction) {
         toBeAligned(getCurrentASMNumber());
     break;
     case V_IN:
-        if (instruction->secondOperandType == ConstantNoAddress) {
+        if (strcmp(instruction->next->operation,"ATRIB") == 0) {
 
-            addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
-            addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
-            addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
-            addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
+            if (instruction->secondOperandType == ConstantNoAddress) {
 
-        } else if (instruction->secondOperandType == SymboltableAddress) {
+                addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
+                addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
+                addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
+                addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
 
-            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
-            addASM( createITYPE( LW, $t1, $t1, 0 ) );
-            addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
-            addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
-            addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
+            } else if (instruction->secondOperandType == SymboltableAddress) {
 
-        } else if (instruction->secondOperandType == TripleAddress) {
+                addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
+                addASM( createITYPE( LW, $t1, $t1, 0 ) );
+                addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
+                addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
+                addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
 
-            addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
-            addASM( createRTYPE( ADD, $acc, $t1, $acc ) );
-            addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
+            } else if (instruction->secondOperandType == TripleAddress) {
+
+                addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
+                addASM( createRTYPE( ADD, $acc, $t1, $acc ) );
+                addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
+
+            } else {
+                callException("asmCode: V_IN",1,5);
+            }
 
         } else {
-            callException("asmCode: V_IN",1,5);
+
+            if (instruction->secondOperandType == ConstantNoAddress) {
+
+                addASM( createITYPE( LI, $t1, $zero, instruction->secondOperand ) );
+                addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
+                addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
+                addASM( createITYPE( LW, $acc, $acc, 0 ) );
+                addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
+
+            } else if (instruction->secondOperandType == SymboltableAddress) {
+
+                addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->secondOperand) ) );
+                addASM( createITYPE( LW, $t1, $t1, 0 ) );
+                addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
+                addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
+                addASM( createITYPE( LW, $acc, $acc, 0 ) );
+                addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
+
+            } else if (instruction->secondOperandType == TripleAddress) {
+
+                addASM( createITYPE( LI, $t1, $zero, getNamePosition(instruction->firstOperand) ) );
+                addASM( createRTYPE( ADD, $acc, $t1, $acc ) );
+                addASM( createITYPE( LW, $acc, $acc, 0 ) );
+                addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
+
+            } else {
+                callException("asmCode: V_IN",1,5);
+            }
+
         }
     break;
     case G_VAR:
@@ -370,7 +424,6 @@ void generateAssembly(triple* List){
     com os números das triplas que precisarão de ajustes. Se der match, basta setar o Alignment
     com o número do getCurrentASMNumber() e pronto!
     */
-
     if (seekAlignment(List->tripleNumber) == 1) {
       setAlignment(List->tripleNumber,getCurrentASMNumber());
     }
