@@ -159,9 +159,6 @@ void asmCode (triple* instruction) {
         }
     break;
     case RET:
-        addASM( createRTYPE( MOVE, $t1, $acc, $zero ) );
-        addASM( createRTYPE( SUB, $t1, $sp, $one ) );
-        addASM( createITYPE( LW, $ra, $t1, 0 ) );
         addASM( createJTYPE( JR, $ra ) );
     break;
     case PARAM:
@@ -208,7 +205,7 @@ void asmCode (triple* instruction) {
 
     break;
     case CALL:
-        addASM ( createJTYPE ( JAL, returnFunctionTriple(instruction->functionName)) );
+        addASM( createJTYPE( JAL, returnFunctionTriple(instruction->functionName) ) );
         toBeAligned(getCurrentASMNumber());
     break;
     case ATR:

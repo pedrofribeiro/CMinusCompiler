@@ -18,7 +18,6 @@ void updateSymtab(TreeNode *);
  * by a postorder syntax tree traversal
  */
 void typeCheck(TreeNode *);
-/*void typeCheck2(TreeNode *);*/
 
 void ESCOPOControllerUP(TreeNode *);
 void ESCOPOControllerDOWN();
