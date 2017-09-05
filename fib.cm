@@ -1,8 +1,4 @@
-int input(void){
-return 1;
-}
-
-int fibonacci(int n){
+int fib(int n){
 	int c;
 	int next;
 	int first;
@@ -26,5 +22,6 @@ return next;
 void main(void){
 	int n;
 	n = input();
-	fibonacci(n);
+	fib(n);
+	return;
 }

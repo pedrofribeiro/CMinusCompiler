@@ -194,9 +194,10 @@ void asmCode (triple* instruction) {
 
         /*loading the parameters into the correct addresses*/
         tripleHandler = getTriple(instruction->functionName);
+        if(tripleHandler == NULL) {callException("asmCode: PARAM",11,5);}
         addASM( createRTYPE( MOVE, $fp, $sp, $zero ) );
         int i;
-        for (i = 0; i < instruction->secondOperand; i++) {
+        for (i = 0; i < tripleHandler->secondOperand; i++) {
           addASM( createRTYPE( SUB, $sp, $sp, $one ) );
           addASM( createITYPE( LI, $t1, $zero, getNamePosition(tripleHandler->params[i].parameterSTAddress) ) );
           addASM( createITYPE( LW, $t1, $sp, 0 ) );
