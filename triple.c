@@ -16,7 +16,7 @@ triple* createTriple(char op[], int fo, int so, operandType fot, operandType sot
   newTriple->tripleNumber = NUMBER_OF_TRIPLES;
   strcpy(newTriple->functionName,"NONE");
   size_t i;
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 5; i++) {
     strcpy(newTriple->params[i].parameterName,"NONE");
     newTriple->params[i].parameterSTAddress = -1;
   }

@@ -16,10 +16,11 @@ int foo(int x, int y, int z, int w){
                 return result/(w - 1);
         }
     }
+return 555;
 }
 void main(void){
-/*    vetor[0] = input(); linha original */
+    vetor[0] = input();
     vetor[0] = 8;
-    vetor[1] = foo(1, vetor[0], 3, 4);
+   /* vetor[1] = foo(1, vetor[0], 3, 4);*/
     output(vetor[1]);
 }

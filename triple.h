@@ -24,7 +24,7 @@ typedef struct triple{
   operandType secondOperandType;
   int tripleNumber;
   char functionName[6];
-  ParamList params[3];
+  ParamList params[5];
   struct triple* next;
 }triple;
 

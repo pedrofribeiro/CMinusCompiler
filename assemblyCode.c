@@ -253,7 +253,7 @@ void asmCode (triple* instruction) {
 
     break;
     case IF_F:
-        //addASM( createITYPE( BEQ, $acc, $zero, 222 ) );
+        /*handled in the operation part, using the logicalBranch() function*/
     break;
     case GOTO:
         addASM( createJTYPE( JUMP, instruction->firstOperand ) );
