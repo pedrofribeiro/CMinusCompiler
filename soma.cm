@@ -2,10 +2,31 @@ int soma(int a, int b){
 	return a+b;
 }
 
-void main (void) {
-	int x[2];
-	int y;
-	y = 2;
-	y = soma(y,y);
-return;
+int sub(int x, int y){
+	return x-y;
+}
+
+
+void main(void){
+  int x;
+  int y;
+  int v[5];
+  int i;
+
+  i = 0;
+
+  while(i < 5){
+    v[i] = input();
+    i = i + 1;
+  }
+
+  x = input();
+  y = input();
+
+  if(x < 5){
+    v[x] = y;
+  }else{
+    v[0] = x;
+  }
+
 }

@@ -11,6 +11,10 @@ void evalExp(TreeNode *node);
 
 void evalProgram(TreeNode *node);
 
+void alignmentHalt();
+
+void cleanTriples();
+
 void generateIntermediaryCode(TreeNode * t);
 
 #endif

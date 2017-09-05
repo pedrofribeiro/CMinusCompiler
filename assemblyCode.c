@@ -393,6 +393,9 @@ void asmCode (triple* instruction) {
         }
 
     break;
+    case HALT:
+        addASM( createJTYPE( HALT, 0) );
+    break;
     default:
         callException("asmCode",1,5);
     break;
@@ -418,11 +421,12 @@ void generateAssembly(triple* List){
     asmCode(List);
     /*marcar no gerador de código intermediário quais as triplas que vão precisar de ajustes
     e ficar de sentinela nesse ponto, dentro do loop. Comparando o número da tripla corrente
-    com os números das triplas que precisarão de ajustes. Se der match, basta setar o Alignment
-    com o número do getCurrentASMNumber() e pronto!
+    com os números das triplas que precisarão ser ajustados como endereços de destino de outras
+    instruções. Se der match, basta setar o Alignment com o número do getCurrentASMNumber() e pronto!
     */
     if (seekAlignment(List->tripleNumber) == 1) {
       setAlignment(List->tripleNumber,getCurrentASMNumber());
+      printf("[%d , %d]\n",List->tripleNumber,getCurrentASMNumber());
     }
 
     List = List->next;

@@ -554,6 +554,11 @@ void evalProgram(TreeNode *node){
   evalProgram(node->sibling); /*recursive descent*/
 }
 
+void alignmentHalt(){
+  addTriple("HALT",-1,-1,EmptyAddress,EmptyAddress);
+  needsAlignment(NUMBER_OF_TRIPLES,1);
+}
+
 void cleanTriples(){
   free(tripleList);
   tripleList = NULL;
@@ -571,5 +576,6 @@ void generateIntermediaryCode(TreeNode * t){
   strcpy(CURRENT_FUNCTION,"global");
 
   evalProgram(t);
+  alignmentHalt();
   printTripleList();
 }

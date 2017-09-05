@@ -72,7 +72,7 @@ ASM_INSTR* createLTYPE(char cop[], int addr){
   newInstruction->ltype.asmAddress = addr;
   newInstruction->asmNumber = NUMBER_OF_ASM;
   newInstruction->next = NULL;
-  _VERBOSE_5 printf("[L] %d: %s %d ",newInstruction->asmNumber,newInstruction->ltype.functionName,newInstruction->ltype.asmAddress);
+  _VERBOSE_5 printf("[L] %d: %s %d \n",newInstruction->asmNumber,newInstruction->ltype.functionName,newInstruction->ltype.asmAddress);
   return newInstruction;
 }
 
@@ -119,11 +119,11 @@ void addASM(ASM_INSTR* newInstruction){
 int adjustASM(int an, int field, int nv){
   if ((an <= 0) || (an > NUMBER_OF_ASM)) {
     callException("adjustASM: number of asm",8,5);
-    return -1;
+    return -999;
   }
   if ((field < 1) || (field > 3)){
     callException("adjustASM: field",8,5);
-    return -1;
+    return -999;
   }
   int SAFE_LOOP = 0;
   tempAsm = asmList->next;
@@ -132,17 +132,17 @@ int adjustASM(int an, int field, int nv){
       if (field == 1) { tempAsm->itype.immediate = nv; }
       else if (field == 2) { tempAsm->jtype.address = nv; }
       else if (field == 3) { tempAsm->ltype.asmAddress = nv; }
-      _VERBOSE_5 printf("Endereço de salto alterado para %d.\n",nv);
+      _VERBOSE_5 printf("Endereço de salto do ASM %d foi alterado para %d.\n",an,nv);
       return 1;
     } else { tempAsm = tempAsm->next; }
     /*safe loop measure*/
     SAFE_LOOP++;
     if(SAFE_LOOP > SAFE_LOOP_SIZE){
       callException("adjustTriple",10,4);
-      return -1;
+      return -999;
     }
   }
-  return -1;
+  return -999;
 }
 
 
@@ -225,6 +225,9 @@ char* toChar(Operation op, Register reg){
           case OUTPUT:
             strcpy(resultString,"OTP");
           break;
+          case HALT:
+            strcpy(resultString,"HLT");
+          break;
           case NONE:
             strcpy(resultString,"");
           break;
@@ -304,6 +307,7 @@ void toBeAligned(int asmNumber){
     if (tempAsm->asmNumber == asmNumber) {
       tempAsm->needsAlignment = TRUE;
       _VERBOSE_5 printf("A instrução %d precisa ter seu endereço de destino alinhado.\n",asmNumber);
+      return;
     }
 
     SAFE_LOOP++;
@@ -311,6 +315,7 @@ void toBeAligned(int asmNumber){
 
     tempAsm = tempAsm->next;
   }
+  callException("toBeAligned",31,5);
 }
 
 void logicalBranch(Operation op, int tripleNumber){
@@ -469,6 +474,8 @@ Operation getOperation(triple *tr){
     return OUTPUT;
   } else if (strcmp(inputOperation,"INPUT") == 0) {
     return INPUT;
+  } else if (strcmp(inputOperation,"HALT") == 0) {
+    return HALT;
   } else {
     return FNDECL;
   }
@@ -539,6 +546,7 @@ void setAlignment(int tripleNumber, int asmNumber){
     if (SAFE_LOOP > SAFE_LOOP_SIZE) { callException("setAlignment",10,5); return; }
     tempAlignment = tempAlignment->next;
   }
+  callException("setAlignment",31,5);
 }
 
 int seekAlignment(int tripleNumber){
