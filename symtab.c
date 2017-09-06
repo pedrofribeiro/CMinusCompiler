@@ -44,7 +44,7 @@ void st_insert( char * name, int loc, int lineno, ExpType dataType, StmtKind idT
   while ((l != NULL) && (strcmp(name,l->name) != 0))
     l = l->next;
 
-  if ( (l == NULL) || (strcmp(ESCOPO,l->scope) != 0) ) /* variable not yet in table */
+  if ( (l == NULL) || (strcmp(scope,l->scope) != 0) ) /* variable not yet in table */
   {
     l = (BucketList) malloc(sizeof(struct BucketListRec));
     l->name = name;

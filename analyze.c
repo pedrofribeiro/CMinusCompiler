@@ -149,7 +149,14 @@ static void insertNode( TreeNode * t)
             if (st_lookupGlobal(t->attr.name) == -1) // << Done recently.
               typeError(t, "ERRO ENCONTRADO. USO DE VARIAVEL NAO DECLARADA.");
           } else {
-            st_insert(t->attr.name,location++, t->lineno, t->type, t->kind.exp, ESCOPO);
+              int globalPosition, localPosition;
+              globalPosition = st_lookupGlobal(t->attr.name);
+              localPosition  = st_lookupVarPosition(t->attr.name,ESCOPO);
+              if (localPosition != -1) {
+                  st_insert(t->attr.name,localPosition, t->lineno, t->type, t->kind.exp, ESCOPO);
+              } else if (globalPosition != -1) {
+                  st_insert(t->attr.name,globalPosition, t->lineno, t->type, t->kind.exp, "global");
+              }
           }
         break;
         case IdVetK:
@@ -160,14 +167,23 @@ static void insertNode( TreeNode * t)
                 //t->child[1] = NULL;
                 //t->child[2] = NULL;
           } else {
-            st_insert(t->attr.name, location++, t->lineno, t->type, t->kind.exp, ESCOPO);
+              int globalPosition, localPosition;
+              globalPosition = st_lookupGlobal(t->attr.name);
+              localPosition  = st_lookupVarPosition(t->attr.name,ESCOPO);
+              if (localPosition != -1) {
+                  st_insert(t->attr.name,localPosition, t->lineno, t->type, t->kind.exp, ESCOPO);
+              } else if (globalPosition!= -1) {
+                  st_insert(t->attr.name,globalPosition, t->lineno, t->type, t->kind.exp, "global");
+              }
           }
         break;
         case IdFunK:
           if(st_lookup2(t->attr.name) == -1) { //Verifica apenas o nome, para nao gerar erro com globais
             typeError(t, "ERRO ENCONTRADO. USO DE FUNCAO NAO DECLARADA.");
           }else{
-            st_insert(t->attr.name, location++, t->lineno, t->type, t->kind.exp, ESCOPO);
+            int fnPosition;
+            fnPosition = st_lookupFnStart(t->attr.name);
+            st_insert(t->attr.name, fnPosition, t->lineno, t->type, t->kind.exp, t->attr.name);
             //counting the number of parameters
               if(t->child[0] == NULL) t->numberOfParameters = 0;
               else{

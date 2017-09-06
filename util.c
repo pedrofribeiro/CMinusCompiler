@@ -162,6 +162,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	29. A problem occured trying to set a new position in memory to an existing variable.
 	30. Invalid type of data to be stored on a register.
 	31. The given asmNumber was not found on the asmList.
+	32. The variable is not declare as local nor as global.
 	*/
 }
 

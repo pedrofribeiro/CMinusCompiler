@@ -268,6 +268,7 @@ void asmCode (triple* instruction) {
                 addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
                 addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
                 addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
+                printf("FIRST OPERAND %d, ADR %d\n",instruction->firstOperand,getNamePosition(instruction->firstOperand));
 
             } else if (instruction->secondOperandType == SymboltableAddress) {
 
@@ -330,7 +331,7 @@ void asmCode (triple* instruction) {
         gvarCreation = setNamePosition(instruction->firstOperand,1);
         if (gvarCreation == -999) { callException("asmCode: G_VAR",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
         setGP(getCurrentASMNumber());
-        addASM( createRTYPE( LI, $gp, $zero, getGP() ) );
+        //addASM( createRTYPE( LI, $gp, $zero, getGP() ) );
 
     break;
     case G_VET:
@@ -346,7 +347,7 @@ void asmCode (triple* instruction) {
       gvetCreation = setNamePosition(instruction->firstOperand,instruction->secondOperand);
       if (gvetCreation == -999) { callException("asmCode: G_VET",20,5); printf(" st id(%d)\n",instruction->firstOperand); return; }
       setGP(getCurrentASMNumber());
-      addASM( createRTYPE( LI, $gp, $zero, getGP() ) );
+      //addASM( createRTYPE( LI, $gp, $zero, getGP() ) );
 
     break;
     case VET:
