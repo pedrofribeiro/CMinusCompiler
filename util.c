@@ -128,7 +128,7 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	4. Intermediary Code Generation
 	5. Assembly Code Generation
 	6. Machine Code Generation
-	There are 30 kinds of exceptions:
+	There are 33 kinds of exceptions:
 	1. A default case was assumed when it shouldn't have.
 		 This means that one of the switches used catched an error, probably on a given (current) treeNode.
 	2. A null node has been found.
@@ -163,6 +163,8 @@ void callException(char* functionOfException, int kindOfException, int pointOfBr
 	30. Invalid type of data to be stored on a register.
 	31. The given asmNumber was not found on the asmList.
 	32. The variable is not declare as local nor as global.
+	33. Could not insert the item on the list.
+	34. The requested id was not on the list.
 	*/
 }
 

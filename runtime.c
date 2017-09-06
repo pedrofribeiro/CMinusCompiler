@@ -330,6 +330,7 @@ int setNamePosition(int id, int ap){
           tempVar->next = newVariable;
           return 1;
       }
+    callException("setNamePosition",33,5);
     return -999;
 }
 

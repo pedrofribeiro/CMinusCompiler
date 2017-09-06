@@ -305,6 +305,8 @@ void evalExp(TreeNode *node){
             callException("evalExp: IdVetK",7,4);
           }
 
+      } else {
+          callException("evalExp: IdVetK",32,5);
       }
 
     break;

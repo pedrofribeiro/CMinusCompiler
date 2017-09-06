@@ -89,7 +89,7 @@ int st_lookupGlobal ( char * name )
   BucketList l =  hashTable[h];
   while (l != NULL) {
     if( ( strcmp(name,l->name) == 0) && (strcmp("global",l->scope) == 0) ) {
-       return 1;
+       return l->memloc;
     }
     l = l->next;
   }

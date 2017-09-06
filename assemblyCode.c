@@ -268,7 +268,6 @@ void asmCode (triple* instruction) {
                 addASM( createITYPE( LI, $acc, $zero, getNamePosition(instruction->firstOperand) ) );
                 addASM( createRTYPE( ADD, $acc, $acc, $t1 ) );
                 addASM( createRTYPE( MOVE, $rv, $acc, $zero ) );
-                printf("FIRST OPERAND %d, ADR %d\n",instruction->firstOperand,getNamePosition(instruction->firstOperand));
 
             } else if (instruction->secondOperandType == SymboltableAddress) {
 
@@ -321,10 +320,6 @@ void asmCode (triple* instruction) {
         }
     break;
     case G_VAR:
-        /*
-        sw $zero 0($sp)
-        addiu $sp $sp 1
-        */
         addASM( createITYPE ( SW, $sp, $zero, 0 ) );
         addASM( createRTYPE ( ADD, $sp, $sp, $one ) );
         int gvarCreation;
@@ -335,10 +330,6 @@ void asmCode (triple* instruction) {
 
     break;
     case G_VET:
-      /*
-      loop n, n = number of parameters
-        sw $zero 0($sp)
-        addiu $sp $sp 1*/
         for (i = 0; i < instruction->secondOperand; i++) {
             addASM ( createITYPE ( SW, $sp, $zero, 0 ) );
             addASM ( createRTYPE ( ADD, $sp, $sp, $one ) );
@@ -431,6 +422,8 @@ void generateAssembly(triple* List){
       printf("[%d , %d]\n",List->tripleNumber,getCurrentASMNumber());
     }
 
+    int nn = getCurrentASMNumber();
+    if (nn == 83) printf("tn %d, stid %d\n",List->tripleNumber,List->secondOperand);
     List = List->next;
   }
 
